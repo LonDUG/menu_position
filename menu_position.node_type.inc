@@ -9,7 +9,7 @@
 /**
  * Adds form elements for the "node type" plugin to the rule configuration form.
  */
-function menu_position_rule_node_type_form(&$form, $form_state) {
+function menu_position_rule_node_type_form(&$form, &$form_state) {
   // If this is an existing rule, load the variables stored in the rule for this plugin.
   $variables = !empty($form_state['#menu-position-rule']['conditions']['node_type']) ? $form_state['#menu-position-rule']['conditions']['node_type'] : array();
 
@@ -33,17 +33,23 @@ function menu_position_rule_node_type_form(&$form, $form_state) {
 /**
  * Prepares the "node type" variables to be stored in the rule.
  */
-function menu_position_rule_node_type_form_submit(&$form, $form_state) {
+function menu_position_rule_node_type_form_submit($form, &$form_state) {
   // The user has added our plugin's form elements as a condition for the rule.
   if (!empty($form_state['values']['node_type'])) {
+    // Remove any 0 valued options.
+    foreach ($form_state['values']['node_type'] as $key => $value) {
+      if ($value === 0) {
+        unset($form_state['values']['node_type'][$key]);
+      }
+    }
     // Since our form elements indicate that our plugin is to be used for this
     // rule, we need to add the appropriate variables to
-    // $form_state['conditions']['PLUGIN'] so that they can be stored statically
+    // $form_state['values']['conditions']['PLUGIN'] so that they can be stored statically
     // with the rule.
     $variables = array(
       'node_type' => $form_state['values']['node_type'],
     );
-    $form_state['conditions']['node_type'] = $variables;
+    $form_state['values']['conditions']['node_type'] = $variables;
   }
   // If $form_state['conditions']['PLUGIN'] is not set, the plugin will not be
   // added as a condition for this rule.
