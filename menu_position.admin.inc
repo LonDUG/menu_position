@@ -96,23 +96,23 @@ function _menu_position_form_menu_edit_item_alter(&$form, &$form_state) {
     foreach (array('link_title', 'description', 'enabled', 'expanded', 'parent', 'weight') as $key) {
       $form[$key]['#disabled'] = TRUE;
     }
+    // Remove the validator.
+    $key = array_search('menu_edit_item_validate', $form['#validate']);
+    if ($key !== FALSE) {
+      unset($form['#validate'][$key]);
+    }
+    // Replace the standard submit handler with our own.
+    $key = array_search('menu_edit_item_submit', $form['#submit']);
+    if ($key !== FALSE) {
+      $form['#submit'][$key] = 'menu_position_edit_item_submit';
+    }
+    // Replace the Save button with a Cancel button.
+    unset($form['actions']['submit']);
+    $form['actions']['cancel'] = array(
+      '#type' => 'submit',
+      '#value' => t('Cancel'),
+    );
   }
-  // Remove the validator.
-  $key = array_search('menu_edit_item_validate', $form['#validate']);
-  if ($key !== FALSE) {
-    unset($form['#validate'][$key]);
-  }
-  // Replace the standard submit handler with our own.
-  $key = array_search('menu_edit_item_submit', $form['#submit']);
-  if ($key !== FALSE) {
-    $form['#submit'][$key] = 'menu_position_edit_item_submit';
-  }
-  // Replace the Save button with a Cancel button.
-  unset($form['actions']['submit']);
-  $form['actions']['cancel'] = array(
-    '#type' => 'submit',
-    '#value' => t('Cancel'),
-  );
 }
 
 /**
