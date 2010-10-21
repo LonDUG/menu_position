@@ -1,14 +1,17 @@
 <?php
 // $Id$
 
+/**
+ * @file
+ * Provides menu links for dynamic positioning of nodes based on configurable rules.
+ */
+
 // @TODO: the rules and temporary menu links are tied to nodes by the router
 // item and the hook_node_view(). See about untethering it.
 // @TODO: use hook_translated_menu_link_alter().
 // HOOK_translated_menu_link_alter() is called during _menu_link_translate()
 // which is called during _menu_tree_check_access().
 // @TODO: use menu_set_item() using modified hidden menu item.
-
-// @TODO: implement hook_menu_link_alter() to make sure plid is updated in rule.
 
 /**
  * Implements hook_node_view().
