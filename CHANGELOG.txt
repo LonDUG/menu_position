@@ -1,3 +1,3 @@
-Menu Position 7.x-1.x-dev, xxxx-xx-xx (development release)
----------------------------------
-- Initial commit.
+Menu Position 7.x-1.0-beta1, 2010-10-21
+---------------------------------------
+- Initial release
