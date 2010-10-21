@@ -7,6 +7,25 @@
  */
 
 /**
+ * Checks if the node is of a certain type.
+ *
+ * @param $variables
+ *   An array containing each of the variables saved in the database necessary
+ *   to evaluate this condition of the rule.
+ * @return
+ *   TRUE if condition applies successfully. Otherwise FALSE.
+ */
+function menu_position_menu_position_condition_node_type($variables) {
+  // Grab the variables stored statically in the rule.
+  $node_type = $variables['node_type'];
+
+  // $node is dynamically added and may not exist.
+  $node = isset($variables['node']) ? $variables['node'] : NULL;
+
+  return ($node && in_array($node->type, $node_type)) ? TRUE : FALSE;
+}
+
+/**
  * Adds form elements for the "node type" plugin to the rule configuration form.
  *
  * @param $form
@@ -27,10 +46,6 @@ function menu_position_menu_position_rule_node_type_form(&$form, &$form_state) {
     '#description' => t('Apply this rule only on pages that display content of the given type(s). If you select no types, there will be no type-specific limitation.'),
     '#weight' => -20,
   );
-
-  // If we had a validation handler, we could add it this way. Or we could add
-  // a per-element validation handler with '#element_validate' above.
-  //$form['#validate'][] = 'menu_position_rule_node_type_form_validate';
 
   // Add a submit handler.
   $form['#submit'][] = 'menu_position_menu_position_rule_node_type_form_submit';
@@ -62,23 +77,4 @@ function menu_position_menu_position_rule_node_type_form_submit(&$form, &$form_s
       $form_state['values']['conditions']['node_type'] = $variables;
     }
   }
-}
-
-/**
- * Checks if the node is of a certain type.
- *
- * @param $variables
- *   An array containing each of the variables saved in the database necessary
- *   to evaluate this condition of the rule.
- * @return
- *   TRUE if condition applies successfully. Otherwise FALSE.
- */
-function menu_position_menu_position_condition_node_type($variables) {
-  // Grab the variables stored statically in the rule.
-  $node_type = $variables['node_type'];
-
-  // $node is dynamically added and may not exist.
-  $node = isset($variables['node']) ? $variables['node'] : NULL;
-
-  return ($node && in_array($node->type, $node_type)) ? TRUE : FALSE;
 }
