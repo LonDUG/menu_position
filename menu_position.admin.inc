@@ -116,6 +116,12 @@ function _menu_position_form_menu_edit_item_alter(&$form, &$form_state) {
 }
 
 /**
+ * Implements hook_menu_link_update().
+ */
+function menu_position_menu_link_update($link) {
+}
+
+/**
  * Process menu and menu item add/edit form submissions for menu_position links.
  */
 function menu_position_edit_item_submit($form, &$form_state) {
