@@ -6,8 +6,12 @@
  * Provides menu links for dynamic positioning of nodes based on configurable rules.
  */
 
-// @TODO: the rule checking is tied to nodes by hook_node_view() See about
-// untethering it.
+// @TODO: the rules and temporary menu links are tied to nodes by the router
+// item and the hook_node_view(). See about untethering it.
+// @TODO: use hook_translated_menu_link_alter().
+// HOOK_translated_menu_link_alter() is called during _menu_link_translate()
+// which is called during _menu_tree_check_access().
+// @TODO: use menu_set_item() using modified hidden menu item.
 
 /**
  * Implements hook_node_view().
@@ -55,6 +59,19 @@ function menu_position_node_view($node, $view_mode) {
 
         // Retrieve menu item specified in the rule.
         $menu_item = menu_link_load($rule->mlid);
+        /*
+        // Update menu item.
+        $faked_menu_item = $menu_item;
+        $faked_menu_item['link_title'] = $node->title;
+        $faked_menu_item['title']      = $node->title;
+        $faked_menu_item['link_path']  = 'node/' . $node->nid;
+        $faked_menu_item['path']       = 'node/' . $node->nid;
+        $faked_menu_item['href']       = 'node/' . $node->nid;
+        $faked_menu_item['hidden']     = 0;
+        $faked_menu_item['access']     = TRUE;
+        $faked_menu_item['localized_options'] = $menu_item['options'];
+        menu_position_set_menu_item($faked_menu_item);
+        */
 
         // Clone the original router item, but insert our menu_position path.
         $router_item = $original_router_item = menu_get_item();
@@ -105,6 +122,20 @@ function menu_position_node_view($node, $view_mode) {
     }
   }
 }
+
+/**
+ * Implements hook_translated_menu_link_alter().
+ */
+/*
+function menu_position_translated_menu_link_alter(&$item, $map) {
+  $menu_item = menu_position_get_menu_item();
+dsm(array('menu_item' => $menu_item, 'item' => $item, 'map' => $map));
+  if ($menu_item['mlid'] == $item['mlid']) {
+    // do stuff.
+    dsm('boo-ya!');
+  }
+}
+*/
 
 /**
  * Implements hook_permission().
@@ -183,6 +214,22 @@ function menu_position_menu_link_update($link) {
   module_load_include('inc', 'menu_position', 'menu_position.admin');
   _menu_position_menu_link_update($link);
 }
+
+/*
+function menu_position_set_menu_item($new_menu_item) {
+  menu_position_get_menu_item($new_menu_item);
+}
+
+function menu_position_get_menu_item($new_menu_item = NULL) {
+  $menu_item = &drupal_static(__FUNCTION__, array('mlid' => -1));
+
+  if (isset($new_menu_item)) {
+    $menu_item = $new_menu_item;
+  }
+
+  return $menu_item;
+}
+*/
 
 /**
  * Retrieves a list of information about every rule plugin.
