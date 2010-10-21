@@ -1,0 +1,88 @@
+<?php
+// $Id$
+
+/**
+ * Sets the current menu location based on the parent item.
+ */
+function menu_position_set_position($mlid) {
+  $menu_item = menu_link_load($mlid);
+  // Set the local tasks based on the actual router item.
+  menu_local_tasks(0);
+  menu_local_tasks(1);
+  // Replace the router item with our menu item.
+//  menu_set_item($_GET['q'], $menu_item);
+
+  // Build and set the breadcrumb trail.
+  $breadcrumb = array();
+  while ($mlid && ($item = menu_link_load($mlid))) {
+    array_unshift($breadcrumb, l($item['link_title'], $item['link_path']));
+    $mlid = $item['plid'];
+  }
+  array_unshift($breadcrumb, l(t('Home'), NULL));
+  drupal_set_breadcrumb($breadcrumb);
+}
+
+/**
+ * Implements hook_node_view().
+ */
+function menu_position_node_view($node, $view_mode) {
+  if ($view_mode == 'full') {
+    $db_rules = db_query('SELECT * FROM {menu_position_rules} ORDER BY weight, rid WHERE enabled = :enabled', array(':enabled' => 1));
+    foreach ($db_rules as $rule) {
+      // Check node type.
+      if ($rule->node_type != '' && $node->type != $rule->node_type) continue;
+      // Check terms.
+      if ($rule->tid > 0) {
+        if (empty($node->taxonomy[$rule->tid])) continue 2;
+      }
+      elseif ($rule->tid < 0) {
+        foreach ($node->taxonomy as $term) {
+          if ($term->vid == -$rule->tid) continue 2;
+        }
+        continue 2;
+      }
+      // Check php condition.
+      if ($rule->php_condition != '') {
+        eval("\$php_condition=$rule->php_condition;");
+        if (!$php_condition) {
+          continue;
+        }
+      }
+      // Apply menu position.
+      menu_position_set_position($rule->mlid);
+      break;
+    }
+    module_invoke_all('menu_position', $node);
+  }
+}
+
+/**
+ * Implements hook_permission().
+ */
+function menu_position_permission() {
+  return array(
+    'administer menu positions' => array(
+      'title' => t('Administer menu position rules'),
+    ),
+  );
+}
+
+/**
+ * Implements hook_menu().
+ */
+function menu_position_menu() {
+  module_load_include('inc', 'menu_position', 'menu_position.admin');
+  return _menu_position_menu();
+}
+
+/**
+ * Implements hook_theme().
+ */
+function menu_position_theme() {
+  return array(
+    'menu_position_rules_order' => array(
+      'render element' => 'element',
+      'file' => 'menu_position.admin.inc',
+    ),
+  );
+}
