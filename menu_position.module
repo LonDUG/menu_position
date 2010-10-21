@@ -8,6 +8,8 @@
 // which is called during _menu_tree_check_access().
 // @TODO: use menu_set_item() using modified hidden menu item.
 
+// @TODO: implement hook_menu_link_alter() to make sure plid is updated in rule.
+
 /**
  * Implements hook_node_view().
  */

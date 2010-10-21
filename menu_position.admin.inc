@@ -385,7 +385,7 @@ function menu_position_rule_form_submit($form, &$form_state) {
   else {
     $rule['rid'] = $form_state['values']['rid'];
     menu_position_edit_rule($rule);
-    drupal_set_message(t('Rule has been added.'));
+    drupal_set_message(t('Rule has been modified.'));
   }
 
   $form_state['redirect'] = 'admin/structure/menu-position';
@@ -439,20 +439,9 @@ function menu_position_add_rule($rule) {
  *   The mlid of the rule's new menu link.
  */
 function menu_position_add_menu_link($rid, $plid, $admin_title = '') {
-  // Add a menu link to handle matching nodes.
-  $item = array(
-    'link_path' => 'menu-position/' . $rid,
-    'link_title' => $admin_title ? $admin_title . ' (menu position rule)' : 'Menu position rule #' . $rid,
-    'mlid' => NULL,
-    'plid' => $plid,
-    'hidden' => 1,
-    'module' => 'menu_position',
-    'options' => array(
-      'alter' => TRUE,
-      'attributes' => array('class' => array('menu-position-link')),
-    ),
-  );
-  return menu_link_save($item);
+  // Add a menu link to handle matching nodes. Passing NULL as the mlid will
+  // cause menu_link_save() to add a new menu link.
+  return menu_position_edit_menu_link($rid, NULL, $plid, $admin_title = '');
 }
 
 /**
@@ -464,10 +453,45 @@ function menu_position_edit_rule($rule) {
     'conditions' =>  $rule['conditions'],
     'plid' =>        $rule['plid'],
   );
+  // Update the rule.
   db_update('menu_position_rules')
     ->condition('rid', $rule['rid'])
     ->fields($fields)
     ->execute();
+  // Update the link.
+  $mlid = db_query('SELECT mlid FROM {menu_position_rules} WHERE rid = :rid', array(':rid' => $rule['rid']))->fetchField();
+  menu_position_edit_menu_link($rule['rid'], $mlid, $rule['plid'], $rule['admin_title']);
+}
+
+/**
+ * Adds a menu position rule.
+ *
+ * @param $rid
+ *   ID of the rule needing a menu link.
+ * @param $mlid
+ *   The mlid of the menu link used in the rule.
+ * @param $plid
+ *   The mlid of the parent menu link specified in the rule.
+ * @param $admin_title
+ *   The administrative title of the rule.
+ * @return
+ *   The mlid of the rule's new menu link.
+ */
+function menu_position_edit_menu_link($rid, $mlid, $plid, $admin_title = '') {
+  // Add a menu link to handle matching nodes.
+  $item = array(
+    'link_path' => 'menu-position/' . $rid,
+    'link_title' => $admin_title ? $admin_title . ' (menu position rule)' : 'Menu position rule #' . $rid,
+    'mlid' => $mlid,
+    'plid' => $plid,
+    'hidden' => 1,
+    'module' => 'menu_position',
+    'options' => array(
+      'alter' => TRUE,
+      'attributes' => array('class' => array('menu-position-link')),
+    ),
+  );
+  return menu_link_save($item);
 }
 
 /**
