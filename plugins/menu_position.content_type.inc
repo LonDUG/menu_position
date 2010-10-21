@@ -3,7 +3,7 @@
 
 /**
  * @file
- * Provides the "Node type" rule plugin for the Menu Position module.
+ * Provides the "Content type" rule plugin for the Menu Position module.
  */
 
 /**
@@ -15,18 +15,18 @@
  * @return
  *   TRUE if condition applies successfully. Otherwise FALSE.
  */
-function menu_position_menu_position_condition_node_type($variables) {
+function menu_position_menu_position_condition_content_type($variables) {
   // Grab the variables stored statically in the rule.
-  $node_type = $variables['node_type'];
+  $content_type = $variables['content_type'];
 
   // $node is dynamically added and may not exist.
   $node = isset($variables['node']) ? $variables['node'] : NULL;
 
-  return ($node && in_array($node->type, $node_type)) ? TRUE : FALSE;
+  return ($node && in_array($node->type, $content_type)) ? TRUE : FALSE;
 }
 
 /**
- * Adds form elements for the "node type" plugin to the rule configuration form.
+ * Adds form elements for the "content type" plugin to the rule configuration form.
  *
  * @param $form
  *   A reference to the "add/edit rule" form array. New form elements should be
@@ -34,47 +34,47 @@ function menu_position_menu_position_condition_node_type($variables) {
  * @param $form_state
  *   A reference to the current form state.
  */
-function menu_position_menu_position_rule_node_type_form(&$form, &$form_state) {
+function menu_position_menu_position_rule_content_type_form(&$form, &$form_state) {
   // If this is an existing rule, load the variables stored in the rule for this plugin.
-  $variables = !empty($form_state['#menu-position-rule']['conditions']['node_type']) ? $form_state['#menu-position-rule']['conditions']['node_type'] : array();
+  $variables = !empty($form_state['#menu-position-rule']['conditions']['content_type']) ? $form_state['#menu-position-rule']['conditions']['content_type'] : array();
 
-  $form['conditions']['node_type'] = array(
+  $form['conditions']['content_type'] = array(
     '#type' => 'checkboxes',
-    '#title' => t('Content type(s)'),
-    '#default_value' => !empty($variables['node_type']) ? $variables['node_type'] : array(),
+    '#title' => t('Content types'),
+    '#default_value' => !empty($variables['content_type']) ? $variables['content_type'] : array(),
     '#options' => node_type_get_names(),
     '#description' => t('Apply this rule only on pages that display content of the given type(s). If you select no types, there will be no type-specific limitation.'),
     '#weight' => -20,
   );
 
   // Add a submit handler.
-  $form['#submit'][] = 'menu_position_menu_position_rule_node_type_form_submit';
+  $form['#submit'][] = 'menu_position_menu_position_rule_content_type_form_submit';
 }
 
 /**
- * Prepares the "node type" variables to be stored in the rule.
+ * Prepares the "content type" variables to be stored in the rule.
  *
  * @param $form
  *   A reference to the "add/edit rule" form array.
  * @param $form_state
  *   A reference to the current form state, including submitted values.
  */
-function menu_position_menu_position_rule_node_type_form_submit(&$form, &$form_state) {
+function menu_position_menu_position_rule_content_type_form_submit(&$form, &$form_state) {
   // The user has added our plugin's form elements as a condition for the rule.
-  if (!empty($form_state['values']['node_type'])) {
+  if (!empty($form_state['values']['content_type'])) {
     // Remove any 0 valued options.
-    foreach ($form_state['values']['node_type'] as $key => $value) {
+    foreach ($form_state['values']['content_type'] as $key => $value) {
       if ($value === 0) {
-        unset($form_state['values']['node_type'][$key]);
+        unset($form_state['values']['content_type'][$key]);
       }
     }
     // Determine if any checkboxes were on.
-    if (!empty($form_state['values']['node_type'])) {
+    if (!empty($form_state['values']['content_type'])) {
       // Add this plugin's variables to the rule.
       $variables = array(
-        'node_type' => $form_state['values']['node_type'],
+        'content_type' => $form_state['values']['content_type'],
       );
-      $form_state['values']['conditions']['node_type'] = $variables;
+      $form_state['values']['conditions']['content_type'] = $variables;
     }
   }
 }
