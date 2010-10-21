@@ -289,12 +289,12 @@ function menu_position_rule_form($form, &$form_state) {
  */
 function menu_position_rule_form_validate($form, &$form_state) {
   // Check if the user cancelled the form.
-  if ($form_state['values']['op'] == $form['cancel']['#value']) {
+  if (!empty($form['cancel']) && $form_state['values']['op'] == $form['cancel']['#value']) {
     drupal_goto('admin/structure/menu-position');
     return;
   }
   // Check if the user deleted the rule.
-  if ($form_state['values']['op'] == $form['delete']['#value']) {
+  if (!empty($form['delete']) && $form_state['values']['op'] == $form['delete']['#value']) {
     drupal_goto('admin/structure/menu-position/delete/' . $form_state['values']['rid']);
     return;
   }
