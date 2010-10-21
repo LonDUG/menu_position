@@ -161,7 +161,7 @@ function menu_position_evaluate_rules($path, $node = NULL) {
         }
       }
     }
-    // We've found the first matching rule.
+    // We've found a matching rule.
     if ($rule_matches) {
 
       // Retrieve menu item specified in the rule.
