@@ -5,15 +5,19 @@
  */
 
 /**
- * Implements hook_node_view().
+ * Implements hook_page_delivery_callback_alter().
  *
- * @TODO: the rule checking is tied to nodes by hook_node_view() See about
- * untethering it.
+ * This is the only hook that occurs after the page callback, but before
+ * hook_page_build (when blocks are added). We're using this hook for its
+ * timing, not its data.
  */
-function menu_position_node_view($node, $view_mode) {
-  if ($view_mode == 'full' && arg(0) == 'node' && arg(1) == $node->nid) {
-    menu_position_evaluate_rules($node->uri['path'], $node);
+function menu_position_page_delivery_callback_alter() {
+  $context = array();
+  $context['path'] = $_GET['q'];
+  if (arg(0) == 'node' && is_numeric(arg(1))) {
+    $context['node'] = node_load(arg(1));
   }
+  menu_position_evaluate_rules($context);
 }
 
 /**
@@ -104,10 +108,12 @@ function menu_position_menu_link_update($link) {
  *
  * @param $path
  *   The path used to evaluate all rules.
- * @param $node
+ * @param $context
  *   The full node object if the path is a node page.
  */
-function menu_position_evaluate_rules($path, $node = NULL) {
+function menu_position_evaluate_rules($context = array()) {
+  $path = $context['path'];
+
   // Retrieve the rules from the database.
   $rules = db_query('SELECT * FROM {menu_position_rules} WHERE enabled = :enabled ORDER BY weight, rid', array(':enabled' => 1));
 
@@ -146,7 +152,7 @@ function menu_position_evaluate_rules($path, $node = NULL) {
       foreach ($rule->conditions as $plugin => $variables) {
         // Add the current rule and node to the callback's variables.
         $variables['rule'] = $rule;
-        $variables['node'] = $node;
+        $variables['context'] = $context;
         // Find the plugin's callback function.
         $callback = menu_position_get_condition_callback($plugin);
         if ($callback) {

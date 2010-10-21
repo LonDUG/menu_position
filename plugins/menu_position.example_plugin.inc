@@ -21,7 +21,7 @@ function HOOK_menu_position_condition_PLUGIN($variables) {
   $lolspeak = $variables['lolspeak'];
 
   // $node is dynamically added and may not exist.
-  $node = isset($variables['node']) ? $variables['node'] : NULL;
+  $node = isset($variables['context']['node']) ? $variables['context']['node'] : NULL;
 
   // Retrieve any extra data needed to determine the condition's result.
 
