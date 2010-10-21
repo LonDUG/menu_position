@@ -22,26 +22,35 @@ function menu_position_node_view($node, $view_mode) {
     // @TODO: disabling a rule doesn't work properly yet.
     $rules = db_query('SELECT * FROM {menu_position_rules} ORDER BY weight, rid');
 
+    // Retrieve the list of menus the node's url is already in.
+    $menu_names = db_query('SELECT menu_name FROM {menu_links} WHERE link_path = :path', array(':path' => $node->uri['path']))->fetchCol();
+
     // Examine each rule and check its conditions.
     foreach ($rules as $rule) {
-      // A rule with no conditions always matches.
-      $rule_matches = TRUE;
-      // Go through each condition, ANDing each result.
-      foreach (unserialize($rule->conditions) as $plugin => $variables) {
-        // Add the current node to the variables to pass to the callback.
-        $variables['node'] = $node;
-        $callback = menu_position_get_condition_callback($plugin);
-        if ($callback) {
-          // Check if this condition matches.
-          $rule_matches = $callback($variables);
-        }
-        else {
-          // If the callback cannot be found, the condition has failed.
-          $rule_matches = FALSE;
-        }
-        // No need to check other conditions if this condition failed.
-        if (!$rule_matches) {
-          break;
+      if (in_array($rule->menu_name, $menu_names)) {
+        // If the node is already placed in the rule's menu, skip the rule.
+        $rule_matches = FALSE;
+      }
+      else {
+        // A rule with no conditions always matches.
+        $rule_matches = TRUE;
+        // Go through each condition, ANDing each result.
+        foreach (unserialize($rule->conditions) as $plugin => $variables) {
+          // Add the current node to the variables to pass to the callback.
+          $variables['node'] = $node;
+          $callback = menu_position_get_condition_callback($plugin);
+          if ($callback) {
+            // Check if this condition matches.
+            $rule_matches = $callback($variables);
+          }
+          else {
+            // If the callback cannot be found, the condition has failed.
+            $rule_matches = FALSE;
+          }
+          // No need to check other conditions if this condition failed.
+          if (!$rule_matches) {
+            break;
+          }
         }
       }
       // We've found the first matching rule.

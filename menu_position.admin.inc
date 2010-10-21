@@ -126,6 +126,7 @@ function _menu_position_menu_link_update($link) {
       // Update the rule with the new parent.
       db_update('menu_position_rules')
         ->fields(array(
+          'menu_name' => $link['menu_name'],
           'plid' => $link['plid'],
           ))
         ->condition('rid', $rule->rid)
@@ -300,7 +301,9 @@ function menu_position_rule_form($form, &$form_state) {
   // Set the default values.
   $rid           = !empty($form_state['#menu-position-rule']['rid'])         ? $form_state['#menu-position-rule']['rid'] : '';
   $admin_title   = !empty($form_state['#menu-position-rule']['admin_title']) ? $form_state['#menu-position-rule']['admin_title'] : '';
+  $menu_name     = !empty($form_state['#menu-position-rule']['menu_name'])   ? $form_state['#menu-position-rule']['menu_name'] : '';
   $plid          = !empty($form_state['#menu-position-rule']['plid'])        ? $form_state['#menu-position-rule']['plid'] : NULL;
+  $mlid          = !empty($form_state['#menu-position-rule']['mlid'])        ? $form_state['#menu-position-rule']['mlid'] : NULL;
 
   $form['rid'] = array(
     '#type' => 'hidden',
@@ -317,10 +320,9 @@ function menu_position_rule_form($form, &$form_state) {
   $form['conditions'] = array();
 
   // Parent menu item.
-  if ($form_state['#menu-position-rule']['mlid']) {
-    $menu_item = menu_link_load($form_state['#menu-position-rule']['mlid']);
-    $options = menu_parent_options(menu_get_menus(), $menu_item);
-    $default = $menu_item['menu_name'] . ':' . $plid;
+  if ($mlid) {
+    $options = menu_parent_options(menu_get_menus(), menu_link_load($mlid));
+    $default = $menu_name . ':' . $plid;
   }
   else {
     $options = menu_parent_options(menu_get_menus(), array('mlid' => 0));
@@ -401,6 +403,7 @@ function menu_position_rule_form_submit($form, &$form_state) {
   $rule = array(
     'admin_title' => $form_state['values']['admin_title'],
     'conditions'  => serialize($form_state['values']['conditions']),
+    'menu_name'   => $menu_name,
     'plid'        => $plid,
   );
   // Add the rule to the database.
@@ -424,8 +427,9 @@ function menu_position_rule_form_submit($form, &$form_state) {
 function menu_position_add_rule($rule) {
   $fields = array(
     'admin_title' => $rule['admin_title'],
-    'conditions' =>  $rule['conditions'],
-    'plid' =>        $rule['plid'],
+    'conditions'  => $rule['conditions'],
+    'menu_name'   => $rule['menu_name'],
+    'plid'        => $rule['plid'],
   );
   $rid = db_insert('menu_position_rules')
     ->fields($fields)
@@ -436,6 +440,7 @@ function menu_position_add_rule($rule) {
     'link_path' => 'menu-position/' . $rid,
     'link_title' => 'Menu position rule #' . $rid,
     'mlid' => NULL,
+    'menu_name' => $rule['menu_name'],
     'plid' => $rule['plid'],
     'hidden' => 1,
     'module' => 'menu_position',
@@ -477,8 +482,9 @@ function menu_position_add_menu_link($rid, $plid, $admin_title = '') {
 function menu_position_edit_rule($rule) {
   $fields = array(
     'admin_title' => $rule['admin_title'],
-    'conditions' =>  $rule['conditions'],
-    'plid' =>        $rule['plid'],
+    'conditions'  => $rule['conditions'],
+    'menu_name'   => $rule['menu_name'],
+    'plid'        => $rule['plid'],
   );
   // Update the rule.
   db_update('menu_position_rules')

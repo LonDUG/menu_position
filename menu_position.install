@@ -36,6 +36,13 @@ function menu_position_schema() {
         'description' => 'The serialized conditions for this rule.',
         'type' => 'text',
       ),
+      'menu_name' => array(
+        'description' => 'The menu of the menu link for this rule.',
+        'type' => 'varchar',
+        'length' => '32',
+        'not null' => TRUE,
+        'default' => '',
+      ),
       'plid' => array(
         'description' => 'The parent menu link id for this rule.',
         'type' => 'int',
