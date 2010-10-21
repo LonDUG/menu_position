@@ -146,9 +146,40 @@ function menu_position_edit_item_submit($form, &$form_state) {
 }
 
 /**
+ * Fix rules after module has been re-enabled.
+ *
+ * When the module is re-enabled, we need to re-create menu links, but we can't
+ * do that in hook_enable() since this module's hook_menu() has yet to be run.
+ */
+function menu_position_enable_helper() {
+  $rules = db_query('SELECT rid, plid, admin_title FROM {menu_position_rules} WHERE enabled = :enabled AND mlid = :mlid', array(':enabled' => 1, ':mlid' => 0));
+  if ($rules->rowCount()) {
+    drupal_set_message(t('Existing menu position rules were discovered and have now been re-configured so they will continue to work.'));
+  }
+  foreach ($rules as $rule) {
+    // If we were to attempt menu_position_add_menu_link() here it would fail
+    // because the module's router item isn't in the system yet. Instead we flag
+    // the rule with a zero-value mlid and fix it in menu_position_rules_form().
+    $mlid = menu_position_add_menu_link($rule->rid, $rule->plid, $rule->admin_title);
+    db_update('menu_position_rules')
+      ->fields(array('mlid' => $mlid))
+      ->condition('rid', $rule->rid)
+      ->execute();
+  }
+}
+
+/**
  * Menu callback: orders rules.
  */
 function menu_position_rules_form($form, &$form_state) {
+  // This is a total hack. @see menu_position_enable(). You shouldn't be doing
+  // non-Form API stuff in a form definition. We mitigate this by ensuring this
+  // hack is only run when the form is accessed from a known path.
+  if ($_GET['q'] == 'admin/structure/menu-position') {
+    menu_position_enable_helper();
+  }
+
+  // We're re-using classes from the menu module.
   $form['#attached']['css'] = array(drupal_get_path('module', 'menu') . '/menu.css');
 
   $rules = db_query('SELECT rid, admin_title, enabled, weight FROM {menu_position_rules} ORDER BY weight, rid');

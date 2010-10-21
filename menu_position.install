@@ -83,18 +83,18 @@ function menu_position_update_7100() {
  */
 function menu_position_enable() {
   // When the module is disabled, the menu links it owns are deleted. When
-  // re-enabling this module, we need to re-create menu links and re-configure
-  // any old rules existing in the database.
+  // re-enabling this module, we need to ensure that any menu links are
+  // re-created and to re-configure any old rules existing in the database.
   $rules = db_query('SELECT rid, plid, admin_title FROM {menu_position_rules} WHERE enabled = :enabled', array(':enabled' => 1));
   if ($rules->rowCount()) {
-    module_load_include('inc', 'menu_position', 'menu_position.admin');
+    drupal_set_message(t('Existing menu position rules were discovered. To ensure they continue to work, visit the <a href="!url">menu position rules admin page</a>.', array('!url' => url('admin/structure/menu-position'))), 'error');
   }
   foreach ($rules as $rule) {
-    // If the rule is enabled, add the menu link.
-    // @TODO: menu_position_add_menu_link() fails because the module's router item isn't in the system yet.
-    $mlid = menu_position_add_menu_link($rule->rid, $rule->plid, $rule->admin_title);
+    // If we were to attempt menu_position_add_menu_link() here it would fail
+    // because the module's router item isn't in the system yet. Instead we flag
+    // the rule with a zero-value mlid and fix it in menu_position_rules_form().
     db_update('menu_position_rules')
-      ->fields(array('mlid' => $mlid))
+      ->fields(array('mlid' => 0))
       ->condition('rid', $rule->rid)
       ->execute();
   }
