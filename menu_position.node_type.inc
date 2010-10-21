@@ -15,7 +15,7 @@
  * @param $form_state
  *   A reference to the current form state.
  */
-function menu_position_rule_node_type_form(&$form, &$form_state) {
+function menu_position_menu_position_rule_node_type_form(&$form, &$form_state) {
   // If this is an existing rule, load the variables stored in the rule for this plugin.
   $variables = !empty($form_state['#menu-position-rule']['conditions']['node_type']) ? $form_state['#menu-position-rule']['conditions']['node_type'] : array();
 
@@ -33,7 +33,7 @@ function menu_position_rule_node_type_form(&$form, &$form_state) {
   //$form['#validate'][] = 'menu_position_rule_node_type_form_validate';
 
   // Add a submit handler.
-  $form['#submit'][] = 'menu_position_rule_node_type_form_submit';
+  $form['#submit'][] = 'menu_position_menu_position_rule_node_type_form_submit';
 }
 
 /**
@@ -44,7 +44,7 @@ function menu_position_rule_node_type_form(&$form, &$form_state) {
  * @param $form_state
  *   A reference to the current form state, including submitted values.
  */
-function menu_position_rule_node_type_form_submit(&$form, &$form_state) {
+function menu_position_menu_position_rule_node_type_form_submit(&$form, &$form_state) {
   // The user has added our plugin's form elements as a condition for the rule.
   if (!empty($form_state['values']['node_type'])) {
     // Remove any 0 valued options.
@@ -75,7 +75,7 @@ function menu_position_rule_node_type_form_submit(&$form, &$form_state) {
  * @return
  *   TRUE if condition applies successfully. Otherwise FALSE.
  */
-function menu_position_condition_node_type($variables) {
+function menu_position_menu_position_condition_node_type($variables) {
   // Grab the variables stored statically in the rule.
   $node_type = $variables['node_type'];
 
