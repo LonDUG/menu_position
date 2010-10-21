@@ -11,4 +11,4 @@ files[] = menu_position.admin.inc
 files[] = menu_position.install
 files[] = menu_position.node_type.inc
 
-configure = admin/config/user-interface/menu-position
+configure = admin/structure/menu-position

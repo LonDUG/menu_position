@@ -10,7 +10,7 @@
  * Implements hook_menu().
  */
 function _menu_position_menu() {
-  $items['admin/config/user-interface/menu-position'] = array(
+  $items['admin/structure/menu-position'] = array(
     'title' => 'Menu position rules',
     'description' => 'Configure rules for menu positions.',
     'access arguments' => array('administer menu positions'),
@@ -19,7 +19,7 @@ function _menu_position_menu() {
     'type' => MENU_NORMAL_ITEM,
     'file' => 'menu_position.admin.inc',
   );
-  $items['admin/config/user-interface/menu-position/add'] = array(
+  $items['admin/structure/menu-position/add'] = array(
     'title' => 'Add menu position rule',
     'description' => 'Add a new menu position rule.',
     'access arguments' => array('administer menu positions'),
@@ -28,7 +28,7 @@ function _menu_position_menu() {
     'type' => MENU_LOCAL_ACTION,
     'file' => 'menu_position.admin.inc',
   );
-  $items['admin/config/user-interface/menu-position/edit'] = array(
+  $items['admin/structure/menu-position/edit'] = array(
     'title' => 'Edit menu position rule',
     'description' => 'Edit a menu position rule.',
     'access arguments' => array('administer menu positions'),
@@ -37,7 +37,7 @@ function _menu_position_menu() {
     'type' => MENU_CALLBACK,
     'file' => 'menu_position.admin.inc',
   );
-  $items['admin/config/user-interface/menu-position/delete'] = array(
+  $items['admin/structure/menu-position/delete'] = array(
     'title' => 'Delete menu position rule',
     'description' => 'Delete a menu position rule.',
     'access arguments' => array('administer menu positions'),
@@ -103,12 +103,12 @@ function menu_position_rules_form($form, &$form_state) {
           'edit-link' => array(
             '#type' => 'link',
             '#title' => t('edit'),
-            '#href' => 'admin/config/user-interface/menu-position/edit/' . $rule->rid,
+            '#href' => 'admin/structure/menu-position/edit/' . $rule->rid,
           ),
           'delete-link' => array(
             '#type' => 'link',
             '#title' => t('delete'),
-            '#href' => 'admin/config/user-interface/menu-position/delete/' . $rule->rid,
+            '#href' => 'admin/structure/menu-position/delete/' . $rule->rid,
           ),
         ),
       );
@@ -201,7 +201,7 @@ function menu_position_add_rule_form($form, &$form_state) {
 function menu_position_edit_rule_form($form, &$form_state, $rid = 0) {
   // Make sure rid is set.
   if ($rid == 0) {
-    drupal_goto('admin/config/user-interface/menu-position');
+    drupal_goto('admin/structure/menu-position');
     return;
   }
   // Grab the rule from the database.
@@ -290,12 +290,12 @@ function menu_position_rule_form($form, &$form_state) {
 function menu_position_rule_form_validate($form, &$form_state) {
   // Check if the user cancelled the form.
   if ($form_state['values']['op'] == $form['cancel']['#value']) {
-    drupal_goto('admin/config/user-interface/menu-position');
+    drupal_goto('admin/structure/menu-position');
     return;
   }
   // Check if the user deleted the rule.
   if ($form_state['values']['op'] == $form['delete']['#value']) {
-    drupal_goto('admin/config/user-interface/menu-position/delete/' . $form_state['values']['rid']);
+    drupal_goto('admin/structure/menu-position/delete/' . $form_state['values']['rid']);
     return;
   }
   // Don't allow the user to select a menu name instead of a menu item.
@@ -327,7 +327,7 @@ function menu_position_rule_form_submit($form, &$form_state) {
     drupal_set_message(t('Rule has been added.'));
   }
 
-  $form_state['redirect'] = 'admin/config/user-interface/menu-position';
+  $form_state['redirect'] = 'admin/structure/menu-position';
 }
 
 /**
@@ -413,14 +413,14 @@ function menu_position_edit_rule($rule) {
 function menu_position_delete_rule_form($form, &$form_state, $rid = 0) {
   // Make sure rid is set.
   if ($rid == 0) {
-    drupal_goto('admin/config/user-interface/menu-position');
+    drupal_goto('admin/structure/menu-position');
     return;
   }
   $form['rid'] = array('#type' => 'hidden', '#value' => $rid);
 
   $title = db_query('SELECT admin_title FROM {menu_position_rules} WHERE rid = :rid', array(':rid' => $rid))->fetchField();
 
-  return confirm_form($form, t('Are you sure you want to delete the %title rule?', array('%title' => $title)), 'admin/config/user-interface/menu-position/edit/' . $rid, NULL, t('Delete'), t('Cancel'));
+  return confirm_form($form, t('Are you sure you want to delete the %title rule?', array('%title' => $title)), 'admin/structure/menu-position/edit/' . $rid, NULL, t('Delete'), t('Cancel'));
 }
 
 /**
@@ -432,7 +432,7 @@ function menu_position_delete_rule_form_submit($form, &$form_state) {
   menu_position_delete_rule($form_state['values']['rid']);
 
   drupal_set_message(t('The %title rule has been deleted.', array('%title' => $title)));
-  $form_state['redirect'] = 'admin/config/user-interface/menu-position';
+  $form_state['redirect'] = 'admin/structure/menu-position';
 }
 
 /**
