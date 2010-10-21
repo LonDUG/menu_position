@@ -53,7 +53,7 @@ function menu_position_menu_position_rule_pages_form(&$form, &$form_state) {
   $form['conditions']['pages']['pages'] = array(
     '#type' => 'textarea',
     '#title' => t('Pages'),
-    '#default_value' => !empty($variables['pages']) ? $variables['pages'] : array(),
+    '#default_value' => !empty($variables['pages']) ? $variables['pages'] : '',
     '#description' => t("Specify pages by using their paths. Enter one path per line. The '*' character is a wildcard. Example paths are %blog for the blog page and %blog-wildcard for every personal blog. %front is the front page.", array('%blog' => 'blog', '%blog-wildcard' => 'blog/*', '%front' => '<front>')),
     '#weight' => -20,
   );
