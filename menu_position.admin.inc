@@ -218,6 +218,9 @@ function menu_position_rules_form_submit($form, &$form_state) {
   drupal_set_message(t('The new rules ordering has been applied.'));
 }
 
+/**
+ * Returns HTML for the menu position rules form.
+ */
 function theme_menu_position_rules_order($variables) {
   $element = $variables['element'];
   drupal_add_tabledrag('menu-position-rules', 'order', 'sibling', 'rule-weight');
