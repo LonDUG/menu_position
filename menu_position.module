@@ -242,21 +242,12 @@ function menu_position_get_plugins() {
       $function = $module . '_menu_position_rule_plugins';
       if (function_exists($function)) {
         foreach ($function() as $name => $plugin) {
-          $plugins[$name] = array(
+          $plugins[$name] = $plugin + array(
             'module' => $module,
             'file' => '',
             'form_callback' => $module . 'menu_position_rule_' . $name . '_form',
             'condition_callback' => $module . 'menu_position_condition_' . $name,
           );
-          if (isset($plugin['file'])) {
-            $plugins[$name]['file'] = $plugin['file'];
-          }
-          if (isset($plugin['form_callback'])) {
-            $plugins[$name]['form_callback'] = $plugin['form_callback'];
-          }
-          if (isset($plugin['condition_callback'])) {
-            $plugins[$name]['condition_callback'] = $plugin['condition_callback'];
-          }
         }
       }
     }
