@@ -16,8 +16,8 @@
  *
  * Modules implementing menu position rule plugins should return an associative
  * array of data. Each key in the array should be the name of plugin implemented
- * by the module. Each value should be an associative array with the following
- * options:
+ * by the module. Each key's value should be an associative array with the
+ * following optional data:
  * - form_callback: (optional) The name of the function to use to add a
  *   configurable form elements to the rule definition form. Defaults to
  *   "MODULE_menu_position_rule_PLUGIN_form".
