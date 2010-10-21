@@ -241,12 +241,12 @@ function menu_position_precache_tree($router_item, $original_router_item, $menu_
   menu_tree_page_data($menu_name, $menu_depth ? $menu_depth : NULL);
 
   // Get the cache for the tree we just generated.
-  $router_item_cid = 'links:' . $menu_name . ':page-cid:' . $router_item['href'] . ':' . $GLOBALS['language']->language . ':' . (int) $router_item['access'] . ':' . (int) $menu_depth;
+  $router_item_cid = 'links:' . $menu_name . ':page:' . $router_item['href'] . ':' . $GLOBALS['language']->language . ':' . (int) $router_item['access'] . ':' . (int) $menu_depth;
   $cache = cache_get($router_item_cid, 'cache_menu');
   $tree_cid = $cache->data;
 
   // Copy the cache to the tree that contains the original router item.
-  $original_router_item_cid = 'links:' . $menu_name . ':page-cid:' . $original_router_item['href'] . ':' . $GLOBALS['language']->language . ':' . (int) $original_router_item['access'] . ':' . $menu_depth;
+  $original_router_item_cid = 'links:' . $menu_name . ':page:' . $original_router_item['href'] . ':' . $GLOBALS['language']->language . ':' . (int) $original_router_item['access'] . ':' . $menu_depth;
   cache_set($original_router_item_cid, $tree_cid, 'cache_menu');
 
   // Ensure menu_tree_page_data's static cache is up-to-date as well.
