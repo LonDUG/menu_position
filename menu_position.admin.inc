@@ -365,7 +365,14 @@ function menu_position_rule_form($form, &$form_state) {
     '#required' => TRUE,
   );
   // Place holder for all condition plug-ins.
-  $form['conditions'] = array();
+  // Visibility settings.
+  $form['conditions_title'] = array(
+    '#type' => 'item',
+    '#title' => t('Conditions'),
+  );
+  $form['conditions'] = array(
+    '#type' => 'vertical_tabs',
+  );
 
   // Parent menu item.
   if ($mlid) {

@@ -39,6 +39,15 @@ function menu_position_menu_position_rule_content_type_form(&$form, &$form_state
   $variables = !empty($form_state['#menu-position-rule']['conditions']['content_type']) ? $form_state['#menu-position-rule']['conditions']['content_type'] : array();
 
   $form['conditions']['content_type'] = array(
+    '#type' => 'fieldset',
+    '#title' => t('Content types'),
+    '#collapsible' => TRUE,
+    '#collapsed' => TRUE,
+    '#attached' => array(
+      'js' => array(drupal_get_path('module', 'menu_position') . '/plugins/menu_position.content_type.js'),
+    ),
+  );
+  $form['conditions']['content_type']['content_type'] = array(
     '#type' => 'checkboxes',
     '#title' => t('Content types'),
     '#default_value' => !empty($variables['content_type']) ? $variables['content_type'] : array(),

@@ -51,9 +51,20 @@ function HOOK_menu_position_rule_PLUGIN_form(&$form, &$form_state) {
   // If this is an existing rule, load the variables stored in the rule for this plugin.
   $variables = !empty($form_state['#menu-position-rule']['conditions']['PLUGIN']) ? $form_state['#menu-position-rule']['conditions']['PLUGIN'] : array();
 
-  // To ensure that the plugin's form elements are placed before the submit
-  // buttons, the elements should be added inside the $form['conditions'] array.
-  $form['conditions']['lolspeak'] = array(
+  // To ensure that the plugin's form elements are placed inside vertical tabs,
+  // all elements should be placed inside a collapsed fielset inside the
+  // $form['conditions'] array.
+  $form['conditions']['PLUGIN'] = array(
+    '#type' => 'fieldset',
+    '#title' => t('Lolspeak'),
+    '#collapsible' => TRUE,
+    '#collapsed' => TRUE,
+    '#attached' => array(
+      // Ensures a proper summary is added to its vertical tab.
+      'js' => array(drupal_get_path('module', 'menu_position') . '/plugins/menu_position.example_plugin.js'),
+    ),
+  );
+  $form['conditions']['PLUGIN']['lolspeak'] = array(
     '#type' => 'checkbox',
     '#title' => t('Lolspeak'),
     '#default_value' => !empty($variables['lolspeak']) ? $variables['lolspeak'] : 0,
@@ -80,7 +91,7 @@ function HOOK_menu_position_rule_PLUGIN_form(&$form, &$form_state) {
 function HOOK_menu_position_rule_PLUGIN_form_validate(&$form, &$form_state) {
   // Can haz valdaishun?
   if (!empty($form_state['values']['has_ponies'])) {
-    form_error($form['conditions']['lolspeak'], t('No soup for you!'));
+    form_error($form['conditions']['PLUGIN']['lolspeak'], t('No soup for you!'));
   }
 }
 
