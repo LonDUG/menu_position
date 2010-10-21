@@ -202,7 +202,7 @@ function menu_position_configure_rule_form($form, &$form_state) {
   $node_type     = !empty($form_state['values']['node_type']) ? $form_state['values']['node_type'] : '';
   $tids          = !empty($form_state['values']['tid']) ? $form_state['values']['tid'] : NULL;
   $php_condition = !empty($form_state['values']['php_condition']) ? $form_state['values']['php_condition'] : NULL;
-  $mid           = !empty($form_state['values']['mid']) ? $form_state['values']['mid'] : NULL;
+  $plid          = !empty($form_state['values']['plid']) ? $form_state['values']['plid'] : NULL;
   $weight        = !empty($form_state['values']['weight']) ? $form_state['values']['weight'] : 0;
 
   $form['rid'] = array(
@@ -277,17 +277,17 @@ function menu_position_configure_rule_form($form, &$form_state) {
     '#default_value' => $php_condition,
   );
 
-  // Menu item.
-  $form['mid'] = array(
+  // Parent menu item.
+  $form['plid'] = array(
     '#type' => 'select',
     '#title' => t('Menu item'),
     '#required' => TRUE,
     '#options' => menu_parent_options(menu_get_menus(), array('mlid' => 0)),
     '#default_value' => 'main-menu:0',
   );
-  if ($mid) {
-    $menu_item = menu_link_load($mid);
-    $form['mid']['#default_value'] = $menu_item['menu_name'] . ':' . $mid;
+  if ($plid) {
+    $menu_item = menu_link_load($plid);
+    $form['plid']['#default_value'] = $menu_item['menu_name'] . ':' . $plid;
   }
 
   // Weight.
@@ -303,14 +303,16 @@ function menu_position_configure_rule_form($form, &$form_state) {
   $form['#validate'][] = 'menu_position_configure_rule_form_validate';
   $form['#submit'][] = 'menu_position_configure_rule_form_submit';
 
-  $form['cancel'] = array(
-    '#type' => 'submit',
-    '#value' => t('Cancel'),
-  );
   if ($rid) {
     $form['delete'] = array(
       '#type' => 'submit',
       '#value' => t('Delete'),
+    );
+  }
+  else {
+    $form['cancel'] = array(
+      '#type' => 'submit',
+      '#value' => t('Cancel'),
     );
   }
   $form['submit'] = array(
@@ -340,9 +342,9 @@ function menu_position_configure_rule_form_validate($form, &$form_state) {
     form_set_error('', t('Please provide a node type or a PHP condition for this rule.'));
   }
   // Don't allow the user to select a menu name instead of a menu item.
-  list($menu_name, $mlid) = explode(':', $form_state['values']['mid']);
-  if ($mlid == 0) {
-    form_set_error('mid', t('Please select a menu item. You have selected the name of a menu.'));
+  list($menu_name, $plid) = explode(':', $form_state['values']['plid']);
+  if ($plid == 0) {
+    form_set_error('plid', t('Please select a menu item. You have selected the name of a menu.'));
   }
 }
 
@@ -356,12 +358,12 @@ function menu_position_configure_rule_form_submit($form, &$form_state) {
       $tids[] = $value;
     }
   }
-  list($menu_name, $mlid) = explode(':', $form_state['values']['mid']);
+  list($menu_name, $plid) = explode(':', $form_state['values']['plid']);
   $rule = array(
     'admin_title' => $form_state['values']['admin_title'],
     'node_type' => $form_state['values']['node_type'],
     'tid' => isset($tids[0]) ? $tids[0] : NULL,
-    'mid' => $mlid,
+    'plid' => $plid,
     'weight' => $form_state['values']['weight'],
     'php_condition' => $form_state['values']['php_condition'],
   );
@@ -379,12 +381,12 @@ function menu_position_configure_rule_form_submit($form, &$form_state) {
 }
 
 /**
- * Adds a breadcrumb rule.
+ * Adds a menu position rule.
  */
 function menu_position_add_rule($rule) {
   $fields = array(
     'admin_title' =>   $rule['admin_title'],
-    'mid' =>           $rule['mid'],
+    'plid' =>          $rule['plid'],
     'weight' =>        $rule['weight'],
     'php_condition' => $rule['php_condition'],
   );
@@ -394,18 +396,38 @@ function menu_position_add_rule($rule) {
   if ($rule['tid']) {
     $fields['tid'] = $rule['tid'];
   }
-  db_insert('menu_position_rules')
+  $rid = db_insert('menu_position_rules')
     ->fields($fields)
+    ->execute();
+
+  // Add a menu link to handle matching nodes.
+  $item = array(
+    'link_path' => 'menu-position/' . $rid,
+    'link_title' => 'Menu position rule #' . $rid,
+    'mlid' => NULL,
+    'plid' => $rule['plid'],
+    'hidden' => 1,
+    'module' => 'menu_position',
+    'options' => array(
+      'attributes' => array('class' => array('menu-position-link')),
+    ),
+  );
+  $mlid = menu_link_save($item);
+
+  // Now add the mlid back to the rule.
+  db_update('menu_position_rules')
+    ->fields(array('mlid' => $mlid))
+    ->condition('rid', $rid)
     ->execute();
 }
 
 /**
- * Edits a breadcrumb rule.
+ * Edits a menu position rule.
  */
 function menu_position_edit_rule($rule) {
   $fields = array(
     'admin_title' =>   $rule['admin_title'],
-    'mid' =>           $rule['mid'],
+    'plid' =>           $rule['plid'],
     'weight' =>        $rule['weight'],
     'php_condition' => $rule['php_condition'],
   );
@@ -450,10 +472,11 @@ function menu_position_delete_rule_form_submit($form, &$form_state) {
 }
 
 /**
- * Deletes a breadcrumb rule.
+ * Deletes a menu position rule.
  */
 function menu_position_delete_rule($rid) {
   db_delete('menu_position_rules')
     ->condition('rid', $rid)
     ->execute();
+  menu_link_delete(NULL, 'menu-position/' . $rid);
 }

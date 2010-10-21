@@ -1,6 +1,11 @@
 <?php
 // $Id$
 
+// @TODO: use hook_translated_menu_link_alter().
+// HOOK_translated_menu_link_alter() is called during _menu_link_translate()
+// which is called during _menu_tree_check_access().
+// @TODO: use menu_set_item() using modified hidden menu item.
+
 /**
  * Sets the current menu location based on the parent item.
  */
@@ -26,8 +31,10 @@ function menu_position_set_position($mlid) {
  * Implements hook_node_view().
  */
 function menu_position_node_view($node, $view_mode) {
-  if ($view_mode == 'full') {
-    $db_rules = db_query('SELECT * FROM {menu_position_rules} ORDER BY weight, rid WHERE enabled = :enabled', array(':enabled' => 1));
+  // Guh. Need a better trigger then arg().
+  if ($view_mode == 'full' && arg(0) == 'node' && arg(1) == $node->nid && !arg(2)) {
+
+    $db_rules = db_query('SELECT * FROM {menu_position_rules} WHERE enabled = :enabled ORDER BY weight, rid', array(':enabled' => 1));
     foreach ($db_rules as $rule) {
       // Check node type.
       if ($rule->node_type != '' && $node->type != $rule->node_type) continue;
