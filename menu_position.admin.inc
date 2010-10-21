@@ -208,11 +208,21 @@ function menu_position_rules_form($form, &$form_state) {
  */
 function menu_position_rules_form_submit($form, &$form_state) {
   foreach ($form_state['values']['rules'] as $rid => $rule) {
+    $fields = array(
+      'enabled' => $rule['enabled'],
+      'weight' => $rule['weight'],
+    );
+    $db_rule = db_query('SELECT * FROM {menu_position_rules} WHERE rid = :rid', array(':rid' => $rid))->fetchObject();
+    if (!$rule['enabled']) {
+      // If the rule has been disabled, remove the menu link.
+      menu_link_delete($db_rule->mlid);
+    }
+    elseif (!$db_rule->enabled) {
+      // If the rule has been enabled, add a menu link.
+      $fields['mlid'] = menu_position_add_menu_link($rid, $db_rule->plid, $db_rule->admin_title);
+    }
     db_update('menu_position_rules')
-      ->fields(array(
-        'enabled' => $rule['enabled'],
-        'weight' => $rule['weight'],
-        ))
+      ->fields($fields)
       ->condition('rid', $rid)
       ->execute();
   }

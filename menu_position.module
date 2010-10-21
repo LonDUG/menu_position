@@ -21,9 +21,7 @@ function menu_position_node_view($node, $view_mode) {
   if ($view_mode == 'full' && arg(0) == 'node' && arg(1) == $node->nid) {
 
     // Retrieve the rules from the database.
-    //$rules = db_query('SELECT * FROM {menu_position_rules} WHERE enabled = :enabled ORDER BY weight, rid', array(':enabled' => 1));
-    // @TODO: disabling a rule doesn't work properly yet.
-    $rules = db_query('SELECT * FROM {menu_position_rules} ORDER BY weight, rid');
+    $rules = db_query('SELECT * FROM {menu_position_rules} WHERE enabled = :enabled ORDER BY weight, rid', array(':enabled' => 1));
 
     // Retrieve the list of menus the node's url is already in.
     $menu_names = db_query('SELECT menu_name FROM {menu_links} WHERE link_path = :path', array(':path' => $node->uri['path']))->fetchCol();
