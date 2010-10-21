@@ -2,6 +2,11 @@
 // $Id$
 
 /**
+ * @file
+ * Provides install, update and un-install functions for menu_position.
+ */
+
+/**
  * Implements hook_schema().
  */
 function menu_position_schema() {
@@ -13,6 +18,12 @@ function menu_position_schema() {
         'type' => 'serial',
         'not null' => TRUE,
       ),
+      'admin_title' => array(
+        'description' => 'The administrative title of this rule.',
+        'type' => 'varchar',
+        'length' => 255,
+        'default' => NULL,
+      ),
       'enabled' => array(
         'description' => 'Whether the rule is enabled or not.',
         'type' => 'int',
@@ -21,25 +32,8 @@ function menu_position_schema() {
         'not null' => TRUE,
         'default' => 1,
       ),
-      'admin_title' => array(
-        'description' => 'The administrative title of this rule.',
-        'type' => 'varchar',
-        'length' => 255,
-        'default' => NULL,
-      ),
-      'node_type' => array(
-        'description' => 'The node type for this rule.',
-        'type' => 'varchar',
-        'length' => 255,
-        'default' => NULL,
-      ),
-      'tid' => array(
-        'description' => 'The taxonomy term for this rule.',
-        'type' => 'int',
-        'default' => NULL,
-      ),
-      'php_condition' => array(
-        'description' => 'The PHP-based condition for this rule.',
+      'conditions' => array(
+        'description' => 'The serialized conditions for this rule.',
         'type' => 'text',
       ),
       'plid' => array(
@@ -60,6 +54,10 @@ function menu_position_schema() {
         'default' => 0,
       ),
     ),
+    'indexes' => array(
+      'rule_enabled' => array('enabled', 'weight', 'rid'),
+      'rule_weight'  => array('weight', 'rid'),
+    ),
     'primary key' => array('rid'),
   );
 
@@ -71,4 +69,14 @@ function menu_position_schema() {
  */
 function menu_position_update_7100() {
   // No-op.
+}
+
+/**
+ * Implements hook_enable().
+ */
+function menu_position_enable() {
+  // @TODO implement this function. :-)
+  // When the module is disabled, the menu links it owns are deleted. When
+  // re-enabling this module, we need to re-create menu links and re-configure
+  // any old rules existing in the database.
 }

@@ -46,7 +46,22 @@ function _menu_position_menu() {
     'type' => MENU_CALLBACK,
     'file' => 'menu_position.admin.inc',
   );
+  $items['menu-position'] = array(
+    'title' => 'Menu position router',
+    'description' => 'Sets access to all menu position links.',
+    'access arguments' => array('access content'),
+    'page callback' => 'menu_position_router',
+    'type' => MENU_CALLBACK,
+    'file' => 'menu_position.admin.inc',
+  );
   return $items;
+}
+
+/**
+ * Routes menu_position links to homepage; normally overridden.
+ */
+function menu_position_router() {
+  drupal_goto('<front>');
 }
 
 /**
@@ -55,7 +70,7 @@ function _menu_position_menu() {
 function menu_position_rules_form($form, &$form_state) {
   $form['#attached']['css'] = array(drupal_get_path('module', 'menu') . '/menu.css');
 
-  $rules = db_query('SELECT rid, admin_title, weight FROM {menu_position_rules} ORDER BY weight, rid');
+  $rules = db_query('SELECT rid, admin_title, enabled, weight FROM {menu_position_rules} ORDER BY weight, rid');
   $delta = $rules->rowCount();
 
   // Default message if no rules.
@@ -114,6 +129,7 @@ function menu_position_rules_form_submit($form, &$form_state) {
   foreach ($form_state['values']['rules'] as $rid => $rule) {
     db_update('menu_position_rules')
       ->fields(array(
+        'enabled' => $rule['enabled'],
         'weight' => $rule['weight'],
         ))
       ->condition('rid', $rid)
@@ -176,41 +192,37 @@ function theme_menu_position_rules_order($variables) {
  * Menu callback; Adds rules.
  */
 function menu_position_add_rule_form($form, &$form_state) {
-  return menu_position_configure_rule_form($form, $form_state);
+  return menu_position_rule_form($form, $form_state);
 }
 
 /**
  * Menu callback; Edits rules.
  */
 function menu_position_edit_rule_form($form, &$form_state, $rid = 0) {
-  // Make sure rid is 
+  // Make sure rid is set.
   if ($rid == 0) {
     drupal_goto('admin/config/user-interface/menu-position');
     return;
   }
-  $form_state['values'] = db_query('SELECT * FROM {menu_position_rules} WHERE rid = :rid', array(':rid' => $rid))->fetchAssoc();
-  return menu_position_configure_rule_form($form, $form_state);
+  // Grab the rule from the database.
+  $form_state['#menu-position-rule'] = db_query('SELECT * FROM {menu_position_rules} WHERE rid = :rid', array(':rid' => $rid))->fetchAssoc();
+  $form_state['#menu-position-rule']['conditions'] = unserialize($form_state['#menu-position-rule']['conditions']);
+  return menu_position_rule_form($form, $form_state);
 }
 
 /**
  * Returns form to add or edit a menu position rule.
  */
-function menu_position_configure_rule_form($form, &$form_state) {
+function menu_position_rule_form($form, &$form_state) {
   // Set the default values.
-  $rid           = !empty($form_state['values']['rid']) ? $form_state['values']['rid'] : '';
-  $admin_title   = !empty($form_state['values']['admin_title']) ? $form_state['values']['admin_title'] : '';
-  $node_type     = !empty($form_state['values']['node_type']) ? $form_state['values']['node_type'] : '';
-  $tids          = !empty($form_state['values']['tid']) ? $form_state['values']['tid'] : NULL;
-  $php_condition = !empty($form_state['values']['php_condition']) ? $form_state['values']['php_condition'] : NULL;
-  $plid          = !empty($form_state['values']['plid']) ? $form_state['values']['plid'] : NULL;
-  $weight        = !empty($form_state['values']['weight']) ? $form_state['values']['weight'] : 0;
+  $rid           = !empty($form_state['#menu-position-rule']['rid'])         ? $form_state['#menu-position-rule']['rid'] : '';
+  $admin_title   = !empty($form_state['#menu-position-rule']['admin_title']) ? $form_state['#menu-position-rule']['admin_title'] : '';
+  $plid          = !empty($form_state['#menu-position-rule']['plid'])        ? $form_state['#menu-position-rule']['plid'] : NULL;
 
   $form['rid'] = array(
     '#type' => 'hidden',
     '#value' => $rid,
   );
-
-  // Administrative title.
   $form['admin_title'] = array(
     '#type' => 'textfield',
     '#default_value' => $admin_title,
@@ -218,64 +230,8 @@ function menu_position_configure_rule_form($form, &$form_state) {
     '#description' => t('This title will be used administratively to identify this rule.'),
     '#required' => TRUE,
   );
-
-  // Node type.
-  $form['node_type'] = array(
-    '#type' => 'select',
-    '#title' => t('Content type'),
-    '#default_value' => $node_type,
-    '#options' => array('' => '<' . t('none') . '>')
-  );
-  foreach (node_type_get_types() as $type) {
-    $form['node_type']['#options'][$type->type] = $type->name;
-  }
-
-  // Taxonomy terms.
-  // @TODO Implement taxonomy
-  /*
-  if (module_exists('taxonomy')) {
-    $form['tid'] = array(
-      '#type' => 'fieldset',
-      '#title' => t('Categories'),
-      '#attributes' => array('class' => 'menu_position_categories'),
-    );
-    $vocabularies = taxonomy_get_vocabularies();
-    $none_option = '<' . t('none') . '>';
-    $vid2tid = array();
-    if (is_array($tids)) {
-      foreach ($tids as $tid) {
-        if ($tid > 0) {
-          $term = taxonomy_get_term($tid);
-          $vid2tid[$term->vid] = $tid;
-        }
-        elseif ($tid < 0) {
-          $vid2tid[-$tid] = $tid;
-        }
-      }
-    }
-    foreach ($vocabularies as $vocabulary) {
-      $taxonomy_form = taxonomy_form($vocabulary->vid);
-      unset($taxonomy_form['#options']['']);
-      $taxonomy_form['#multiple'] = FALSE;
-      $taxonomy_form['#default_value'] = $vid2tid[$vocabulary->vid] ? $vid2tid[$vocabulary->vid] : 0;
-      unset($taxonomy_form['#size']);
-      unset($all_option);
-      $all_option->option = array(-$vocabulary->vid => '<' . t('any') . '>');
-      array_unshift($taxonomy_form['#options'], $all_option);
-      array_unshift($taxonomy_form['#options'], $none_option);
-      $form['tid']['vid_' . $vocabulary->vid] = $taxonomy_form;
-    }
-  }
-  */
-
-  // PHP condition.
-  $form['php_condition'] = array(
-    '#type' => 'textarea',
-    '#rows' => 1,
-    '#title' => t('Condition'),
-    '#description' => t('Optional PHP expression, e. g., $node->type == \'story\' || $node->type == \'news\''),
-    '#default_value' => $php_condition,
-  );
+  // Place holder for all condition plug-ins.
+  $form['conditions'] = array();
 
   // Parent menu item.
   $form['plid'] = array(
@@ -289,19 +245,6 @@ function menu_position_configure_rule_form($form, &$form_state) {
     $menu_item = menu_link_load($plid);
     $form['plid']['#default_value'] = $menu_item['menu_name'] . ':' . $plid;
   }
-
-  // Weight.
-  $form['weight'] = array(
-    '#type' => 'weight',
-    '#title' => t('Weight'),
-    '#default_value' => $weight,
-    '#required' => TRUE,
-    '#delta' => 25,
-  );
-
-  // Form validation and submission.
-  $form['#validate'][] = 'menu_position_configure_rule_form_validate';
-  $form['#submit'][] = 'menu_position_configure_rule_form_submit';
 
   if ($rid) {
     $form['delete'] = array(
@@ -320,13 +263,31 @@ function menu_position_configure_rule_form($form, &$form_state) {
     '#value' => t('Save'),
   );
 
+  // Add conditions.
+  foreach (menu_position_get_plugins() as $plugin) {
+    // Load the required include file.
+    if (!empty($plugin['file'])) {
+      $file = pathinfo($plugin['file']);
+      module_load_include($file['extension'], $plugin['module'], $file['filename']);
+    }
+    // Call form callback to add additional form elements.
+    $function = $plugin['form_callback'];
+    if (function_exists($function)) {
+      $function($form, $form_state);
+    }
+  }
+
+  // Form validation and submission.
+  $form['#validate'][] = 'menu_position_rule_form_validate';
+  $form['#submit'][] = 'menu_position_rule_form_submit';
+
   return $form;
 }
 
 /**
- * Validates the form for menu_position_configure_rule_form().
+ * Validates the form for menu_position_rule_form().
  */
-function menu_position_configure_rule_form_validate($form, &$form_state) {
+function menu_position_rule_form_validate($form, &$form_state) {
   // Check if the user cancelled the form.
   if ($form_state['values']['op'] == $form['cancel']['#value']) {
     drupal_goto('admin/config/user-interface/menu-position');
@@ -337,10 +298,6 @@ function menu_position_configure_rule_form_validate($form, &$form_state) {
     drupal_goto('admin/config/user-interface/menu-position/delete/' . $form_state['values']['rid']);
     return;
   }
-  if ($form_state['values']['node_type'] == '' && empty($form_state['values']['php_condition'])) {
-    //form_set_error('', t('Please provide a node type, a taxonomy term or a PHP condition for this rule.'));
-    form_set_error('', t('Please provide a node type or a PHP condition for this rule.'));
-  }
   // Don't allow the user to select a menu name instead of a menu item.
   list($menu_name, $plid) = explode(':', $form_state['values']['plid']);
   if ($plid == 0) {
@@ -349,28 +306,21 @@ function menu_position_configure_rule_form_validate($form, &$form_state) {
 }
 
 /**
- * Handles form submission for menu_position_configure_rule_form().
+ * Handles form submission for menu_position_rule_form().
  */
-function menu_position_configure_rule_form_submit($form, &$form_state) {
-  $tids = array();
-  foreach ($form_state['values'] as $key => $value) {
-    if (substr($key, 0, 4) == 'vid_' && $value != 0) {
-      $tids[] = $value;
-    }
-  }
+function menu_position_rule_form_submit($form, &$form_state) {
   list($menu_name, $plid) = explode(':', $form_state['values']['plid']);
   $rule = array(
     'admin_title' => $form_state['values']['admin_title'],
-    'node_type' => $form_state['values']['node_type'],
-    'tid' => isset($tids[0]) ? $tids[0] : NULL,
-    'plid' => $plid,
-    'weight' => $form_state['values']['weight'],
-    'php_condition' => $form_state['values']['php_condition'],
+    'conditions'  => serialize($form_state['values']['conditions']);
+    'plid'        => $plid,
   );
+  // Add the rule to the database.
   if ($form_state['values']['rid'] == '') {
     menu_position_add_rule($rule);
     drupal_set_message(t('Rule has been added.'));
   }
+  // Update an exisiting rule.
   else {
     $rule['rid'] = $form_state['values']['rid'];
     menu_position_edit_rule($rule);
@@ -385,17 +335,10 @@ function menu_position_configure_rule_form_submit($form, &$form_state) {
  */
 function menu_position_add_rule($rule) {
   $fields = array(
-    'admin_title' =>   $rule['admin_title'],
-    'plid' =>          $rule['plid'],
-    'weight' =>        $rule['weight'],
-    'php_condition' => $rule['php_condition'],
+    'admin_title' => $rule['admin_title'],
+    'conditions' =>  $rule['conditions'],
+    'plid' =>        $rule['plid'],
   );
-  if ($rule['node_type']) {
-    $fields['node_type'] = $rule['node_type'];
-  }
-  if ($rule['tid']) {
-    $fields['tid'] = $rule['tid'];
-  }
   $rid = db_insert('menu_position_rules')
     ->fields($fields)
     ->execute();
@@ -409,10 +352,11 @@ function menu_position_add_rule($rule) {
     'hidden' => 1,
     'module' => 'menu_position',
     'options' => array(
+      'alter' => TRUE,
       'attributes' => array('class' => array('menu-position-link')),
     ),
   );
-  $mlid = menu_link_save($item);
+  $mlid = menu_position_add_menu_link($rid, $rule['plid']);
 
   // Now add the mlid back to the rule.
   db_update('menu_position_rules')
@@ -422,21 +366,41 @@ function menu_position_add_rule($rule) {
 }
 
 /**
+ * Adds a menu position rule.
+ *
+ * @param $rid
+ *   ID of the rule needing a menu link.
+ * @param $plid
+ *   The mlid of the parent menu link specified in the rule.
+ * @return
+ *   The mlid of the rule's new menu link.
+ */
+function menu_position_add_menu_link($rid, $plid) {
+  // Add a menu link to handle matching nodes.
+  $item = array(
+    'link_path' => 'menu-position/' . $rid,
+    'link_title' => 'Menu position rule #' . $rid,
+    'mlid' => NULL,
+    'plid' => $plid,
+    'hidden' => 1,
+    'module' => 'menu_position',
+    'options' => array(
+      'alter' => TRUE,
+      'attributes' => array('class' => array('menu-position-link')),
+    ),
+  );
+  return menu_link_save($item);
+}
+
+/**
  * Edits a menu position rule.
  */
 function menu_position_edit_rule($rule) {
   $fields = array(
-    'admin_title' =>   $rule['admin_title'],
-    'plid' =>           $rule['plid'],
-    'weight' =>        $rule['weight'],
-    'php_condition' => $rule['php_condition'],
+    'admin_title' => $rule['admin_title'],
+    'conditions' =>  $rule['conditions'],
+    'plid' =>        $rule['plid'],
   );
-  if ($rule['node_type']) {
-    $fields['node_type'] = $rule['node_type'];
-  }
-  if ($rule['tid']) {
-    $fields['tid'] = $rule['tid'];
-  }
   db_update('menu_position_rules')
     ->condition('rid', $rule['rid'])
     ->fields($fields)

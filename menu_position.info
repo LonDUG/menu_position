@@ -9,5 +9,6 @@ dependencies[] = menu
 files[] = menu_position.module
 files[] = menu_position.admin.inc
 files[] = menu_position.install
+files[] = menu_position.node_type.inc
 
-configure = admin/config/user-interface/node-position
+configure = admin/config/user-interface/menu-position

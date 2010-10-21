@@ -1,67 +1,122 @@
 <?php
 // $Id$
 
+// @TODO: the rules and temporary menu links are tied to nodes by the router
+// item and the hook_node_view(). See about untethering it.
 // @TODO: use hook_translated_menu_link_alter().
 // HOOK_translated_menu_link_alter() is called during _menu_link_translate()
 // which is called during _menu_tree_check_access().
 // @TODO: use menu_set_item() using modified hidden menu item.
 
 /**
- * Sets the current menu location based on the parent item.
- */
-function menu_position_set_position($mlid) {
-  $menu_item = menu_link_load($mlid);
-  // Set the local tasks based on the actual router item.
-  menu_local_tasks(0);
-  menu_local_tasks(1);
-  // Replace the router item with our menu item.
-//  menu_set_item($_GET['q'], $menu_item);
-
-  // Build and set the breadcrumb trail.
-  $breadcrumb = array();
-  while ($mlid && ($item = menu_link_load($mlid))) {
-    array_unshift($breadcrumb, l($item['link_title'], $item['link_path']));
-    $mlid = $item['plid'];
-  }
-  array_unshift($breadcrumb, l(t('Home'), NULL));
-  drupal_set_breadcrumb($breadcrumb);
-}
-
-/**
  * Implements hook_node_view().
  */
 function menu_position_node_view($node, $view_mode) {
-  // Guh. Need a better trigger then arg().
-  if ($view_mode == 'full' && arg(0) == 'node' && arg(1) == $node->nid && !arg(2)) {
+  // Guh. Need a better trigger then arg() and hook_node_view().
+  if ($view_mode == 'full' && arg(0) == 'node' && arg(1) == $node->nid) {
 
-    $db_rules = db_query('SELECT * FROM {menu_position_rules} WHERE enabled = :enabled ORDER BY weight, rid', array(':enabled' => 1));
-    foreach ($db_rules as $rule) {
-      // Check node type.
-      if ($rule->node_type != '' && $node->type != $rule->node_type) continue;
-      // Check terms.
-      if ($rule->tid > 0) {
-        if (empty($node->taxonomy[$rule->tid])) continue 2;
-      }
-      elseif ($rule->tid < 0) {
-        foreach ($node->taxonomy as $term) {
-          if ($term->vid == -$rule->tid) continue 2;
+    // Retrieve the rules from the database.
+    $rules = db_query('SELECT * FROM {menu_position_rules} WHERE enabled = :enabled ORDER BY weight, rid', array(':enabled' => 1));
+
+    // Examine each rule and check its conditions.
+    foreach ($rules as $rule) {
+      // A rule with no conditions always matches.
+      $rule_matches = TRUE;
+      // Go through each condition, ANDing each result.
+      foreach (unserialize($rule->conditions) as $plugin => $variables) {
+        // Add the current node to the variables to pass to the callback.
+        $variables['node'] = $node;
+        $callback = menu_position_get_condition_callback($plugin);
+        if ($callback) {
+          // Check if this condition matches.
+          $rule_matches = $callback($variables);
         }
-        continue 2;
-      }
-      // Check php condition.
-      if ($rule->php_condition != '') {
-        eval("\$php_condition=$rule->php_condition;");
-        if (!$php_condition) {
-          continue;
+        else {
+          // If the callback cannot be found, the condition has failed.
+          $rule_matches = FALSE;
+        }
+        // No need to check other conditions if this condition failed.
+        if (!$rule_matches) {
+          break;
         }
       }
-      // Apply menu position.
-      menu_position_set_position($rule->mlid);
-      break;
+      // We've found the first matching rule.
+      if ($rule_matches) {
+
+        // Retrieve menu item specified in the rule.
+        $menu_item = menu_link_load($rule->mlid);
+        /*
+        // Update menu item.
+        $faked_menu_item = $menu_item;
+        $faked_menu_item['link_title'] = $node->title;
+        $faked_menu_item['title']      = $node->title;
+        $faked_menu_item['link_path']  = 'node/' . $node->nid;
+        $faked_menu_item['path']       = 'node/' . $node->nid;
+        $faked_menu_item['href']       = 'node/' . $node->nid;
+        $faked_menu_item['hidden']     = 0;
+        $faked_menu_item['access']     = TRUE;
+        $faked_menu_item['localized_options'] = $menu_item['options'];
+        menu_position_set_menu_item($faked_menu_item);
+        */
+
+        // Clone the original router item, but insert our menu_position path.
+        $router_item = $original_router_item = menu_get_item();
+        $router_item['href'] = $menu_item['link_path'];
+        $router_item['access'] = TRUE;
+
+        // Temporarily override the original router item.
+        menu_set_item(NULL, $router_item);
+
+        // Create a menu tree using the menu_position path.
+        menu_tree_page_data($menu_item['menu_name']);
+
+        // Copy the menu tree cache from our faked path to the original router's path.
+        $router_item_cid          = 'links:' . $menu_item['menu_name'] . ':page-cid:' . $router_item['href'] . ':' . $GLOBALS['language']->language . ':' . (int) $router_item['access'] . ':0';
+        $original_router_item_cid = 'links:' . $menu_item['menu_name'] . ':page-cid:' . $original_router_item['href'] . ':' . $GLOBALS['language']->language . ':' . (int) $original_router_item['access'] . ':0';
+        $cache = cache_get($router_item_cid, 'cache_menu');
+        $tree_cid = $cache->data;
+        cache_set($router_item_cid, $tree_cid, 'cache_menu');
+
+        // Ensure menu_tree_page_data's static cache is up-to-date as well.
+        $tree = &drupal_static('menu_tree_page_data', array());
+        $tree[$original_router_item_cid] = $tree[$router_item_cid];
+
+        // To save memory, clean up the cache since we won't need this data again.
+        unset($tree[$router_item_cid]);
+
+        // @TODO Don't we need to prime the static caches for menu_tree_all_data()?
+        //menu_tree_all_data($menu_item['menu_name']);
+
+        // Use our fake router item to influence the breadcrumbs.
+        $trail = menu_set_active_trail();
+        // @TODO The last item in our breadcrumb is broken; fix it.
+        // The last item in the breadcrumb is our fake menu item; remove it.
+        //array_pop($trail);
+        //menu_set_active_trail($trail);
+
+        // Restore the original router item.
+        menu_set_item(NULL, $original_router_item);
+
+        // If the rule matches, do not continue looking for other rules.
+        break;
+      }
     }
-    module_invoke_all('menu_position', $node);
   }
 }
+
+/**
+ * Implements hook_translated_menu_link_alter().
+ */
+/*
+function menu_position_translated_menu_link_alter(&$item, $map) {
+  $menu_item = menu_position_get_menu_item();
+dsm(array('menu_item' => $menu_item, 'item' => $item, 'map' => $map));
+  if ($menu_item['mlid'] == $item['mlid']) {
+    // do stuff.
+    dsm('boo-ya!');
+  }
+}
+*/
 
 /**
  * Implements hook_permission().
@@ -92,4 +147,92 @@ function menu_position_theme() {
       'file' => 'menu_position.admin.inc',
     ),
   );
+}
+
+/**
+ * Implements hook_menu_position_rule_plugins().
+ */
+function menu_position_menu_position_rule_plugins() {
+  return array(
+    'node_type' => array(
+      'form_callback' => 'menu_position_rule_node_type_form',
+      'condition_callback' => 'menu_position_condition_node_type',
+      'file' => 'menu_position.node_type.inc',
+    ),
+  );
+}
+
+/*
+function menu_position_set_menu_item($new_menu_item) {
+  menu_position_get_menu_item($new_menu_item);
+}
+
+function menu_position_get_menu_item($new_menu_item = NULL) {
+  $menu_item = &drupal_static(__FUNCTION__, array('mlid' => -1));
+
+  if (isset($new_menu_item)) {
+    $menu_item = $new_menu_item;
+  }
+
+  return $menu_item;
+}
+*/
+
+/**
+ * Retrieves a list of information about every rule plugin.
+ */
+function menu_position_get_plugins() {
+  $plugins = &drupal_static(__FUNCTION__, array());
+
+  if (empty($plugins)) {
+    foreach (module_implements('menu_position_rule_plugins') as $module) {
+      $function = $module . '_menu_position_rule_plugins';
+      if (function_exists($function)) {
+        foreach ($function() as $name => $plugin) {
+          $plugins[$name] = array(
+            'module' => $module,
+            'file' => '',
+            'form_callback' => $module . 'menu_position_rule_' . $name . '_form',
+            'condition_callback' => $module . 'menu_position_condition_' . $name,
+          );
+          if (isset($plugin['file'])) {
+            $plugins[$name]['file'] = $plugin['file'];
+          }
+          if (isset($plugin['form_callback'])) {
+            $plugins[$name]['form_callback'] = $plugin['form_callback'];
+          }
+          if (isset($plugin['condition_callback'])) {
+            $plugins[$name]['condition_callback'] = $plugin['condition_callback'];
+          }
+        }
+      }
+    }
+  }
+
+  return $plugins;
+}
+
+/**
+ * Loads the include file containing a condition's callback function definition.
+ *
+ * @param $plugin
+ *   The name of the 
+ * @return
+ *   The name of the callback function, or FALSE if it could not be found.
+ */
+function menu_position_get_condition_callback($plugin) {
+  $plugins = menu_position_get_plugins();
+  $callback = !empty($plugins[$plugin]['condition_callback']) ? $plugins[$plugin]['condition_callback'] : FALSE;
+  if ($callback && !function_exists($callback)) {
+    // Load the specified include file.
+    if (!empty($plugins[$plugin]['file'])) {
+      $file = pathinfo($plugins[$plugin]['file']);
+      module_load_include($file['extension'], $plugins[$plugin]['module'], $file['filename']);
+    }
+    // Note if the callback still cannot be found.
+    if (!function_exists($callback)) {
+      $callback = FALSE;
+    }
+  }
+  return $callback;
 }
