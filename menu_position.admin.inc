@@ -312,7 +312,7 @@ function menu_position_rule_form_submit($form, &$form_state) {
   list($menu_name, $plid) = explode(':', $form_state['values']['plid']);
   $rule = array(
     'admin_title' => $form_state['values']['admin_title'],
-    'conditions'  => serialize($form_state['values']['conditions']);
+    'conditions'  => serialize($form_state['values']['conditions']),
     'plid'        => $plid,
   );
   // Add the rule to the database.

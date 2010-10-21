@@ -42,7 +42,7 @@ function menu_position_rule_node_type_form_submit(&$form, $form_state) {
     // with the rule.
     $variables = array(
       'node_type' => $form_state['values']['node_type'],
-    )
+    );
     $form_state['conditions']['node_type'] = $variables;
   }
   // If $form_state['conditions']['PLUGIN'] is not set, the plugin will not be
