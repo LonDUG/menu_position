@@ -53,17 +53,15 @@ function menu_position_menu_position_rule_node_type_form_submit(&$form, &$form_s
         unset($form_state['values']['node_type'][$key]);
       }
     }
-    // Since our form elements indicate that our plugin is to be used for this
-    // rule, we need to add the appropriate variables to
-    // $form_state['values']['conditions']['PLUGIN'] so that they can be stored statically
-    // with the rule.
-    $variables = array(
-      'node_type' => $form_state['values']['node_type'],
-    );
-    $form_state['values']['conditions']['node_type'] = $variables;
+    // Determine if any checkboxes were on.
+    if (!empty($form_state['values']['node_type'])) {
+      // Add this plugin's variables to the rule.
+      $variables = array(
+        'node_type' => $form_state['values']['node_type'],
+      );
+      $form_state['values']['conditions']['node_type'] = $variables;
+    }
   }
-  // If $form_state['conditions']['PLUGIN'] is not set, the plugin will not be
-  // added as a condition for this rule.
 }
 
 /**
