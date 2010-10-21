@@ -182,8 +182,10 @@ function menu_position_rules_form($form, &$form_state) {
   // We're re-using classes from the menu module.
   $form['#attached']['css'] = array(drupal_get_path('module', 'menu') . '/menu.css');
 
-  $rules = db_query('SELECT rid, admin_title, enabled, weight FROM {menu_position_rules} ORDER BY weight, rid');
+  $rules = db_query('SELECT rid, admin_title, menu_name, enabled, weight FROM {menu_position_rules} ORDER BY weight, rid');
   $delta = $rules->rowCount();
+
+  $menus = menu_get_menus();
 
   // Default message if no rules.
   if ($delta == 0) {
@@ -200,6 +202,9 @@ function menu_position_rules_form($form, &$form_state) {
       $form['rules'][$rule->rid] = array(
         'title' => array(
           '#markup' => check_plain($rule->admin_title),
+        ),
+        'menu_name' => array(
+          '#markup' => check_plain($menus[$rule->menu_name]),
         ),
         'enabled' => array(
           '#type' => 'checkbox',
@@ -270,6 +275,7 @@ function theme_menu_position_rules_order($variables) {
   $variables = array(
     'header' => array(
       t('Rule'),
+      t('Affected menu'),
       array(
         'data' => t('Enabled'),
         'class' => array('checkbox'),
@@ -291,6 +297,7 @@ function theme_menu_position_rules_order($variables) {
     // Render the title, enabled, and weight columns.
     $data = array(
       drupal_render($element[$rule]['title']),
+      drupal_render($element[$rule]['menu_name']),
       array(
         'data' => drupal_render($element[$rule]['enabled']),
         'class' => array('checkbox', 'menu-enabled'),
