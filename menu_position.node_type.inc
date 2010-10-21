@@ -16,7 +16,7 @@ function menu_position_rule_node_type_form(&$form, $form_state) {
   $form['conditions']['node_type'] = array(
     '#type' => 'checkboxes',
     '#title' => t('Content type(s)'),
-    '#default_value' => $variables['node_type'],
+    '#default_value' => !empty($variables['node_type']) ? $variables['node_type'] : '',
     '#options' => node_type_get_names(),
     '#description' => t('Apply this rule only on pages that display content of the given type(s). If you select no types, there will be no type-specific limitation.'),
     '#weight' => -20,
@@ -27,7 +27,7 @@ function menu_position_rule_node_type_form(&$form, $form_state) {
   //$form['#validate'][] = 'menu_position_rule_node_type_form_validate';
 
   // Add a submit handler.
-  $form['#submit'][]   = 'menu_position_rule_node_type_form_submit';
+  $form['#submit'][] = 'menu_position_rule_node_type_form_submit';
 }
 
 /**
