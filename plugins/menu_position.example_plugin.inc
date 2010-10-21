@@ -63,7 +63,7 @@ function HOOK_menu_position_rule_PLUGIN_form(&$form, &$form_state) {
 
   // If we have a validation handler, we can add it this way. Or we could add
   // a per-element validation handler with '#element_validate' above.
-  $form['#validate'][] = 'HOOK_rule_PLUGIN_form_validate';
+  $form['#validate'][] = 'HOOK_menu_position_rule_PLUGIN_form_validate';
 
   // Add a submit handler.
   $form['#submit'][] = 'HOOK_menu_position_rule_PLUGIN_form_submit';
@@ -77,7 +77,7 @@ function HOOK_menu_position_rule_PLUGIN_form(&$form, &$form_state) {
  * @param $form_state
  *   A reference to the current form state, including submitted values.
  */
-function HOOK_menu_position_rule_PLUGIN_form_submit(&$form, &$form_state) {
+function HOOK_menu_position_rule_PLUGIN_form_validate(&$form, &$form_state) {
   // Can haz valdaishun?
   if (!empty($form_state['values']['has_ponies'])) {
     form_error($form['conditions']['lolspeak'], t('No soup for you!'));
