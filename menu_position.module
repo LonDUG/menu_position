@@ -13,7 +13,6 @@
  * untethering it.
  */
 function menu_position_node_view($node, $view_mode) {
-  // Guh. Need a better trigger then arg() and hook_node_view().
   if ($view_mode == 'full' && arg(0) == 'node' && arg(1) == $node->nid) {
     menu_position_evaluate_rules($node->uri['path'], $node);
   }
