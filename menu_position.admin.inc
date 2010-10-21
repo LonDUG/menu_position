@@ -442,7 +442,7 @@ function menu_position_add_menu_link($rid, $plid, $admin_title = '') {
   // Add a menu link to handle matching nodes.
   $item = array(
     'link_path' => 'menu-position/' . $rid,
-    'link_title' => $admin_title ? 'Menu position rule (' . $admin_title . ')' : 'Menu position rule #' . $rid,
+    'link_title' => $admin_title ? $admin_title . ' (menu position rule)' : 'Menu position rule #' . $rid,
     'mlid' => NULL,
     'plid' => $plid,
     'hidden' => 1,
