@@ -57,7 +57,7 @@ function menu_position_menu_position_rule_plugins() {
     'node_type' => array(
       'form_callback' => 'menu_position_menu_position_rule_node_type_form',
       'condition_callback' => 'menu_position_menu_position_condition_node_type',
-      'file' => 'menu_position.node_type.inc',
+      'file' => 'plugins/menu_position.node_type.inc',
     ),
   );
 }
@@ -286,6 +286,10 @@ function menu_position_get_condition_callback($plugin) {
     // Load the specified include file.
     if (!empty($plugins[$plugin]['file'])) {
       $file = pathinfo($plugins[$plugin]['file']);
+      // Allow plugins to be in a sub-directory.
+      if ($file['dirname']) {
+        $file['filename'] = $file['dirname'] . '/' . $file['filename'];
+      }
       module_load_include($file['extension'], $plugins[$plugin]['module'], $file['filename']);
     }
     // Note if the callback still cannot be found.

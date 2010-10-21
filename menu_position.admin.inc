@@ -406,6 +406,10 @@ function menu_position_rule_form($form, &$form_state) {
     // Load the required include file.
     if (!empty($plugin['file'])) {
       $file = pathinfo($plugin['file']);
+      // Allow plugins to be in a sub-directory.
+      if ($file['dirname']) {
+        $file['filename'] = $file['dirname'] . '/' . $file['filename'];
+      }
       module_load_include($file['extension'], $plugin['module'], $file['filename']);
     }
     // Call form callback to add additional form elements.
