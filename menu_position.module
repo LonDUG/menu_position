@@ -83,22 +83,29 @@ function menu_position_node_view($node, $view_mode) {
         // Temporarily override the original router item.
         menu_set_item(NULL, $router_item);
 
-        // Create a menu tree using the menu_position path.
-        menu_tree_page_data($menu_item['menu_name']);
-
-        // Copy the menu tree cache from our faked path to the original router's path.
-        $router_item_cid          = 'links:' . $menu_item['menu_name'] . ':page-cid:' . $router_item['href'] . ':' . $GLOBALS['language']->language . ':' . (int) $router_item['access'] . ':0';
-        $original_router_item_cid = 'links:' . $menu_item['menu_name'] . ':page-cid:' . $original_router_item['href'] . ':' . $GLOBALS['language']->language . ':' . (int) $original_router_item['access'] . ':0';
-        $cache = cache_get($router_item_cid, 'cache_menu');
-        $tree_cid = $cache->data;
-        cache_set($router_item_cid, $tree_cid, 'cache_menu');
-
-        // Ensure menu_tree_page_data's static cache is up-to-date as well.
+        // Copy the menu tree cache from our faked path to the original router's
+        // path. We iterate through 3 levels of menu_depth: 0 - full tree, 1 -
+        // primary links, 2 - secondary links.
         $tree = &drupal_static('menu_tree_page_data', array());
-        $tree[$original_router_item_cid] = $tree[$router_item_cid];
+        foreach (array(0, 1, 2) as $menu_depth) {
+          // Create a menu tree using the menu_position path.
+          menu_tree_page_data($menu_item['menu_name'], $menu_depth ? $menu_depth : NULL);
 
-        // To save memory, clean up the cache since we won't need this data again.
-        unset($tree[$router_item_cid]);
+          // Get the cache for the tree we just generated.
+          $router_item_cid = 'links:' . $menu_item['menu_name'] . ':page-cid:' . $router_item['href'] . ':' . $GLOBALS['language']->language . ':' . (int) $router_item['access'] . ':' . (int) $menu_depth;
+          $cache = cache_get($router_item_cid, 'cache_menu');
+          $tree_cid = $cache->data;
+
+          // Copy the cache to the tree that contains the original router item.
+          $original_router_item_cid = 'links:' . $menu_item['menu_name'] . ':page-cid:' . $original_router_item['href'] . ':' . $GLOBALS['language']->language . ':' . (int) $original_router_item['access'] . ':' . $menu_depth;
+          cache_set($original_router_item_cid, $tree_cid, 'cache_menu');
+
+          // Ensure menu_tree_page_data's static cache is up-to-date as well.
+          $tree[$original_router_item_cid] = $tree[$router_item_cid];
+
+          // To save memory, clean up the cache since we won't need this data again.
+          unset($tree[$router_item_cid]);
+        }
 
         // @TODO Don't we need to prime the static caches for menu_tree_all_data()?
         //menu_tree_all_data($menu_item['menu_name']);
