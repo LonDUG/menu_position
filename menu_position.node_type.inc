@@ -8,6 +8,12 @@
 
 /**
  * Adds form elements for the "node type" plugin to the rule configuration form.
+ *
+ * @param $form
+ *   A reference to the "add/edit rule" form array. New form elements should be
+ *   added directly to this array.
+ * @param $form_state
+ *   A reference to the current form state.
  */
 function menu_position_rule_node_type_form(&$form, &$form_state) {
   // If this is an existing rule, load the variables stored in the rule for this plugin.
@@ -32,8 +38,13 @@ function menu_position_rule_node_type_form(&$form, &$form_state) {
 
 /**
  * Prepares the "node type" variables to be stored in the rule.
+ *
+ * @param $form
+ *   A reference to the "add/edit rule" form array.
+ * @param $form_state
+ *   A reference to the current form state, including submitted values.
  */
-function menu_position_rule_node_type_form_submit($form, &$form_state) {
+function menu_position_rule_node_type_form_submit(&$form, &$form_state) {
   // The user has added our plugin's form elements as a condition for the rule.
   if (!empty($form_state['values']['node_type'])) {
     // Remove any 0 valued options.
@@ -58,6 +69,9 @@ function menu_position_rule_node_type_form_submit($form, &$form_state) {
 /**
  * Checks if the node is of a certain type.
  *
+ * @param $variables
+ *   An array containing each of the variables saved in the database necessary
+ *   to evaluate this condition of the rule.
  * @return
  *   TRUE if condition applies successfully. Otherwise FALSE.
  */
