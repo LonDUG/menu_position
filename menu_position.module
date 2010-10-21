@@ -6,11 +6,11 @@
  * Provides menu links for dynamic positioning of nodes based on configurable rules.
  */
 
-// @TODO: the rule checking is tied to nodes by hook_node_view() See about
-// untethering it.
-
 /**
  * Implements hook_node_view().
+ *
+ * @TODO: the rule checking is tied to nodes by hook_node_view() See about
+ * untethering it.
  */
 function menu_position_node_view($node, $view_mode) {
   // Guh. Need a better trigger then arg() and hook_node_view().
@@ -194,6 +194,7 @@ function menu_position_get_plugins() {
     foreach (module_implements('menu_position_rule_plugins') as $module) {
       $function = $module . '_menu_position_rule_plugins';
       if (function_exists($function)) {
+        // Register each module's plugin while setting baseline defaults.
         foreach ($function() as $name => $plugin) {
           $plugins[$name] = $plugin + array(
             'module' => $module,
@@ -220,6 +221,7 @@ function menu_position_get_plugins() {
 function menu_position_get_condition_callback($plugin) {
   $plugins = menu_position_get_plugins();
   $callback = !empty($plugins[$plugin]['condition_callback']) ? $plugins[$plugin]['condition_callback'] : FALSE;
+
   if ($callback && !function_exists($callback)) {
     // Load the specified include file.
     if (!empty($plugins[$plugin]['file'])) {
@@ -231,5 +233,6 @@ function menu_position_get_condition_callback($plugin) {
       $callback = FALSE;
     }
   }
+
   return $callback;
 }

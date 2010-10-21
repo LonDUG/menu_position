@@ -80,11 +80,12 @@ function menu_position_update_7100() {
 
 /**
  * Implements hook_enable().
+ *
+ * When the module is disabled, the menu links it owns are deleted. When
+ * re-enabling this module, we need to ensure that any menu links are re-created
+ * and to re-configure any old rules existing in the database.
  */
 function menu_position_enable() {
-  // When the module is disabled, the menu links it owns are deleted. When
-  // re-enabling this module, we need to ensure that any menu links are
-  // re-created and to re-configure any old rules existing in the database.
   $rules = db_query('SELECT rid, plid, admin_title FROM {menu_position_rules} WHERE enabled = :enabled', array(':enabled' => 1));
   if ($rules->rowCount()) {
     drupal_set_message(t('Existing menu position rules were discovered. To ensure they continue to work, visit the <a href="!url">menu position rules admin page</a>.', array('!url' => url('admin/structure/menu-position'))), 'error');
