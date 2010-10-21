@@ -24,7 +24,9 @@
  * - condition_callback: (optional) The name of the function to use when the
  *   rule is being tested. Defaults to "MODULE_menu_position_condition_PLUGIN".
  * - file: (optional) Include file containing form and condition callback
- *   function definitions.
+ *   function definitions. The hook_menu_position_rule_plugins() implementation
+ *   must be in a .module file, but the include file will only be loaded if a
+ *   rule is configured to use the plugin's condition.
  *
  * @return
  *   An associative array containing the information about each plugin.
