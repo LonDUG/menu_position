@@ -65,6 +65,58 @@ function menu_position_router() {
 }
 
 /**
+ * Implements hook_form_FORM_ID_alter().
+ */
+function _menu_position_form_menu_overview_form_alter(&$form, &$form_state) {
+  // Retrieve all of the rules' mlids.
+  $rules = db_query('SELECT mlid FROM {menu_position_rules} WHERE enabled = :enabled ORDER BY weight, rid', array(':enabled' => 1));
+  foreach ($rules as $rule) {
+    $mlid = $rule->mlid;
+    if (!empty($form['mlid:' . $mlid]['#item']['mlid']) && $mlid == $form['mlid:' . $mlid]['#item']['mlid']) {
+      // Ensure that the menu item cannot be enabled.
+      $form['mlid:' . $mlid]['hidden']['#disabled'] = TRUE;
+      // Remove the edit link for this menu item.
+      unset($form['mlid:' . $mlid]['operations']['edit']);
+    }
+  }
+}
+
+/**
+ * Implements hook_form_FORM_ID_alter().
+ */
+function _menu_position_form_menu_edit_item_alter(&$form, &$form_state) {
+  // Retrieve all of the rules' mlids.
+  $result = db_query('SELECT mlid FROM {menu_position_rules} WHERE mlid = :mlid ORDER BY weight, rid', array(':mlid' => (int) $form['mlid']['#value']));
+  if ($result->rowCount()) {
+    if (empty($form_state['input'])) {
+      drupal_set_message(t('This menu item cannot be edited.'), 'error');
+    }
+    foreach (array('link_title', 'description', 'enabled', 'expanded', 'parent', 'weight') as $key) {
+      $form[$key]['#disabled'] = TRUE;
+    }
+  }
+  // Remove the validator.
+  $key = array_search('menu_edit_item_validate', $form['#validate']);
+  if ($key !== FALSE) {
+    unset($form['#validate'][$key]);
+  }
+  // Replace the standard submit handler with our own.
+  $key = array_search('menu_edit_item_submit', $form['#submit']);
+  if ($key !== FALSE) {
+    $form['#submit'][$key] = 'menu_position_edit_item_submit';
+  }
+}
+
+/**
+ * Process menu and menu item add/edit form submissions for menu_position links.
+ */
+function menu_position_edit_item_submit($form, &$form_state) {
+  list($menu_name, ) = explode(':', $form['parent']['#default_value']);
+  $form_state['redirect'] = 'admin/structure/menu/manage/' . $menu_name;
+  drupal_set_message(t('Your configuration was not saved.'), 'error');
+}
+
+/**
  * Menu callback: orders rules.
  */
 function menu_position_rules_form($form, &$form_state) {
