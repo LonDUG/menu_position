@@ -1,6 +1,4 @@
 <?php
-// $Id$
-
 /**
  * @file
  * Provides menu links for dynamic positioning of nodes based on configurable rules.

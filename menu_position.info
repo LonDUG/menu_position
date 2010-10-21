@@ -1,5 +1,3 @@
-; $Id$
-
 name = Menu position
 description = Customize menu position of nodes depending on their content type, associated terms and others conditions.
 

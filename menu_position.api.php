@@ -1,6 +1,4 @@
 <?php
-// $Id$
-
 /**
  * @file
  * Hooks provided by the Menu Position module.

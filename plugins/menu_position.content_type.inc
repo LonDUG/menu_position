@@ -1,6 +1,4 @@
 <?php
-// $Id$
-
 /**
  * @file
  * Provides the "Content type" rule plugin for the Menu Position module.

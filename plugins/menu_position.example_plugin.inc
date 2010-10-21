@@ -1,6 +1,4 @@
 <?php
-// $Id$
-
 /**
  * @file
  * Provides the PLUGIN rule plugin for the Menu Position module.

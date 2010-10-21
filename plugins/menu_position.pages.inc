@@ -1,6 +1,4 @@
 <?php
-// $Id$
-
 /**
  * @file
  * Provides the "Pages" rule plugin for the Menu Position module.

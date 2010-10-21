@@ -1,5 +1,3 @@
-// $Id$
-
 ABOUT MENU POSITION
 -------------------
 
