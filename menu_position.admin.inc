@@ -317,17 +317,22 @@ function menu_position_rule_form($form, &$form_state) {
   $form['conditions'] = array();
 
   // Parent menu item.
+  if ($form_state['#menu-position-rule']['mlid']) {
+    $menu_item = menu_link_load($form_state['#menu-position-rule']['mlid']);
+    $options = menu_parent_options(menu_get_menus(), $menu_item);
+    $default = $menu_item['menu_name'] . ':' . $plid;
+  }
+  else {
+    $options = menu_parent_options(menu_get_menus(), array('mlid' => 0));
+    $default = 'main-menu:0';
+  }
   $form['plid'] = array(
     '#type' => 'select',
     '#title' => t('Menu item'),
     '#required' => TRUE,
-    '#options' => menu_parent_options(menu_get_menus(), array('mlid' => 0)),
-    '#default_value' => 'main-menu:0',
+    '#options' => $options,
+    '#default_value' => $default,
   );
-  if ($plid) {
-    $menu_item = menu_link_load($plid);
-    $form['plid']['#default_value'] = $menu_item['menu_name'] . ':' . $plid;
-  }
 
   if ($rid) {
     $form['delete'] = array(
