@@ -88,9 +88,11 @@ function _menu_position_form_menu_edit_item_alter(&$form, &$form_state) {
   // Retrieve all of the rules' mlids.
   $result = db_query('SELECT mlid FROM {menu_position_rules} WHERE mlid = :mlid ORDER BY weight, rid', array(':mlid' => (int) $form['mlid']['#value']));
   if ($result->rowCount()) {
+    // If the form hasn't been submitted, display a warning.
     if (empty($form_state['input'])) {
-      drupal_set_message(t('This menu item cannot be edited.'), 'error');
+      drupal_set_message(t('This menu item cannot be edited.'), 'warning');
     }
+    // Disable all the normal form elements.
     foreach (array('link_title', 'description', 'enabled', 'expanded', 'parent', 'weight') as $key) {
       $form[$key]['#disabled'] = TRUE;
     }
@@ -105,12 +107,19 @@ function _menu_position_form_menu_edit_item_alter(&$form, &$form_state) {
   if ($key !== FALSE) {
     $form['#submit'][$key] = 'menu_position_edit_item_submit';
   }
+  // Replace the Save button with a Cancel button.
+  unset($form['actions']['submit']);
+  $form['actions']['cancel'] = array(
+    '#type' => 'submit',
+    '#value' => t('Cancel'),
+  );
 }
 
 /**
  * Process menu and menu item add/edit form submissions for menu_position links.
  */
 function menu_position_edit_item_submit($form, &$form_state) {
+  // Redirect to the menu edit form and display a message.
   list($menu_name, ) = explode(':', $form['parent']['#default_value']);
   $form_state['redirect'] = 'admin/structure/menu/manage/' . $menu_name;
   drupal_set_message(t('Your configuration was not saved.'), 'error');
