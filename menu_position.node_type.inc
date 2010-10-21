@@ -16,7 +16,7 @@ function menu_position_rule_node_type_form(&$form, $form_state) {
   $form['conditions']['node_type'] = array(
     '#type' => 'checkboxes',
     '#title' => t('Content type(s)'),
-    '#default_value' => !empty($variables['node_type']) ? $variables['node_type'] : '',
+    '#default_value' => !empty($variables['node_type']) ? $variables['node_type'] : array(),
     '#options' => node_type_get_names(),
     '#description' => t('Apply this rule only on pages that display content of the given type(s). If you select no types, there will be no type-specific limitation.'),
     '#weight' => -20,
