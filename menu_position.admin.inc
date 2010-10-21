@@ -118,7 +118,20 @@ function _menu_position_form_menu_edit_item_alter(&$form, &$form_state) {
 /**
  * Implements hook_menu_link_update().
  */
-function menu_position_menu_link_update($link) {
+function _menu_position_menu_link_update($link) {
+  $rules = db_query('SELECT rid, plid FROM {menu_position_rules} WHERE mlid = :mlid ORDER BY weight, rid', array(':mlid' => $link['mlid']));
+  foreach ($rules as $rule) {
+    // Check if the user has altered the parent menu item.
+    if ($link['plid'] != $rule->plid) {
+      // Update the rule with the new parent.
+      db_update('menu_position_rules')
+        ->fields(array(
+          'plid' => $link['plid'],
+          ))
+        ->condition('rid', $rule->rid)
+        ->execute();
+    }
+  }
 }
 
 /**
