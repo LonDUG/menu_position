@@ -11,36 +11,36 @@
  */
 function _menu_position_menu() {
   $items['admin/config/user-interface/menu-position'] = array(
-    'title' => 'Node breadcrumb rules',
+    'title' => 'Menu position rules',
     'description' => 'Configure rules for menu positions.',
-    'access arguments' => array('administer breadcrumb rules'),
+    'access arguments' => array('administer menu positions'),
     'page callback' => 'drupal_get_form',
     'page arguments' => array('menu_position_rules_form'),
     'type' => MENU_NORMAL_ITEM,
     'file' => 'menu_position.admin.inc',
   );
   $items['admin/config/user-interface/menu-position/add'] = array(
-    'title' => 'Add breadcrumb rule',
-    'description' => 'Add a new breadcrumb rule.',
-    'access arguments' => array('Administer breadcrumb rules'),
+    'title' => 'Add menu position rule',
+    'description' => 'Add a new menu position rule.',
+    'access arguments' => array('administer menu positions'),
     'page callback' => 'drupal_get_form',
     'page arguments' => array('menu_position_add_rule_form'),
     'type' => MENU_LOCAL_ACTION,
     'file' => 'menu_position.admin.inc',
   );
   $items['admin/config/user-interface/menu-position/edit'] = array(
-    'title' => 'Edit breadcrumb rule',
-    'description' => 'Edit a breadcrumb rule.',
-    'access arguments' => array('Administer breadcrumb rules'),
+    'title' => 'Edit menu position rule',
+    'description' => 'Edit a menu position rule.',
+    'access arguments' => array('administer menu positions'),
     'page callback' => 'drupal_get_form',
     'page arguments' => array('menu_position_edit_rule_form'),
     'type' => MENU_CALLBACK,
     'file' => 'menu_position.admin.inc',
   );
   $items['admin/config/user-interface/menu-position/delete'] = array(
-    'title' => 'Delete breadcrumb rule',
-    'description' => 'Delete a breadcrumb rule.',
-    'access arguments' => array('Administer breadcrumb rules'),
+    'title' => 'Delete menu position rule',
+    'description' => 'Delete a menu position rule.',
+    'access arguments' => array('administer menu positions'),
     'page callback' => 'drupal_get_form',
     'page arguments' => array('menu_position_delete_rule_form'),
     'type' => MENU_CALLBACK,
@@ -53,7 +53,7 @@ function _menu_position_menu() {
  * Menu callback: orders rules.
  */
 function menu_position_rules_form($form, &$form_state) {
-  $form['#attached']['css'] = array(drupal_get_path('module', 'menu_position') . '/menu-position.css');
+  $form['#attached']['css'] = array(drupal_get_path('module', 'menu') . '/menu.css');
 
   $rules = db_query('SELECT rid, admin_title, weight FROM {menu_position_rules} ORDER BY weight, rid');
   $delta = $rules->rowCount();
@@ -74,25 +74,27 @@ function menu_position_rules_form($form, &$form_state) {
         'title' => array(
           '#markup' => check_plain($rule->admin_title),
         ),
-        'operations' => array(
-          '#theme' => 'links',
-          '#links' => array(
-            'delete-rule' => array(
-              'title' => t('delete rule'),
-              'href' => 'admin/config/user-interface/menu-position/delete/' . $rule->rid,
-            ),
-            'edit-rule' => array(
-              'title' => t('edit rule'),
-              'href' => 'admin/config/user-interface/menu-position/edit/' . $rule->rid,
-            ),
-          ),
-          '#attributes' => array('class' => array('rule-operation-links', 'inline')),
+        'enabled' => array(
+          '#type' => 'checkbox',
+          '#default_value' => $rule->enabled,
         ),
         'weight' => array(
           '#type' => 'weight',
           '#default_value' => $rule->weight,
           '#delta' => max($delta, 5),
           '#id' => 'edit-rule-' . $rule->rid,
+        ),
+        'operations' => array(
+          'edit-link' => array(
+            '#type' => 'link',
+            '#title' => t('edit'),
+            '#href' => 'admin/config/user-interface/menu-position/edit/' . $rule->rid,
+          ),
+          'delete-link' => array(
+            '#type' => 'link',
+            '#title' => t('delete'),
+            '#href' => 'admin/config/user-interface/menu-position/delete/' . $rule->rid,
+          ),
         ),
       );
     }
@@ -127,8 +129,15 @@ function theme_menu_position_rules_order($variables) {
   $variables = array(
     'header' => array(
       t('Rule'),
-      t('Operations'),
+      array(
+        'data' => t('Enabled'),
+        'class' => array('checkbox'),
+      ),
       t('Weight'),
+      array(
+        'data' => t('Operations'),
+        'colspan' => '2',
+      ),
     ),
     'rows' => array(),
     'attributes' => array('id' => 'menu-position-rules'),
@@ -136,13 +145,26 @@ function theme_menu_position_rules_order($variables) {
 
   // Generate table of draggable menu names.
   foreach (element_children($element) as $rule) {
+    // Add special classes to be used for tabledrag.js.
     $element[$rule]['weight']['#attributes']['class'] = array('rule-weight');
-    $variables['rows'][] = array(
-      'data' => array(
-        drupal_render($element[$rule]['title']),
-        drupal_render($element[$rule]['operations']),
-        drupal_render($element[$rule]['weight']),
+    // Render the title, enabled, and weight columns.
+    $data = array(
+      drupal_render($element[$rule]['title']),
+      array(
+        'data' => drupal_render($element[$rule]['enabled']),
+        'class' => array('checkbox', 'menu-enabled'),
       ),
+      drupal_render($element[$rule]['weight']),
+    );
+    // Render the operations links.
+    foreach (element_children($element[$rule]['operations']) as $op) {
+      $data[] = array(
+        'data' => drupal_render($element[$rule]['operations'][$op]),
+        'class' => array('menu-operations'),
+      );
+    }
+    $variables['rows'][] = array(
+      'data' => $data,
       'class' => array('draggable'),
     );
   }
