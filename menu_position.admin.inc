@@ -435,20 +435,6 @@ function menu_position_add_rule($rule) {
     ->fields($fields)
     ->execute();
 
-  // Add a menu link to handle matching nodes.
-  $item = array(
-    'link_path' => 'menu-position/' . $rid,
-    'link_title' => 'Menu position rule #' . $rid,
-    'mlid' => NULL,
-    'menu_name' => $rule['menu_name'],
-    'plid' => $rule['plid'],
-    'hidden' => 1,
-    'module' => 'menu_position',
-    'options' => array(
-      'alter' => TRUE,
-      'attributes' => array('class' => array('menu-position-link')),
-    ),
-  );
   $mlid = menu_position_add_menu_link($rid, $rule['plid'], $rule['admin_title']);
 
   // Now add the mlid back to the rule.
@@ -473,7 +459,7 @@ function menu_position_add_rule($rule) {
 function menu_position_add_menu_link($rid, $plid, $admin_title = '') {
   // Add a menu link to handle matching nodes. Passing NULL as the mlid will
   // cause menu_link_save() to add a new menu link.
-  return menu_position_edit_menu_link($rid, NULL, $plid, $admin_title = '');
+  return menu_position_edit_menu_link($rid, NULL, $plid, $admin_title);
 }
 
 /**
