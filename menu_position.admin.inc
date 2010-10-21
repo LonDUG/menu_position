@@ -429,7 +429,7 @@ function menu_position_delete_rule_form($form, &$form_state, $rid = 0) {
  * Handles form submission for menu_position_delete_rule_form().
  */
 function menu_position_delete_rule_form_submit($form, &$form_state) {
-  $title = db_query('SELECT admin_title FROM {menu_position_rules} WHERE rid = :rid', array(':rid' => $rid))->fetchField();
+  $title = db_query('SELECT admin_title FROM {menu_position_rules} WHERE rid = :rid', array(':rid' => $form_state['values']['rid']))->fetchField();
 
   menu_position_delete_rule($form_state['values']['rid']);
 
