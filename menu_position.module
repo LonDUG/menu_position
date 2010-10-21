@@ -44,9 +44,12 @@ function menu_position_evaluate_rules($path, $node = NULL) {
       // A rule with no conditions always matches.
       $rule_matches = TRUE;
       // Go through each condition, ANDing each result.
-      foreach (unserialize($rule->conditions) as $plugin => $variables) {
-        // Add the current node to the variables to pass to the callback.
+      $rule->conditions = unserialize($rule->conditions);
+      foreach ($rule->conditions as $plugin => $variables) {
+        // Add the current rule and node to the callback's variables.
+        $variables['rule'] = $rule;
         $variables['node'] = $node;
+        // Find the plugin's callback function.
         $callback = menu_position_get_condition_callback($plugin);
         if ($callback) {
           // Check if this condition matches.
