@@ -53,11 +53,11 @@ Once a rule is "matched", the following things happen:
 PLUG-INS
 --------
 
-Currently, the Menu position module only provides a "node type" plug-in that
-allows conditions to be added to rules based on the type of node being displayed
-on the page. However, this module also provides a simple API for "rule
-conditions" plug-ins so module developers can develop their own logic for adding
-dynamic menu positioning.
+Currently, the Menu position module only provides "content type" and "pages"
+plug-ins that allow conditions to be added to rules based on the type of content
+being displayed or on the path of the page. However, this module also provides a
+simple API for "rule conditions" plug-ins so module developers can develop their
+own logic for adding dynamic menu positioning.
 
 See the following files for more information:
 - menu_position.api.php
