@@ -221,7 +221,7 @@ function menu_position_evaluate_rules($context = array()) {
   // Clean-up the menu tree cache.
   $tree = &drupal_static('menu_tree_page_data', array());
   foreach (array_keys($tree) as $key) {
-    if (strpos($key, ':page-cid:menu-position/')) {
+    if (strpos($key, ':page:menu-position/')) {
       // To save memory, clean up the cache since we won't need this data again.
       unset($tree[$key]);
     }
