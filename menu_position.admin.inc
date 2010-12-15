@@ -12,8 +12,7 @@ function _menu_position_menu() {
     'title' => 'Menu position rules',
     'description' => 'Configure rules for menu positions.',
     'access arguments' => array('administer menu positions'),
-    'page callback' => 'drupal_get_form',
-    'page arguments' => array('menu_position_rules_form'),
+    'page callback' => 'menu_position_rules_form_callback',
     'type' => MENU_NORMAL_ITEM,
     'file' => 'menu_position.admin.inc',
   );
@@ -157,7 +156,8 @@ function menu_position_enable_helper() {
   foreach ($rules as $rule) {
     // If we were to attempt menu_position_add_menu_link() here it would fail
     // because the module's router item isn't in the system yet. Instead we flag
-    // the rule with a zero-value mlid and fix it in menu_position_rules_form().
+    // the rule with a zero-value mlid and fix it in
+    // menu_position_rules_form_callback().
     $mlid = menu_position_add_menu_link($rule->rid, $rule->plid, $rule->admin_title);
     db_update('menu_position_rules')
       ->fields(array('mlid' => $mlid))
@@ -169,14 +169,19 @@ function menu_position_enable_helper() {
 /**
  * Menu callback: orders rules.
  */
-function menu_position_rules_form($form, &$form_state) {
+function menu_position_rules_form_callback() {
   // This is a total hack. @see menu_position_enable(). You shouldn't be doing
-  // non-Form API stuff in a form definition. We mitigate this by ensuring this
-  // hack is only run when the form is accessed from a known path.
-  if ($_GET['q'] == 'admin/structure/menu-position') {
-    menu_position_enable_helper();
-  }
+  // non-Form API stuff in a form definition. So we've created this wrapper
+  // callback to run the hack and then return the form definition.
+  menu_position_enable_helper();
 
+  return drupal_get_form('menu_position_rules_form');
+}
+
+/**
+ * Form definition: orders rules.
+ */
+function menu_position_rules_form($form, &$form_state) {
   // We're re-using classes from the menu module.
   $form['#attached']['css'] = array(drupal_get_path('module', 'menu') . '/menu.css');
 
