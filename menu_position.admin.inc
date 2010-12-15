@@ -66,14 +66,15 @@ function menu_position_router() {
  */
 function _menu_position_form_menu_overview_form_alter(&$form, &$form_state) {
   // Retrieve all of the rules' mlids.
-  $rules = db_query('SELECT mlid FROM {menu_position_rules} WHERE enabled = :enabled ORDER BY weight, rid', array(':enabled' => 1));
+  $rules = db_query('SELECT rid, mlid FROM {menu_position_rules} WHERE enabled = :enabled ORDER BY weight, rid', array(':enabled' => 1));
   foreach ($rules as $rule) {
     $mlid = $rule->mlid;
     if (!empty($form['mlid:' . $mlid]['#item']['mlid']) && $mlid == $form['mlid:' . $mlid]['#item']['mlid']) {
       // Ensure that the menu item cannot be enabled.
       $form['mlid:' . $mlid]['hidden']['#disabled'] = TRUE;
-      // Remove the edit link for this menu item.
-      unset($form['mlid:' . $mlid]['operations']['edit']);
+      // Alter the edit link for this menu item.
+      $form['mlid:' . $mlid]['operations']['edit']['#href'] = 'admin/structure/menu-position/edit/' . $rule->rid;
+      $form['mlid:' . $mlid]['operations']['edit']['#options'] = array('query' => array('destination' => $_GET['q']));
     }
   }
 }
