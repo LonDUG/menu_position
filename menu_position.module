@@ -57,13 +57,9 @@ function menu_position_theme() {
 function menu_position_menu_position_rule_plugins() {
   return array(
     'content_type' => array(
-      'form_callback' => 'menu_position_menu_position_rule_content_type_form',
-      'condition_callback' => 'menu_position_menu_position_condition_content_type',
       'file' => 'plugins/menu_position.content_type.inc',
     ),
     'pages' => array(
-      'form_callback' => 'menu_position_menu_position_rule_pages_form',
-      'condition_callback' => 'menu_position_menu_position_condition_pages',
       'file' => 'plugins/menu_position.pages.inc',
     ),
   );
