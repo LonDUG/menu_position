@@ -199,14 +199,14 @@ function menu_position_evaluate_rules($context = array()) {
       }
       menu_position_precache_tree($router_item, $original_router_item, $menu_item['menu_name']);
 
+      // Use our fake router item to influence the active trail.
       if (!$breadcrumb_set) {
-        // Use our fake router item to influence the active trail.
+        // Retrieve the fake active trail.
         $active_trail = menu_set_active_trail();
-        // After we reset the original router item, menu_get_active_breadcrumb()
-        // will no longer remove the last item from the end of the trail since
-        // its path won't match the path of the original router item. So we need
-        // to force the breadcrumbs now.
-        drupal_set_breadcrumb(menu_get_active_breadcrumb());
+        // Replace the menu_position item with the original menu item.
+        array_pop($active_trail);
+        $active_trail[] = $original_router_item;
+        menu_set_active_trail($active_trail);
         $breadcrumb_set = TRUE;
       }
 

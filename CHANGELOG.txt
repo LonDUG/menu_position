@@ -1,5 +1,6 @@
 Menu Position 7.x-1.x-dev, xxxx-xx-xx
 -------------------------------------
+- #993958: Wrong page titles displayed
 - Updated to work with Drupal 7.0-rc2
 
 Menu Position 7.x-1.0-beta1, 2010-10-21
