@@ -268,8 +268,8 @@ function menu_position_get_plugins() {
           $plugins[$name] = $plugin + array(
             'module' => $module,
             'file' => '',
-            'form_callback' => $module . 'menu_position_rule_' . $name . '_form',
-            'condition_callback' => $module . 'menu_position_condition_' . $name,
+            'form_callback' => $module . '_menu_position_rule_' . $name . '_form',
+            'condition_callback' => $module . '_menu_position_condition_' . $name,
           );
         }
       }
