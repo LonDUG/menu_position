@@ -70,7 +70,10 @@ function _menu_position_form_menu_overview_form_alter(&$form, &$form_state) {
   foreach ($rules as $rule) {
     $mlid = $rule->mlid;
     if (!empty($form['mlid:' . $mlid]['#item']['mlid']) && $mlid == $form['mlid:' . $mlid]['#item']['mlid']) {
+      // Remove link and "disabled" text from the menu item's title.
+      $form['mlid:' . $mlid]['title']['#markup'] = strip_tags(str_replace(' (' . t('disabled') . ')', '', $form['mlid:' . $mlid]['title']['#markup']));
       // Ensure that the menu item cannot be enabled.
+      $form['mlid:' . $mlid]['hidden']['#default_value'] = TRUE;
       $form['mlid:' . $mlid]['hidden']['#disabled'] = TRUE;
       // Alter the edit link for this menu item.
       $form['mlid:' . $mlid]['operations']['edit']['#href'] = 'admin/structure/menu-position/edit/' . $rule->rid;
