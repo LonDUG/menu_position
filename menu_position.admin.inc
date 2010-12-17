@@ -520,7 +520,7 @@ function menu_position_add_rule($rule) {
  *   The mlid of the rule's new menu link.
  */
 function menu_position_add_menu_link($rid, $plid, $admin_title) {
-  // Add a menu link to handle matching nodes. Passing NULL as the mlid will
+  // Add a menu link to handle matching pages. Passing NULL as the mlid will
   // cause menu_link_save() to add a new menu link.
   return menu_position_edit_menu_link($rid, NULL, $plid, $admin_title);
 }
@@ -560,7 +560,7 @@ function menu_position_edit_rule($rule) {
  *   The mlid of the rule's new menu link.
  */
 function menu_position_edit_menu_link($rid, $mlid, $plid, $admin_title) {
-  // Add a menu link to handle matching nodes.
+  // Add a menu link to handle matching pages.
   $item = array(
     'link_path' => 'menu-position/' . $rid,
     'link_title' => $admin_title . ' (menu position rule)',
