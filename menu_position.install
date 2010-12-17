@@ -91,7 +91,8 @@ function menu_position_enable() {
   foreach ($rules as $rule) {
     // If we were to attempt menu_position_add_menu_link() here it would fail
     // because the module's router item isn't in the system yet. Instead we flag
-    // the rule with a zero-value mlid and fix it in menu_position_rules_form().
+    // the rule with a zero-value mlid and fix it in
+    // menu_position_rules_form_callback().
     db_update('menu_position_rules')
       ->fields(array('mlid' => 0))
       ->condition('rid', $rule->rid)

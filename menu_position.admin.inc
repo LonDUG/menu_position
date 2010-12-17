@@ -149,19 +149,16 @@ function menu_position_edit_item_submit($form, &$form_state) {
 /**
  * Fix rules after module has been re-enabled.
  *
- * When the module is re-enabled, we need to re-create menu links, but we can't
- * do that in hook_enable() since this module's hook_menu() has yet to be run.
+ * During menu_position_enable(), existing rules are flagged with a zero-value
+ * mlid. We fix that here.
  */
 function menu_position_enable_helper() {
+  // Find rules with zero-value menu links.
   $rules = db_query('SELECT rid, plid, admin_title FROM {menu_position_rules} WHERE enabled = :enabled AND mlid = :mlid', array(':enabled' => 1, ':mlid' => 0));
   if ($rules->rowCount()) {
     drupal_set_message(t('Existing menu position rules were discovered and have now been re-configured so they will continue to work.'));
   }
   foreach ($rules as $rule) {
-    // If we were to attempt menu_position_add_menu_link() here it would fail
-    // because the module's router item isn't in the system yet. Instead we flag
-    // the rule with a zero-value mlid and fix it in
-    // menu_position_rules_form_callback().
     $mlid = menu_position_add_menu_link($rule->rid, $rule->plid, $rule->admin_title);
     db_update('menu_position_rules')
       ->fields(array('mlid' => $mlid))

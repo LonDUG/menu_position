@@ -82,7 +82,7 @@ function menu_position_form_menu_edit_item_alter(&$form, &$form_state) {
 }
 
 /**
- * Implements hook_menu_link_update().
+ * Implements hook_menu_link_alter().
  */
 function menu_position_menu_link_alter(&$item) {
   if (isset($item['module']) && $item['module'] == 'menu_position') {
