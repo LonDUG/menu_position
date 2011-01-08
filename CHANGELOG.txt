@@ -1,5 +1,6 @@
 Menu Position 7.x-1.x-dev, xxxx-xx-xx (development release)
 -------------------------------------
+- #1001538: Provide/better document CRUD functions for menu position rule sets
 - #1000980: Editing rule causes corresponding menu link's weight to reset
 - #1000332: default values not properly set for some plugin properties
 

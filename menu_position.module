@@ -100,6 +100,34 @@ function menu_position_menu_link_update($link) {
 }
 
 /**
+ * Retrieves a menu position rule from the database.
+ *
+ * @param $rid
+ *   The ID of the requested rule. If not specified, all enabled rules are
+ *   retrieved.
+ * @return
+ *   An associative array for the requested rule. If the $rid is not specified,
+ *   an assiciative array for all enabled rules with keys equal to the rid of
+ *   each rule.
+ */
+function menu_position_read_rule($rid = FALSE) {
+  if ($rid) {
+    $rule = db_query('SELECT * FROM {menu_position_rules} WHERE rid = :rid', array(':rid' => $rid))->fetchAssoc();
+    $rule['conditions'] = unserialize($rule['conditions']);
+    return $rule;
+  }
+  else {
+    $query = db_query('SELECT * FROM {menu_position_rules} WHERE enabled = :enabled ORDER BY weight, rid', array(':enabled' => 1));
+    $rules = array();
+    foreach ($query as $rule) {
+      $rule['conditions'] = unserialize($rule['conditions']);
+      $rules[$rule['rid']] = $rule;
+    }
+    return $rules;
+  }
+}
+
+/**
  * Evaluates all rules based on the given path.
  *
  * @param $path
@@ -110,7 +138,8 @@ function menu_position_menu_link_update($link) {
 function menu_position_evaluate_rules($context = array()) {
   $path = $context['path'];
 
-  // Retrieve the rules from the database.
+  // Retrieve the rules from the database. For speed, we don't call
+  // menu_position_read_rule() and unserialize the conditions only if needed.
   $rules = db_query('SELECT * FROM {menu_position_rules} WHERE enabled = :enabled ORDER BY weight, rid', array(':enabled' => 1));
 
   // Retrieve the list of menus the path is already in.

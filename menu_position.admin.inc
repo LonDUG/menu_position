@@ -341,7 +341,7 @@ function menu_position_edit_rule_form($form, &$form_state, $rid = 0) {
     return;
   }
   // Grab the rule from the database.
-  $form_state['#menu-position-rule'] = db_query('SELECT * FROM {menu_position_rules} WHERE rid = :rid', array(':rid' => $rid))->fetchAssoc();
+  $form_state['#menu-position-rule'] = menu_position_read_rule($rid);
   $form_state['#menu-position-rule']['conditions'] = unserialize($form_state['#menu-position-rule']['conditions']);
   return menu_position_rule_form($form, $form_state);
 }
@@ -465,7 +465,7 @@ function menu_position_rule_form_submit($form, &$form_state) {
   list($menu_name, $plid) = explode(':', $form_state['values']['plid']);
   $rule = array(
     'admin_title' => $form_state['values']['admin_title'],
-    'conditions'  => serialize($form_state['values']['conditions']),
+    'conditions'  => isset($form_state['values']['conditions']) ? $form_state['values']['conditions'] : array(),
     'menu_name'   => $menu_name,
     'plid'        => $plid,
   );
@@ -486,11 +486,21 @@ function menu_position_rule_form_submit($form, &$form_state) {
 
 /**
  * Adds a menu position rule.
+ *
+ * @param $rule
+ *   An associate array defining the new rule to be created. Must contain the
+ *   following keys:
+ *   - admin_title: The administrative title of the rule.
+ *   - conditions: An associative array whose keys are the machine names of the
+ *     plugins actively configured in the rule. The value of each array element
+ *     is array containing the necessary variables for that plugin.
+ *   - menu_name: The machine name of the menu where this rule is positioned.
+ *   - plid: The mlid of the parent menu link specified in the rule.
  */
 function menu_position_add_rule($rule) {
   $fields = array(
     'admin_title' => $rule['admin_title'],
-    'conditions'  => $rule['conditions'],
+    'conditions'  => serialize($rule['conditions']),
     'menu_name'   => $rule['menu_name'],
     'plid'        => $rule['plid'],
   );
@@ -527,11 +537,22 @@ function menu_position_add_menu_link($rid, $plid, $admin_title) {
 
 /**
  * Edits a menu position rule.
+ *
+ * @param $rule
+ *   An associate array defining the rule to be edited. Must contain the
+ *   following keys:
+ *   - rid: The rule ID.
+ *   - admin_title: The administrative title of the rule.
+ *   - conditions: An associative array whose keys are the machine names of the
+ *     plugins actively configured in the rule. The value of each array element
+ *     is array containing the necessary variables for that plugin.
+ *   - menu_name: The machine name of the menu where this rule is positioned.
+ *   - plid: The mlid of the parent menu link specified in the rule.
  */
 function menu_position_edit_rule($rule) {
   $fields = array(
     'admin_title' => $rule['admin_title'],
-    'conditions'  => $rule['conditions'],
+    'conditions'  => serialize($rule['conditions']),
     'menu_name'   => $rule['menu_name'],
     'plid'        => $rule['plid'],
   );
