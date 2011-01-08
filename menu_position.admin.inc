@@ -536,6 +536,36 @@ function menu_position_add_menu_link($rid, $plid, $admin_title) {
 }
 
 /**
+ * Retrieves a menu position rule from the database.
+ *
+ * @param $rid
+ *   The ID of the requested rule.
+ * @return
+ *   An associative array for the requested rule.
+ */
+function menu_position_read_rule($rid) {
+  $rule = db_query('SELECT * FROM {menu_position_rules} WHERE rid = :rid', array(':rid' => $rid))->fetchAssoc();
+  $rule['conditions'] = unserialize($rule['conditions']);
+  return $rule;
+}
+
+/**
+ * Retrieves a menu position rule from the database.
+ *
+ * @return
+ *   An assiciative array for all rules with keys equal to the rid of each rule.
+ */
+function menu_position_read_rules() {
+  $query = db_query('SELECT * FROM {menu_position_rules} ORDER BY weight, rid');
+  $rules = array();
+  foreach ($query as $rule) {
+    $rule['conditions'] = unserialize($rule['conditions']);
+    $rules[$rule['rid']] = $rule;
+  }
+  return $rules;
+}
+
+/**
  * Edits a menu position rule.
  *
  * @param $rule
