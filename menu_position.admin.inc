@@ -342,7 +342,6 @@ function menu_position_edit_rule_form($form, &$form_state, $rid = 0) {
   }
   // Grab the rule from the database.
   $form_state['#menu-position-rule'] = menu_position_read_rule($rid);
-  $form_state['#menu-position-rule']['conditions'] = unserialize($form_state['#menu-position-rule']['conditions']);
   return menu_position_rule_form($form, $form_state);
 }
 
