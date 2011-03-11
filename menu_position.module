@@ -152,7 +152,7 @@ function menu_position_menu_position_rule_plugins() {
       'file' => 'plugins/menu_position.language.inc',
     );
   }
-	if (module_exists('taxonomy')) {
+  if (module_exists('taxonomy')) {
     $plugins['taxonomy'] = array(
       'file' => 'plugins/menu_position.taxonomy.inc',
     );

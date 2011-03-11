@@ -14,26 +14,26 @@
  *   TRUE if condition applies successfully. Otherwise FALSE.
  */
 function menu_position_menu_position_condition_taxonomy($variables) {
-	
+
   // Grab the variables stored statically in the rule.
   $vid = $variables['vid'];
   $tid = $variables['tid'];
 
   // $node is dynamically added and may not exist.
   $node = isset($variables['context']['node']) ? $variables['context']['node'] : NULL;
-	
-	// get the vocabulary machine_name to compare against field settings 
-	if(!$tid) {
-		$vocabulary = taxonomy_vocabulary_load($vid);
-		$machine_name = $vocabulary->machine_name;
-	}
-	
-	// build a list of each taxonomy reference field belonging to the bundle for the current node
+
+  // get the vocabulary machine_name to compare against field settings
+  if(!$tid) {
+    $vocabulary = taxonomy_vocabulary_load($vid);
+    $machine_name = $vocabulary->machine_name;
+  }
+
+  // build a list of each taxonomy reference field belonging to the bundle for the current node
   $fields = field_info_fields();
-  $instance_fields = field_info_instances('node', $node->type);
+  $instance_fields = isset($node) ? field_info_instances('node', $node->type) : array();
   $check_fields = array();
   foreach ($instance_fields as $key => $field_info) {
-    if ($fields[$key]['type'] == 'taxonomy_term_reference') {
+    if (isset($fields[$key]['type']) && $fields[$key]['type'] == 'taxonomy_term_reference') {
       $check_fields[] = $key;
     }
   }
@@ -41,27 +41,24 @@ function menu_position_menu_position_condition_taxonomy($variables) {
   if (!empty($check_fields)) {
     foreach ($check_fields as $field) {
       if (isset($node->{$field}[$node->language])) {
-				// check for matching terms
-				if($tid) {
-	        foreach ($node->{$field}[$node->language] as $term) {
-						if(in_array($term['tid'], $tid)) {
-							return TRUE;
-						}
-	        }
-				// check for any terms from a matching vocabulary
-				} else {
-					$vocabulary_name = $fields[$field]['settings']['allowed_values'][0]['vocabulary'];
-					if(!empty($node->{$field}[$node->language]) && $vocabulary_name == $machine_name) {
-						return TRUE;
-					}
-				}
+        // check for matching terms
+        if($tid) {
+          foreach ($node->{$field}[$node->language] as $term) {
+            if(in_array($term['tid'], $tid)) {
+              return TRUE;
+            }
+          }
+        // check for any terms from a matching vocabulary
+        } else {
+          $vocabulary_name = $fields[$field]['settings']['allowed_values'][0]['vocabulary'];
+          if(!empty($node->{$field}[$node->language]) && $vocabulary_name == $machine_name) {
+            return TRUE;
+          }
+        }
       }
     }
-		return FALSE;
-  } else {
-		return FALSE;
-	}
-
+  }
+  return FALSE;
 }
 
 /**
@@ -80,9 +77,9 @@ function menu_position_menu_position_rule_taxonomy_form(&$form, &$form_state) {
   // Load the taxonomy terms.
   if (!empty($variables['tid'])) {
     $vars = taxonomy_term_load_multiple($variables['tid']);
-		foreach($vars as $term) {
-			$terms[] = $term->name;
-		}
+    foreach($vars as $term) {
+      $terms[] = $term->name;
+    }
     $terms = implode(', ', $terms);
   }
   else {
@@ -94,7 +91,7 @@ function menu_position_menu_position_rule_taxonomy_form(&$form, &$form_state) {
     '#title' => t('Taxonomy'),
     '#collapsible' => TRUE,
     '#collapsed' => TRUE,
-		'#attributes' => array('id' => 'edit-taxonomy'),
+    '#attributes' => array('id' => 'edit-taxonomy'),
     '#attached' => array(
       'js' => array(drupal_get_path('module', 'menu_position') . '/plugins/menu_position.taxonomy.js'),
     ),
@@ -163,16 +160,16 @@ function menu_position_menu_position_rule_taxonomy_form(&$form, &$form_state) {
  */
 function menu_position_menu_position_rule_taxonomy_form_submit(&$form, &$form_state) {
   if (!empty($form_state['values']['term']) || $form_state['values']['vid'] != 0) {
-		$variables = array(
-			'vid' => $form_state['values']['vid'],
-		);
+    $variables = array(
+      'vid' => $form_state['values']['vid'],
+    );
     // Determine if a taxonomy term has been selected.
     if ($form_state['values']['term']) {
-			foreach($form_state['values']['term'] as $term) {
-				$variables['tid'][] = $term['tid'];
-			}
+      foreach($form_state['values']['term'] as $term) {
+        $variables['tid'][] = $term['tid'];
+      }
     }
-		$form_state['values']['conditions']['taxonomy'] = $variables;
+    $form_state['values']['conditions']['taxonomy'] = $variables;
   }
 }
 
