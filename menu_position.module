@@ -192,10 +192,6 @@ function menu_position_evaluate_rules($context = array()) {
   // Retrieve the list of menus the path is already in.
   $menu_names = db_query('SELECT menu_name FROM {menu_links} WHERE link_path = :path', array(':path' => $path))->fetchCol();
 
-  // Retrieve the main and secondary menu names.
-  $main_menu      = theme_get_setting('toggle_main_menu')      ? variable_get('menu_main_links_source', 'main-menu') : FALSE;
-  $secondary_menu = theme_get_setting('toggle_secondary_menu') ? variable_get('menu_secondary_links_source', 'user-menu') : FALSE;
-
   // Flag that we haven't set the breadcrumb yet.
   $breadcrumb_set = FALSE;
 
@@ -204,13 +200,6 @@ function menu_position_evaluate_rules($context = array()) {
     if (in_array($rule->menu_name, $menu_names)) {
       // If the page is already placed in the rule's menu, skip the rule.
       $rule_matches = FALSE;
-      if ($rule->menu_name == $main_menu) {
-        // Don't override the main menu links.
-        $main_menu = FALSE;
-      }
-      if ($rule->menu_name == $secondary_menu) {
-        $secondary_menu = FALSE;
-      }
       $breadcrumb_set = TRUE;
     }
     else {
@@ -259,42 +248,24 @@ function menu_position_evaluate_rules($context = array()) {
         continue;
       }
 
-      // Clone the original router item, but insert our menu_position path.
-      $router_item = $original_router_item;
-      $router_item['href'] = $menu_item['link_path'];
-      // Even if we are denied access to the page, we still want to show the
-      // navigational paths to the page.
-      $router_item['access'] = TRUE;
+      // Set the active path for the rule's menu.
+      menu_tree_set_path($rule->menu_name, $menu_item['link_path']);
 
       // Get the default preferred link and save it so that it can be used in
       // place of the rule's menu link when menu trees are rendered.
-      $preferred_link = $original_router_item;
-      menu_position_set_link($rule->rid, $preferred_link);
+      menu_position_set_link($rule->rid, menu_link_get_preferred());
 
       // Allow the rule's parent menu item to show "expanded" status.
       menu_position_expand_parent_link($rule->plid);
 
-      // Temporarily override the original router item.
-      menu_set_item(NULL, $router_item);
-
-      // Set the theme's secondary menu links if the rule matches the secondary menu.
-      if ($rule->menu_name == $secondary_menu) {
-        $menu_depth = ($secondary_menu == $main_menu) ? 2 : 1;
-        menu_position_precache_tree($router_item, $original_router_item, $menu_item['menu_name'], $menu_depth);
-        // Mark that we no longer need to set the secondary menu's tree.
-        $secondary_menu = FALSE;
-      }
-      // Set the theme's main menu links if the rule matches the main menu.
-      if ($rule->menu_name == $main_menu) {
-        menu_position_precache_tree($router_item, $original_router_item, $menu_item['menu_name'], 1);
-        // Mark that we no longer need to set the main menu's tree.
-        $main_menu = FALSE;
-      }
-      menu_position_precache_tree($router_item, $original_router_item, $menu_item['menu_name']);
-
       // Alter the active trail if breadcrumbs still need to be set.
       if (!$breadcrumb_set) {
-        // Remove any menu position rules from the trail.
+        // Manually set the preferred link for this path so that
+        // menu_get_active_trail() returns the proper trail.
+        $preferred_links = &drupal_static('menu_link_get_preferred');
+        $preferred_links[$_GET['q']] = menu_link_get_preferred($menu_item['link_path']);
+
+        // Remove the menu position router from the end of the trail.
         $active_trail = menu_set_active_trail();
         array_pop($active_trail);
         menu_set_active_trail($active_trail);
@@ -302,20 +273,8 @@ function menu_position_evaluate_rules($context = array()) {
         $breadcrumb_set = TRUE;
       }
 
-      // Restore the original router item.
-      menu_set_item(NULL, $original_router_item);
-
       // Don't let other rules match against this rule's menu.
       $menu_names[] = $rule->menu_name;
-    }
-  }
-
-  // Clean-up the menu tree cache.
-  $tree = &drupal_static('menu_tree_page_data', array());
-  foreach (array_keys($tree) as $key) {
-    if (strpos($key, ':page:menu-position/')) {
-      // To save memory, clean up the cache since we won't need this data again.
-      unset($tree[$key]);
     }
   }
 }
@@ -385,31 +344,6 @@ function menu_position_translated_menu_link_alter(&$item, &$map) {
   elseif ($item['mlid'] == menu_position_expand_parent_link()) {
     $item['has_children'] = 1;
   }
-}
-
-/**
- * Places a menu tree cache in place of the original router item's tree.
- */
-function menu_position_precache_tree($router_item, $original_router_item, $menu_name, $menu_depth = 0) {
-  // Copy the menu tree cache from our faked path to the original router's
-  // path. We iterate through 3 levels of menu_depth: 0 - full tree, 1 -
-  // primary links, 2 - secondary links.
-  $tree = &drupal_static('menu_tree_page_data', array());
-
-  // Create a menu tree using the menu_position path.
-  menu_tree_page_data($menu_name, $menu_depth ? $menu_depth : NULL);
-
-  // Get the cache for the tree we just generated.
-  $router_item_cid = 'links:' . $menu_name . ':page:' . $router_item['href'] . ':' . $GLOBALS['language']->language . ':' . (int) $router_item['access'] . ':' . (int) $menu_depth;
-  $cache = cache_get($router_item_cid, 'cache_menu');
-  $tree_cid = $cache->data;
-
-  // Copy the cache to the tree that contains the original router item.
-  $original_router_item_cid = 'links:' . $menu_name . ':page:' . $original_router_item['href'] . ':' . $GLOBALS['language']->language . ':' . (int) $original_router_item['access'] . ':' . $menu_depth;
-  cache_set($original_router_item_cid, $tree_cid, 'cache_menu');
-
-  // Ensure menu_tree_page_data's static cache is up-to-date as well.
-  $tree[$original_router_item_cid] = $tree[$router_item_cid];
 }
 
 /**
