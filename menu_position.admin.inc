@@ -136,7 +136,7 @@ function menu_position_rules_form($form, &$form_state) {
   // We're re-using classes from the menu module.
   $form['#attached']['css'] = array(drupal_get_path('module', 'menu') . '/menu.css');
 
-  $rules = db_query('SELECT rid, admin_title, menu_name, enabled, weight FROM {menu_position_rules} ORDER BY weight, rid');
+  $rules = db_query('SELECT rid, admin_title, plid, menu_name, enabled, weight FROM {menu_position_rules} ORDER BY weight, rid');
   $delta = $rules->rowCount();
 
   $menus = menu_get_menus();
@@ -153,9 +153,10 @@ function menu_position_rules_form($form, &$form_state) {
       '#theme' => 'menu_position_rules_order',
     );
     foreach ($rules as $rule) {
+      $menu_link = menu_link_load($rule->plid);
       $form['rules'][$rule->rid] = array(
         'title' => array(
-          '#markup' => check_plain($rule->admin_title),
+          '#markup' => '<strong>' . check_plain($rule->admin_title) . '</strong> (' . t('Positioned under: %title', array('%title' => check_plain($menu_link['title']))) . ')',
         ),
         'menu_name' => array(
           '#markup' => check_plain($menus[$rule->menu_name]),
