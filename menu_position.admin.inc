@@ -317,16 +317,6 @@ function menu_position_rule_form($form, &$form_state) {
     '#description' => t('This title will be used administratively to identify this rule.'),
     '#required' => TRUE,
   );
-  // Place holder for all condition plug-ins.
-  // Visibility settings.
-  $form['conditions_title'] = array(
-    '#type' => 'item',
-    '#title' => t('Conditions'),
-  );
-  $form['conditions'] = array(
-    '#type' => 'vertical_tabs',
-  );
-
   // Parent menu item.
   if ($mlid) {
     $options = menu_parent_options(menu_get_menus(), menu_link_load($mlid));
@@ -338,10 +328,22 @@ function menu_position_rule_form($form, &$form_state) {
   }
   $form['plid'] = array(
     '#type' => 'select',
-    '#title' => t('Menu item'),
+    '#title' => t('Parent menu item'),
     '#required' => TRUE,
     '#options' => $options,
     '#default_value' => $default,
+    '#description' => t('Select the place in the menu where the rule should position its menu links.'),
+  );
+
+  // Place holder for all condition plug-ins.
+  // Visibility settings.
+  $form['conditions_title'] = array(
+    '#type' => 'item',
+    '#title' => t('Conditions'),
+    '#description' => t('All the conditions must be met before a rule is applied.'),
+  );
+  $form['conditions'] = array(
+    '#type' => 'vertical_tabs',
   );
 
   if ($rid) {
