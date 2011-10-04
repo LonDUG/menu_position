@@ -5,56 +5,6 @@
  */
 
 /**
- * Implements hook_menu().
- */
-function _menu_position_menu() {
-  $items['admin/structure/menu-position'] = array(
-    'title' => 'Menu position rules',
-    'description' => 'Configure rules for menu positions.',
-    'access arguments' => array('administer menu positions'),
-    'page callback' => 'menu_position_rules_form_callback',
-    'type' => MENU_NORMAL_ITEM,
-    'file' => 'menu_position.admin.inc',
-  );
-  $items['admin/structure/menu-position/add'] = array(
-    'title' => 'Add menu position rule',
-    'description' => 'Add a new menu position rule.',
-    'access arguments' => array('administer menu positions'),
-    'page callback' => 'drupal_get_form',
-    'page arguments' => array('menu_position_add_rule_form'),
-    'type' => MENU_LOCAL_ACTION,
-    'file' => 'menu_position.admin.inc',
-  );
-  $items['admin/structure/menu-position/edit'] = array(
-    'title' => 'Edit menu position rule',
-    'description' => 'Edit a menu position rule.',
-    'access arguments' => array('administer menu positions'),
-    'page callback' => 'drupal_get_form',
-    'page arguments' => array('menu_position_edit_rule_form'),
-    'type' => MENU_CALLBACK,
-    'file' => 'menu_position.admin.inc',
-  );
-  $items['admin/structure/menu-position/delete'] = array(
-    'title' => 'Delete menu position rule',
-    'description' => 'Delete a menu position rule.',
-    'access arguments' => array('administer menu positions'),
-    'page callback' => 'drupal_get_form',
-    'page arguments' => array('menu_position_delete_rule_form'),
-    'type' => MENU_CALLBACK,
-    'file' => 'menu_position.admin.inc',
-  );
-  $items['menu-position'] = array(
-    'title' => 'Menu position router',
-    'description' => 'Sets access to all menu position links.',
-    'access arguments' => array('access content'),
-    'page callback' => 'menu_position_router',
-    'type' => MENU_CALLBACK,
-    'file' => 'menu_position.admin.inc',
-  );
-  return $items;
-}
-
-/**
  * Routes menu_position links to homepage; normally overridden.
  */
 function menu_position_router() {
