@@ -212,6 +212,12 @@ function menu_position_evaluate_rules($context = array()) {
     // We've found a matching rule.
     if ($rule_matches) {
 
+      // Reset the menu trail that views may have set.
+      if ($original_router_item['page_callback'] == 'views_page') {
+        $preferred = &drupal_static('menu_link_get_preferred');
+        unset($preferred[$path]);
+      }
+
       // Retrieve menu item specified in the rule.
       $menu_item = menu_link_load($rule->mlid);
       // Clone the original router item, but insert our menu_position path.
