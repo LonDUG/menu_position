@@ -245,14 +245,20 @@ function menu_position_evaluate_rules($context = array()) {
       }
       menu_position_precache_tree($router_item, $original_router_item, $menu_item['menu_name']);
 
-      // Use our fake router item to influence the active trail.
+      // Alter the active trail if breadcrumbs still need to be set.
       if (!$breadcrumb_set) {
-        // Retrieve the fake active trail.
+        // Remove any menu position rules from the trail.
         $active_trail = menu_set_active_trail();
-        // Replace the menu_position item with the original menu item.
-        array_pop($active_trail);
+        foreach (array_keys($active_trail) as $key) {
+          if (isset($active_trail[$key]['router_path']) && $active_trail[$key]['router_path'] == 'menu-position/%') {
+            unset($active_trail[$key]);
+          }
+        }
+
+        // Add the default preferred link to the end of the trail.
         $active_trail[] = $original_router_item;
         menu_set_active_trail($active_trail);
+
         $breadcrumb_set = TRUE;
       }
 
