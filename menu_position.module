@@ -153,6 +153,15 @@ function menu_position_menu_link_update($link) {
 function menu_position_evaluate_rules($context = array()) {
   $path = $context['path'];
 
+  // Retrieve the original router item.
+  $original_router_item = menu_get_item();
+
+  // Sanity check: if there is no existing menu item, Drupal won't display any
+  // navigation menus anyway and will error out when we try methods below.
+  if ($original_router_item === FALSE) {
+    return;
+  }
+
   // Retrieve the rules from the database. For speed, we don't call
   // menu_position_read_rules() and unserialize the conditions only if needed.
   $rules = db_query('SELECT * FROM {menu_position_rules} WHERE enabled = :enabled ORDER BY weight, rid', array(':enabled' => 1));
@@ -163,9 +172,6 @@ function menu_position_evaluate_rules($context = array()) {
   // Retrieve the main and secondary menu names.
   $main_menu      = theme_get_setting('toggle_main_menu')      ? variable_get('menu_main_links_source', 'main-menu') : FALSE;
   $secondary_menu = theme_get_setting('toggle_secondary_menu') ? variable_get('menu_secondary_links_source', 'user-menu') : FALSE;
-
-  // Retrieve the original router item.
-  $original_router_item = menu_get_item();
 
   // Flag that we haven't set the breadcrumb yet.
   $breadcrumb_set = FALSE;
