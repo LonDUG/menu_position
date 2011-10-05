@@ -15,10 +15,7 @@
  */
 function menu_position_menu_position_condition_language($variables) {
   // Grab the variables stored statically in the rule.
-  if ($variables['language'] == $GLOBALS['language']->language) {
-    return TRUE;
-  }
-  return FALSE;
+  return ($variables['language'] == $GLOBALS['language']->language) ? TRUE : FALSE;
 }
 
 /**
@@ -46,9 +43,9 @@ function menu_position_menu_position_rule_language_form(&$form, &$form_state) {
   $form['conditions']['language']['language'] = array(
     '#type' => 'select',
     '#title' => t('Language'),
-    '#options' => module_exists('locale') ? locale_language_list() : array(),
+    '#options' => array('' => t('Any language')) + locale_language_list(),
     '#default_value' => !empty($variables['language']) ? $variables['language'] : '',
-    '#description' => t("The menu will only be repositioned when the language matches the current language."),
+    '#description' => t("Apply this rule only when the language matches the current page's language."),
     '#weight' => -20,
   );
 
@@ -65,7 +62,8 @@ function menu_position_menu_position_rule_language_form(&$form, &$form_state) {
  *   A reference to the current form state, including submitted values.
  */
 function menu_position_menu_position_rule_language_form_submit(&$form, &$form_state) {
-  // The user has added our plugin's form elements as a condition for the rule.
+  // Check if the user has added our plugin's form elements as a condition for
+  // the rule.
   if (!empty($form_state['values']['language'])) {
     // Add this plugin's variables to the rule.
     $variables = array(

@@ -98,17 +98,20 @@ function menu_position_theme() {
  * Implements hook_menu_position_rule_plugins().
  */
 function menu_position_menu_position_rule_plugins() {
-  return array(
+  $plugins = array(
     'content_type' => array(
       'file' => 'plugins/menu_position.content_type.inc',
     ),
     'pages' => array(
       'file' => 'plugins/menu_position.pages.inc',
     ),
-    'language' => array(
-      'file' => 'plugins/menu_position.language.inc',
-    ),
   );
+  if (module_exists('locale')) {
+    $plugins['language'] = array(
+      'file' => 'plugins/menu_position.language.inc',
+    );
+  }
+  return $plugins;
 }
 
 /**
