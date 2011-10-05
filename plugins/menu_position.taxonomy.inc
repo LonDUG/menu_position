@@ -22,13 +22,14 @@ function menu_position_menu_position_condition_taxonomy($variables) {
   // $node is dynamically added and may not exist.
   $node = isset($variables['context']['node']) ? $variables['context']['node'] : NULL;
 
-  // get the vocabulary machine_name to compare against field settings
-  if(!$tid) {
+  // Get the vocabulary machine_name to compare against field settings.
+  if (!$tid) {
     $vocabulary = taxonomy_vocabulary_load($vid);
     $machine_name = $vocabulary->machine_name;
   }
 
-  // build a list of each taxonomy reference field belonging to the bundle for the current node
+  // Build a list of each taxonomy reference field belonging to the bundle for
+  // the current node.
   $fields = field_info_fields();
   $instance_fields = isset($node) ? field_info_instances('node', $node->type) : array();
   $check_fields = array();
@@ -41,17 +42,18 @@ function menu_position_menu_position_condition_taxonomy($variables) {
   if (!empty($check_fields)) {
     foreach ($check_fields as $field) {
       if (isset($node->{$field}[$node->language])) {
-        // check for matching terms
-        if($tid) {
+        // Check for matching terms.
+        if ($tid) {
           foreach ($node->{$field}[$node->language] as $term) {
-            if(in_array($term['tid'], $tid)) {
+            if (in_array($term['tid'], $tid)) {
               return TRUE;
             }
           }
-        // check for any terms from a matching vocabulary
-        } else {
+        }
+        // Check for any terms from a matching vocabulary.
+        else {
           $vocabulary_name = $fields[$field]['settings']['allowed_values'][0]['vocabulary'];
-          if(!empty($node->{$field}[$node->language]) && $vocabulary_name == $machine_name) {
+          if (!empty($node->{$field}[$node->language]) && $vocabulary_name == $machine_name) {
             return TRUE;
           }
         }
