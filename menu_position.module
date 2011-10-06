@@ -274,7 +274,9 @@ function menu_position_evaluate_rules($context = array()) {
         }
 
         // Add the default preferred link to the end of the trail.
-        $active_trail[] = $original_router_item;
+        if (isset($original_router_item['localized_options'])) {
+          $active_trail[] = $original_router_item;
+        }
         menu_set_active_trail($active_trail);
 
         $breadcrumb_set = TRUE;
