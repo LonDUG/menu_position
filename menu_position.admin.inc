@@ -33,7 +33,12 @@ function _menu_position_form_menu_overview_form_alter(&$form, &$form_state) {
 }
 
 /**
- * Implements hook_form_FORM_ID_alter().
+ * Implements hook_form_menu_edit_item_alter().
+ *
+ * This handles the edge case of another module accidentally exposing (or of a
+ * user hacking the URL to) the standard "menu link edit" form for a menu
+ * position rule's hidden menu link. We alter the form so that it is not posible
+ * for the link to be edited.
  */
 function _menu_position_form_menu_edit_item_alter(&$form, &$form_state) {
   // Retrieve all of the rules' mlids.
@@ -347,22 +352,16 @@ function menu_position_rule_form($form, &$form_state) {
     '#type' => 'vertical_tabs',
   );
 
+  $form['submit'] = array(
+    '#type' => 'submit',
+    '#value' => t('Save'),
+  );
   if ($rid) {
     $form['delete'] = array(
       '#type' => 'submit',
       '#value' => t('Delete'),
     );
   }
-  else {
-    $form['cancel'] = array(
-      '#type' => 'submit',
-      '#value' => t('Cancel'),
-    );
-  }
-  $form['submit'] = array(
-    '#type' => 'submit',
-    '#value' => t('Save'),
-  );
 
   // Add conditions.
   foreach (menu_position_get_plugins() as $plugin) {
@@ -393,11 +392,6 @@ function menu_position_rule_form($form, &$form_state) {
  * Validates the form for menu_position_rule_form().
  */
 function menu_position_rule_form_validate($form, &$form_state) {
-  // Check if the user cancelled the form.
-  if (!empty($form['cancel']) && $form_state['values']['op'] == $form['cancel']['#value']) {
-    drupal_goto('admin/structure/menu-position');
-    return;
-  }
   // Check if the user deleted the rule.
   if (!empty($form['delete']) && $form_state['values']['op'] == $form['delete']['#value']) {
     drupal_goto('admin/structure/menu-position/delete/' . $form_state['values']['rid']);
@@ -505,7 +499,7 @@ function menu_position_read_rule($rid) {
  * Retrieves a menu position rule from the database.
  *
  * @return
- *   An assiciative array for all rules with keys equal to the rid of each rule.
+ *   An associative array for all rules with keys equal to the rid of each rule.
  */
 function menu_position_read_rules() {
   $query = db_query('SELECT * FROM {menu_position_rules} ORDER BY weight, rid');
