@@ -232,6 +232,12 @@ function menu_position_evaluate_rules($context = array()) {
 
       // Retrieve menu item specified in the rule.
       $menu_item = menu_link_load($rule->mlid);
+
+      // Sanity check: if the menu link doesn't exist abort processing the rule.
+      if (!$menu_item) {
+        continue;
+      }
+
       // Clone the original router item, but insert our menu_position path.
       $router_item = $original_router_item;
       $router_item['href'] = $menu_item['link_path'];
