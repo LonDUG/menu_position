@@ -5,6 +5,16 @@
  */
 
 /**
+ * Implements hook_panels_pane_content_alter().
+ *
+ * Panels are rendered before hook_page_delivery_callback_alter() is called, so
+ * for Panels pages, we evaluate our rules here instead.
+ */
+function menu_position_panels_pre_render($display) {
+  menu_position_page_delivery_callback_alter();
+}
+
+/**
  * Implements hook_page_delivery_callback_alter().
  *
  * This is the only hook that occurs after the page callback, but before
@@ -12,6 +22,13 @@
  * timing, not its data.
  */
 function menu_position_page_delivery_callback_alter() {
+  // Don't evaluate the rules twice.
+  $evaluated = &drupal_static(__FUNCTION__, FALSE);
+  if ($evaluated) {
+    return;
+  }
+  $evaluated = TRUE;
+
   $context = array();
   $context['path'] = $_GET['q'];
   if (arg(0) == 'node' && is_numeric(arg(1))) {
