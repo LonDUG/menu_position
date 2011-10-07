@@ -86,7 +86,7 @@ function menu_position_update_7100() {
 function menu_position_enable() {
   $rules = db_query('SELECT rid, plid, admin_title FROM {menu_position_rules} WHERE enabled = :enabled', array(':enabled' => 1));
   if ($rules->rowCount()) {
-    drupal_set_message(t('Existing menu position rules were discovered. To ensure they continue to work, visit the <a href="!url">menu position rules admin page</a>.', array('!url' => url('admin/structure/menu-position'))), 'error');
+    drupal_set_message(t('Existing menu position rules were discovered. They will be disabled until you visit the <a href="!url">menu position rules admin page</a>.', array('!url' => url('admin/structure/menu-position'))), 'error');
   }
   foreach ($rules as $rule) {
     // If we were to attempt menu_position_add_menu_link() here it would fail
