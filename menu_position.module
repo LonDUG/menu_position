@@ -238,6 +238,10 @@ function menu_position_evaluate_rules($context = array()) {
         }
       }
     }
+
+    // Let other modules manipulate the rule.
+    drupal_alter('menu_position_rule', $rule, $context, $rule_matches, $breadcrumb_set);
+
     // We've found a matching rule.
     if ($rule_matches) {
 

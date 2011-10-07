@@ -10,6 +10,25 @@
  */
 
 /**
+ * Allow a rule to be altered after it is evaluated but before action is taken.
+ *
+ * @param $rule
+ *   The rule that was just evaulated.
+ * @param $context
+ *   A small context variable used by the menu_position module.
+ * @param $rule_matches
+ *   Whether we have a matching rule or not.
+ * @param $breadcrumb_set
+ *   Whether the breadcrumb is set or not.
+ */
+function hook_menu_position_rule_alter(&$rule, &$context, &$rule_matches, &$breadcrumb_set) {
+  // Disable the rule if we're looking at a node with a certain id.
+  if ($context['node']->nid == 119) {
+    $rule_matches = FALSE;
+  }
+}
+
+/**
  * Registers rule plugins with menu_position module.
  *
  * Modules implementing menu position rule plugins should return an associative
