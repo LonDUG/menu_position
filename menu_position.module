@@ -266,6 +266,11 @@ function menu_position_evaluate_rules($context = array()) {
       // navigational paths to the page.
       $router_item['access'] = TRUE;
 
+      // Get the default preferred link and save it so that it can be used in
+      // place of the rule's menu link when menu trees are rendered.
+      $preferred_link = $original_router_item;
+      menu_position_set_link($rule->rid, $preferred_link);
+
       // Temporarily override the original router item.
       menu_set_item(NULL, $router_item);
 
@@ -288,16 +293,7 @@ function menu_position_evaluate_rules($context = array()) {
       if (!$breadcrumb_set) {
         // Remove any menu position rules from the trail.
         $active_trail = menu_set_active_trail();
-        foreach (array_keys($active_trail) as $key) {
-          if (isset($active_trail[$key]['router_path']) && $active_trail[$key]['router_path'] == 'menu-position/%') {
-            unset($active_trail[$key]);
-          }
-        }
-
-        // Add the default preferred link to the end of the trail.
-        if (isset($original_router_item['localized_options'])) {
-          $active_trail[] = $original_router_item;
-        }
+        array_pop($active_trail);
         menu_set_active_trail($active_trail);
 
         $breadcrumb_set = TRUE;
@@ -317,6 +313,55 @@ function menu_position_evaluate_rules($context = array()) {
     if (strpos($key, ':page:menu-position/')) {
       // To save memory, clean up the cache since we won't need this data again.
       unset($tree[$key]);
+    }
+  }
+}
+
+/**
+ * Dynamically sets the menu item for a specified rule.
+ *
+ * @param $rid
+ *   The rule ID.
+ * @param $link
+ *   The menu item that should be used for the rule.
+ */
+function menu_position_set_link($rid, $link) {
+  menu_position_get_link('menu-position/' . $rid, $link);
+}
+
+/**
+ * Returns the dynamically set menu item for a specified rule.
+ *
+ * @param $path
+ *   The path of the requested rule, e.g. menu-position/10.
+ * @return
+ *   The title that should be used for the rule's menu item.
+ */
+function menu_position_get_link($path, $link = NULL) {
+  $links = &drupal_static(__FUNCTION__, array());
+
+  // If a link is given, save it for later retrieval.
+  if ($link) {
+    $links[$path] = $link;
+  }
+  return isset($links[$path]) ? $links[$path] : NULL;
+}
+
+/**
+ * Implements hook_translated_menu_link().
+ *
+ * All of the menu items of menu position rules have their "alter" option set
+ * which allows them to be altered with this hook. We "translate" the menu item
+ * to have the proper URL and title for the current page.
+ */
+function menu_position_translated_menu_link_alter(&$item, &$map) {
+  if ($item['module'] == 'menu_position') {
+    $menu_item = menu_position_get_link($item['link_path']);
+    // We only alter the link after its replacement has been set.
+    if (!empty($menu_item['title'])) {
+      $item['title'] = $menu_item['title'];
+      $item['href'] = $menu_item['href'];
+      $item['hidden'] = 0;
     }
   }
 }
