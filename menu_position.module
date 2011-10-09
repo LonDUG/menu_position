@@ -202,7 +202,7 @@ function menu_position_evaluate_rules($context = array()) {
   // Examine each rule and check its conditions.
   foreach ($rules as $rule) {
     if (in_array($rule->menu_name, $menu_names)) {
-      // If the node is already placed in the rule's menu, skip the rule.
+      // If the page is already placed in the rule's menu, skip the rule.
       $rule_matches = FALSE;
       if ($rule->menu_name == $main_menu) {
         // Don't override the main menu links.
