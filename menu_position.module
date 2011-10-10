@@ -271,6 +271,9 @@ function menu_position_evaluate_rules($context = array()) {
       $preferred_link = $original_router_item;
       menu_position_set_link($rule->rid, $preferred_link);
 
+      // Allow the rule's parent menu item to show "expanded" status.
+      menu_position_expand_parent_link($rule->plid);
+
       // Temporarily override the original router item.
       menu_set_item(NULL, $router_item);
 
@@ -315,6 +318,21 @@ function menu_position_evaluate_rules($context = array()) {
       unset($tree[$key]);
     }
   }
+}
+
+/**
+ * Dynamically expands the parent menu item for a rule.
+ *
+ * @param $plid
+ *   The parent menu item's mlid.
+ */
+function menu_position_expand_parent_link($plid = NULL) {
+  $link_id = &drupal_static(__FUNCTION__, NULL);
+
+  if (isset($plid)) {
+    $link_id = $plid;
+  }
+  return $link_id;
 }
 
 /**
@@ -363,6 +381,9 @@ function menu_position_translated_menu_link_alter(&$item, &$map) {
       $item['href'] = $menu_item['href'];
       $item['hidden'] = 0;
     }
+  }
+  elseif ($item['mlid'] == menu_position_expand_parent_link()) {
+    $item['has_children'] = 1;
   }
 }
 

@@ -77,6 +77,20 @@ function menu_position_update_7100() {
 }
 
 /**
+ * Allow parent menu item's to show "expanded" status.
+ */
+function menu_position_update_7101() {
+  $rules = db_query('SELECT plid, mlid FROM {menu_position_rules} WHERE enabled = :enabled', array(':enabled' => 1));
+  foreach ($rules as $rule) {
+    if ($rule->mlid) {
+      $parent = menu_link_load($rule->plid);
+      $parent['options']['alter'] = TRUE;
+      menu_link_save($parent, $parent);
+    }
+  }
+}
+
+/**
  * Implements hook_enable().
  *
  * When the module is disabled, the menu links it owns are deleted. When
