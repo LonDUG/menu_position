@@ -33,6 +33,7 @@ function menu_position_schema() {
       'conditions' => array(
         'description' => 'The serialized conditions for this rule.',
         'type' => 'text',
+        'serialize' => TRUE,
       ),
       'menu_name' => array(
         'description' => 'The menu of the menu link for this rule.',
