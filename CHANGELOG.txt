@@ -1,5 +1,19 @@
-Menu Position 7.x-1.x-dev, xxxx-xx-xx (development release)
--------------------------------------
+Menu Position 7.x-1.0-beta3, 2011-10-10
+---------------------------------------
+- #1266816: Parent menu link of rule shows wrong expand/leaf icon
+- #1019342: Add current page's menu link at the end of the active trail
+- #1217484 by swentel and JohnAlbin: Let other modules alter the rule
+- #1248040 by inolen, Davidovich and JohnAlbin: Panels content isn't affected by menu position rules
+- #1295822 by JohnAlbin and vectoroc: Fatal error on custom 403 pages
+- #1116938 by akalata and JohnAlbin: button order is inconsistent with menu link edit form
+- #1070430 by Stalski: Add multi-language plugin
+- #1177606 by JohnAlbin and timmillwood: fatal error on 404 pages with an active menu position rule
+- #1152932 by JohnAlbin, Wolfgang Reszel, nowarninglabel, jhedstrom and aasarava: Strange "menu position rule" link added to breadcrumb
+- #1280986 by JohnAlbin and davereid: Show the parent menu link title for each rule on the admin form
+- #1163868 by mstrelan: Menu position doesn't get set for Views with contextual filters
+- #1117452: Not clear if conditions are ORed or ANDed
+- #1298832: Add proper page arguments to the router menu item
+- #1244130 by davereid and JohnAlbin: Menu items are untranslatable
 - #1071190: Warning: unserialize() expects parameter 1 to be string
 - #1001538: Provide/better document CRUD functions for menu position rule sets
 - #1000980: Editing rule causes corresponding menu link's weight to reset
