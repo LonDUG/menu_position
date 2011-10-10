@@ -61,8 +61,8 @@ function _menu_position_form_menu_overview_form_alter(&$form, &$form_state) {
  */
 function _menu_position_form_menu_edit_item_alter(&$form, &$form_state) {
   // Retrieve all of the rules' mlids.
-  $result = db_query('SELECT mlid FROM {menu_position_rules} WHERE mlid = :mlid ORDER BY weight, rid', array(':mlid' => (int) $form['mlid']['#value']));
-  if ($result->rowCount()) {
+  $mlids = db_query('SELECT mlid FROM {menu_position_rules} WHERE mlid = :mlid ORDER BY weight, rid', array(':mlid' => (int) $form['mlid']['#value']))->fetchAll();
+  if (!empty($mlids)) {
     // If the form hasn't been submitted, display a warning.
     if (empty($form_state['input'])) {
       drupal_set_message(t('This menu item cannot be edited.'), 'warning');
@@ -128,8 +128,8 @@ function menu_position_edit_item_submit($form, &$form_state) {
  */
 function menu_position_enable_helper() {
   // Find rules with zero-value menu links.
-  $rules = db_query('SELECT rid, plid, admin_title FROM {menu_position_rules} WHERE enabled = :enabled AND mlid = :mlid', array(':enabled' => 1, ':mlid' => 0));
-  if ($rules->rowCount()) {
+  $rules = db_query('SELECT rid, plid, admin_title FROM {menu_position_rules} WHERE enabled = :enabled AND mlid = :mlid', array(':enabled' => 1, ':mlid' => 0))->fetchAll();
+  if (!empty($rules)) {
     drupal_set_message(t('Existing menu position rules were discovered and have now been re-configured so they will continue to work.'));
   }
   foreach ($rules as $rule) {
@@ -160,8 +160,8 @@ function menu_position_rules_form($form, &$form_state) {
   // We're re-using classes from the menu module.
   $form['#attached']['css'] = array(drupal_get_path('module', 'menu') . '/menu.css');
 
-  $rules = db_query('SELECT rid, admin_title, plid, menu_name, enabled, weight FROM {menu_position_rules} ORDER BY weight, rid');
-  $delta = $rules->rowCount();
+  $rules = db_query('SELECT rid, admin_title, plid, menu_name, enabled, weight FROM {menu_position_rules} ORDER BY weight, rid')->fetchAll();
+  $delta = count($rules);
 
   $menus = menu_get_menus();
 
