@@ -78,16 +78,26 @@ function menu_position_update_7100() {
 }
 
 /**
- * Allow parent menu item's to show "expanded" status.
+ * Fix all menu position rules.
  */
-function menu_position_update_7101() {
-  $rules = db_query('SELECT plid, mlid FROM {menu_position_rules} WHERE enabled = :enabled', array(':enabled' => 1));
+function menu_position_update_7102() {
+  // Issue #1298832 did not include a proper upgrade path for existing rules'
+  // menu links which broke all the rules. So we first delete all the menu links.
+  db_query('DELETE FROM {menu_links} WHERE module = :module', array(':module' => 'menu_position'));
+  // And then let menu_position_enable_helper() fix all the rules.
+  $rules = db_query('SELECT rid, plid, admin_title FROM {menu_position_rules} WHERE enabled = :enabled', array(':enabled' => 1));
   foreach ($rules as $rule) {
-    if ($rule->mlid) {
-      $parent = menu_link_load($rule->plid);
-      $parent['options']['alter'] = TRUE;
-      menu_link_save($parent, $parent);
-    }
+    // If we were to attempt menu_position_add_menu_link() here it would fail
+    // because the module's new router item isn't in the system yet. Instead we
+    // flag the rule with a zero-value mlid and fix it in
+    // menu_position_rules_form_callback().
+    db_update('menu_position_rules')
+      ->fields(array('mlid' => 0))
+      ->condition('rid', $rule->rid)
+      ->execute();
+  }
+  if ($rules->rowCount()) {
+    return t('Due to a bug in Menu position 7.x-1.0-beta3, all menu position rules need to be fixed. All rules will be disabled until you visit the <a href="!url">menu position rules admin page</a>.', array('!url' => url('admin/structure/menu-position')));
   }
 }
 

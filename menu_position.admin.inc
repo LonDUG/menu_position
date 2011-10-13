@@ -582,7 +582,7 @@ function menu_position_edit_menu_link($rid, $mlid, $plid, $admin_title) {
     }
   }
   // Update the new parent.
-  $parent = menu_link_load($existing_item['plid']);
+  $parent = menu_link_load($item['plid']);
   $parent['options']['alter'] = TRUE;
   menu_link_save($parent, $parent);
   return menu_link_save($item);
