@@ -1,6 +1,8 @@
-Menu Position 7.x-1.x-dev, xxxx-xx-xx (development release)
--------------------------------------
--
+Menu Position 7.x-1.0-beta4, 2011-10-14
+---------------------------------------
+- #1266816: PHP warning about unserialize during update to beta3
+- #1305546 by JohnAlbin and ewills: All rules are broken after upgrade to 7.x-1.0-beta3
+- Add serialize flag to conditions column
 
 Menu Position 7.x-1.0-beta3, 2011-10-10
 ---------------------------------------
