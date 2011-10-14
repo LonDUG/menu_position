@@ -3,9 +3,9 @@
 /**
  * Provide the summary information for the lolspeak plugin's vertical tab.
  */
-Drupal.behaviors.menuPositionLolSpeakSettingsSummary = {
+Drupal.behaviors.menuPositionPLUGINSettingsSummary = {
   attach: function (context) {
-    $('fieldset#edit-content-type', context).drupalSetSummary(function (context) {
+    $('fieldset#edit-PLUGIN', context).drupalSetSummary(function (context) {
       var vals = [];
       $('input[type="checkbox"]:checked', context).each(function () {
         vals.push($.trim($(this).next('label').text()));
