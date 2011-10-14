@@ -36,7 +36,6 @@ function menu_position_menu_position_rule_content_type_form(&$form, &$form_state
     '#title' => t('Content types'),
     '#collapsible' => TRUE,
     '#collapsed' => TRUE,
-		'#attributes' => array('id' => 'edit-content-type'),
     '#attached' => array(
       'js' => array(drupal_get_path('module', 'menu_position') . '/plugins/menu_position.content_type.js'),
     ),

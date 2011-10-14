@@ -46,7 +46,6 @@ function menu_position_menu_position_rule_pages_form(&$form, &$form_state) {
     '#title' => t('Pages'),
     '#collapsible' => TRUE,
     '#collapsed' => TRUE,
-		'#attributes' => array('id' => 'edit-pages'),
     '#attached' => array(
       'js' => array(drupal_get_path('module', 'menu_position') . '/plugins/menu_position.pages.js'),
     ),

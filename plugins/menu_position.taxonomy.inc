@@ -14,7 +14,6 @@
  *   TRUE if condition applies successfully. Otherwise FALSE.
  */
 function menu_position_menu_position_condition_taxonomy($variables) {
-
   // Grab the variables stored statically in the rule.
   $vid = $variables['vid'];
   $tid = $variables['tid'];
@@ -78,8 +77,8 @@ function menu_position_menu_position_rule_taxonomy_form(&$form, &$form_state) {
 
   // Load the taxonomy terms.
   if (!empty($variables['tid'])) {
-    $vars = taxonomy_term_load_multiple($variables['tid']);
-    foreach($vars as $term) {
+    $terms = array();
+    foreach (taxonomy_term_load_multiple($variables['tid']) as $term) {
       $terms[] = $term->name;
     }
     $terms = implode(', ', $terms);
@@ -93,7 +92,6 @@ function menu_position_menu_position_rule_taxonomy_form(&$form, &$form_state) {
     '#title' => t('Taxonomy'),
     '#collapsible' => TRUE,
     '#collapsed' => TRUE,
-    '#attributes' => array('id' => 'edit-taxonomy'),
     '#attached' => array(
       'js' => array(drupal_get_path('module', 'menu_position') . '/plugins/menu_position.taxonomy.js'),
     ),
