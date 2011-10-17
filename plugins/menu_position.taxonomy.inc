@@ -162,6 +162,7 @@ function menu_position_menu_position_rule_taxonomy_form_submit(&$form, &$form_st
   if (!empty($form_state['values']['term']) || $form_state['values']['vid'] != 0) {
     $variables = array(
       'vid' => $form_state['values']['vid'],
+      'tid' => array(),
     );
     // Determine if a taxonomy term has been selected.
     if ($form_state['values']['term']) {
