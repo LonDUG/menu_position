@@ -26,12 +26,6 @@ function menu_position_menu_position_condition_taxonomy($variables) {
     $bundle_name = $variables['context']['bundle_name'];
     $entity = $variables['context'][$entity_type];
 
-    // Get the vocabulary machine_name to compare against field settings.
-    if (!$tid) {
-      $vocabulary = taxonomy_vocabulary_load($vid);
-      $machine_name = $vocabulary->machine_name;
-    }
-
     // Build a list of each taxonomy reference fields.
     $fields = field_info_fields();
     $taxonomy_fields = array();
@@ -42,9 +36,9 @@ function menu_position_menu_position_condition_taxonomy($variables) {
     }
 
     foreach ($taxonomy_fields as $field) {
-      if (isset($entity->{$field}[$entity->language])) {
+      if (!empty($entity->{$field}[$entity->language])) {
         // Check for matching terms.
-        if ($tid) {
+        if (!empty($tid)) {
           foreach ($entity->{$field}[$entity->language] as $term) {
             if (in_array($term['tid'], $tid)) {
               return TRUE;
@@ -53,9 +47,10 @@ function menu_position_menu_position_condition_taxonomy($variables) {
         }
         // Check for any terms from a matching vocabulary.
         else {
-          $vocabulary_name = $fields[$field]['settings']['allowed_values'][0]['vocabulary'];
-          if (!empty($entity->{$field}[$entity->language]) && $vocabulary_name == $machine_name) {
-            return TRUE;
+          foreach ($entity->{$field}[$entity->language] as $term) {
+            if (isset($term['taxonomy_term']->vid) && $term['taxonomy_term']->vid === $vid) {
+              return TRUE;
+            }
           }
         }
       }
