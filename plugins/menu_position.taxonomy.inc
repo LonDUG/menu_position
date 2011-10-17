@@ -14,36 +14,38 @@
  *   TRUE if condition applies successfully. Otherwise FALSE.
  */
 function menu_position_menu_position_condition_taxonomy($variables) {
-  // Grab the variables stored statically in the rule.
-  $vid = $variables['vid'];
-  $tid = $variables['tid'];
+  // We can only check for taxonomy terms on an "entity" page.
+  if ($variables['context']['entity_type']) {
 
-  // $node is dynamically added and may not exist.
-  $node = isset($variables['context']['node']) ? $variables['context']['node'] : NULL;
+    // Grab the variables stored statically in the rule.
+    $vid = $variables['vid'];
+    $tid = $variables['tid'];
 
-  // Get the vocabulary machine_name to compare against field settings.
-  if (!$tid) {
-    $vocabulary = taxonomy_vocabulary_load($vid);
-    $machine_name = $vocabulary->machine_name;
-  }
+    // Determine what kind of entity page this is.
+    $entity_type = $variables['context']['entity_type'];
+    $bundle_name = $variables['context']['bundle_name'];
+    $entity = $variables['context'][$entity_type];
 
-  // Build a list of each taxonomy reference field belonging to the bundle for
-  // the current node.
-  $fields = field_info_fields();
-  $instance_fields = isset($node) ? field_info_instances('node', $node->type) : array();
-  $check_fields = array();
-  foreach ($instance_fields as $key => $field_info) {
-    if (isset($fields[$key]['type']) && $fields[$key]['type'] == 'taxonomy_term_reference') {
-      $check_fields[] = $key;
+    // Get the vocabulary machine_name to compare against field settings.
+    if (!$tid) {
+      $vocabulary = taxonomy_vocabulary_load($vid);
+      $machine_name = $vocabulary->machine_name;
     }
-  }
 
-  if (!empty($check_fields)) {
-    foreach ($check_fields as $field) {
-      if (isset($node->{$field}[$node->language])) {
+    // Build a list of each taxonomy reference fields.
+    $fields = field_info_fields();
+    $taxonomy_fields = array();
+    foreach (array_keys(field_info_instances($entity_type, $bundle_name)) as $key) {
+      if (isset($fields[$key]['type']) && $fields[$key]['type'] == 'taxonomy_term_reference') {
+        $taxonomy_fields[] = $key;
+      }
+    }
+
+    foreach ($taxonomy_fields as $field) {
+      if (isset($entity->{$field}[$entity->language])) {
         // Check for matching terms.
         if ($tid) {
-          foreach ($node->{$field}[$node->language] as $term) {
+          foreach ($entity->{$field}[$entity->language] as $term) {
             if (in_array($term['tid'], $tid)) {
               return TRUE;
             }
@@ -52,7 +54,7 @@ function menu_position_menu_position_condition_taxonomy($variables) {
         // Check for any terms from a matching vocabulary.
         else {
           $vocabulary_name = $fields[$field]['settings']['allowed_values'][0]['vocabulary'];
-          if (!empty($node->{$field}[$node->language]) && $vocabulary_name == $machine_name) {
+          if (!empty($entity->{$field}[$entity->language]) && $vocabulary_name == $machine_name) {
             return TRUE;
           }
         }
