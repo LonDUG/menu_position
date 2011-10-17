@@ -110,6 +110,16 @@ function menu_position_menu() {
     'type' => MENU_CALLBACK,
     'file' => 'menu_position.admin.inc',
   );
+  if (module_exists('taxonomy')) {
+    $items['menu-position/taxonomy/autocomplete'] = array(
+      'title' => 'Autocomplete taxonomy',
+      'page callback' => 'menu_position_taxonomy_autocomplete',
+      'page arguments' => array(3, 4),
+      'access arguments' => array('access content'),
+      'type' => MENU_CALLBACK,
+      'file' => 'plugins/menu_position.taxonomy.inc',
+    );
+  }
   return $items;
 }
 
@@ -140,6 +150,11 @@ function menu_position_menu_position_rule_plugins() {
   if (module_exists('locale')) {
     $plugins['language'] = array(
       'file' => 'plugins/menu_position.language.inc',
+    );
+  }
+  if (module_exists('taxonomy')) {
+    $plugins['taxonomy'] = array(
+      'file' => 'plugins/menu_position.taxonomy.inc',
     );
   }
   return $plugins;
