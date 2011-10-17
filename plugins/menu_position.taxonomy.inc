@@ -165,8 +165,8 @@ function menu_position_menu_position_rule_taxonomy_form_submit(&$form, &$form_st
       'tid' => array(),
     );
     // Determine if a taxonomy term has been selected.
-    if ($form_state['values']['term']) {
-      foreach($form_state['values']['term'] as $term) {
+    if ($form_state['values']['vid_or_tid'] == 'tid' && !empty($form_state['values']['term'])) {
+      foreach ($form_state['values']['term'] as $term) {
         $variables['tid'][] = $term['tid'];
       }
     }
