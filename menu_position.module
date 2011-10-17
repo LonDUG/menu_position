@@ -42,6 +42,11 @@ function menu_position_page_delivery_callback_alter() {
     $context['entity_type'] = 'node';
     $context['bundle_name'] = $context['node']->type;
   }
+  elseif ($arg0 == 'user' && is_numeric($arg1)) {
+    $context['user'] = user_load($arg1);
+    $context['entity_type'] = 'user';
+    $context['bundle_name'] = 'user';
+  }
 
   menu_position_evaluate_rules($context);
 }
