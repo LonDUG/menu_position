@@ -29,11 +29,20 @@ function menu_position_page_delivery_callback_alter() {
   }
   $evaluated = TRUE;
 
-  $context = array();
-  $context['path'] = $_GET['q'];
-  if (arg(0) == 'node' && is_numeric(arg(1))) {
-    $context['node'] = node_load(arg(1));
+  // Build a small context.
+  $context = array(
+    'path' => $_GET['q'],
+    'entity_type' => NULL,
+    'bundle_name' => NULL,
+  );
+  // Determine what kind of entity page this is.
+  list($arg0, $arg1, ) = explode('/', $context['path'] . '//');
+  if ($arg0 == 'node' && is_numeric($arg1)) {
+    $context['node'] = node_load($arg1);
+    $context['entity_type'] = 'node';
+    $context['bundle_name'] = $context['node']->type;
   }
+
   menu_position_evaluate_rules($context);
 }
 

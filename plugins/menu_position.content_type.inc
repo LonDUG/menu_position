@@ -14,13 +14,8 @@
  *   TRUE if condition applies successfully. Otherwise FALSE.
  */
 function menu_position_menu_position_condition_content_type($variables) {
-  // Grab the variables stored statically in the rule.
-  $content_type = $variables['content_type'];
-
-  // $node is dynamically added and may not exist.
-  $node = isset($variables['context']['node']) ? $variables['context']['node'] : NULL;
-
-  return ($node && in_array($node->type, $content_type)) ? TRUE : FALSE;
+  // Check if this is a node page and then what type of node it is.
+  return ($variables['context']['entity_type'] == 'node' && in_array($variables['context']['bundle_name'], $variables['content_type'])) ? TRUE : FALSE;
 }
 
 /**
