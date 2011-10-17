@@ -33,16 +33,17 @@ function menu_position_menu_position_condition_taxonomy($variables) {
       $field_info = field_info_fields();
       foreach (array_keys(field_info_instances($entity_type, $bundle_name)) as $key) {
         if ($field_info[$key]['type'] == 'taxonomy_term_reference') {
-          $taxonomy_fields[] = $key;
+          $taxonomy_fields[$key] = $field_info[$key]['translatable'];
         }
       }
     }
 
-    foreach ($taxonomy_fields as $field) {
-      if (!empty($entity->{$field}[$entity->language])) {
+    foreach ($taxonomy_fields as $field => $translatable) {
+      $language = $translatable ? $entity->language : LANGUAGE_NONE;
+      if (!empty($entity->{$field}[$language])) {
         // Check for matching terms.
         if (!empty($tid)) {
-          foreach ($entity->{$field}[$entity->language] as $term) {
+          foreach ($entity->{$field}[$language] as $term) {
             if (in_array($term['tid'], $tid)) {
               return TRUE;
             }
@@ -50,7 +51,7 @@ function menu_position_menu_position_condition_taxonomy($variables) {
         }
         // Check for any terms from a matching vocabulary.
         else {
-          foreach ($entity->{$field}[$entity->language] as $term) {
+          foreach ($entity->{$field}[$language] as $term) {
             if (isset($term['taxonomy_term']->vid) && $term['taxonomy_term']->vid === $vid) {
               return TRUE;
             }
