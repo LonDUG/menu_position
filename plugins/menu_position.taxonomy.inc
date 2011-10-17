@@ -27,11 +27,14 @@ function menu_position_menu_position_condition_taxonomy($variables) {
     $entity = $variables['context'][$entity_type];
 
     // Build a list of each taxonomy reference fields.
-    $fields = field_info_fields();
-    $taxonomy_fields = array();
-    foreach (array_keys(field_info_instances($entity_type, $bundle_name)) as $key) {
-      if (isset($fields[$key]['type']) && $fields[$key]['type'] == 'taxonomy_term_reference') {
-        $taxonomy_fields[] = $key;
+    $taxonomy_fields = &drupal_static(__FUNCTION__, NULL);
+    if (!isset($taxonomy_fields)) {
+      $taxonomy_fields = array();
+      $field_info = field_info_fields();
+      foreach (array_keys(field_info_instances($entity_type, $bundle_name)) as $key) {
+        if ($field_info[$key]['type'] == 'taxonomy_term_reference') {
+          $taxonomy_fields[] = $key;
+        }
       }
     }
 
