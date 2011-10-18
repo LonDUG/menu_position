@@ -203,14 +203,9 @@ function menu_position_menu_link_update($link) {
  *   The full node object if the path is a node page.
  */
 function menu_position_evaluate_rules($context = array()) {
-  $path = $context['path'];
-
-  // Retrieve the original router item.
-  $original_router_item = menu_get_item();
-
   // Sanity check: if there is no existing menu item, Drupal won't display any
   // navigation menus anyway and will error out when we try methods below.
-  if ($original_router_item === FALSE) {
+  if (menu_get_item() === FALSE) {
     return;
   }
 
@@ -219,17 +214,17 @@ function menu_position_evaluate_rules($context = array()) {
   $rules = db_query('SELECT * FROM {menu_position_rules} WHERE enabled = :enabled ORDER BY weight, rid', array(':enabled' => 1));
 
   // Retrieve the list of menus the path is already in.
-  $menu_names = db_query('SELECT menu_name FROM {menu_links} WHERE link_path = :path', array(':path' => $path))->fetchCol();
+  $menu_names = db_query('SELECT menu_name FROM {menu_links} WHERE link_path = :path', array(':path' => $context['path']))->fetchCol();
 
-  // Flag that we haven't set the breadcrumb yet.
-  $breadcrumb_set = FALSE;
+  // Flag that we still need to set the breadcrumb.
+  $set_breadcrumb = TRUE;
 
   // Examine each rule and check its conditions.
   foreach ($rules as $rule) {
     if (in_array($rule->menu_name, $menu_names)) {
       // If the page is already placed in the rule's menu, skip the rule.
       $rule_matches = FALSE;
-      $breadcrumb_set = TRUE;
+      $set_breadcrumb = FALSE;
     }
     else {
       // A rule with no conditions always matches.
@@ -258,54 +253,69 @@ function menu_position_evaluate_rules($context = array()) {
     }
 
     // Let other modules manipulate the rule.
-    drupal_alter('menu_position_rule', $rule, $context, $rule_matches, $breadcrumb_set);
+    drupal_alter('menu_position_rule', $rule, $context, $rule_matches, $set_breadcrumb);
 
     // We've found a matching rule.
-    if ($rule_matches) {
-
-      // Reset the menu trail that views may have set.
-      if ($original_router_item['page_callback'] == 'views_page') {
-        $preferred = &drupal_static('menu_link_get_preferred');
-        unset($preferred[$path]);
-      }
-
-      // Retrieve menu item specified in the rule.
-      $menu_item = menu_link_load($rule->mlid);
-
-      // Sanity check: if the menu link doesn't exist abort processing the rule.
-      if (!$menu_item) {
-        continue;
-      }
-
-      // Set the active path for the rule's menu.
-      menu_tree_set_path($rule->menu_name, $menu_item['link_path']);
-
-      // Get the default preferred link and save it so that it can be used in
-      // place of the rule's menu link when menu trees are rendered.
-      menu_position_set_link($rule->rid, menu_link_get_preferred());
-
-      // Allow the rule's parent menu item to show "expanded" status.
-      menu_position_expand_parent_link($rule->plid);
-
-      // Alter the active trail if breadcrumbs still need to be set.
-      if (!$breadcrumb_set) {
-        // Manually set the preferred link for this path so that
-        // menu_get_active_trail() returns the proper trail.
-        $preferred_links = &drupal_static('menu_link_get_preferred');
-        $preferred_links[$_GET['q']] = menu_link_get_preferred($menu_item['link_path']);
-
-        // Remove the menu position router from the end of the trail.
-        $active_trail = menu_set_active_trail();
-        array_pop($active_trail);
-        menu_set_active_trail($active_trail);
-
-        $breadcrumb_set = TRUE;
-      }
+    if ($rule_matches && menu_position_activate_rule($rule, $context, $set_breadcrumb)) {
+      // Don't let other rules set the breadcrumb.
+      $set_breadcrumb = FALSE;
 
       // Don't let other rules match against this rule's menu.
       $menu_names[] = $rule->menu_name;
     }
   }
+}
+
+/**
+ * Evaluates all rules based on the given path.
+ *
+ * @param $rule
+ *   The rule that should be activated.
+ * @param $context
+ *   A small context variable used by the menu_position module.
+ * @param $set_breadcrumb
+ *   Whether the breadcrumb still needs to be set or not.
+ */
+function menu_position_activate_rule($rule, $context, $set_breadcrumb) {
+  // Retrieve menu item specified in the rule.
+  $menu_item = menu_link_load($rule->mlid);
+
+  // Sanity check: if the menu link doesn't exist abort processing the rule.
+  if (!$menu_item) {
+    return FALSE;
+  }
+
+  // Reset the menu trail that views may have set.
+  $original_router_item = menu_get_item();
+  if ($original_router_item['page_callback'] == 'views_page') {
+    $preferred = &drupal_static('menu_link_get_preferred');
+    unset($preferred[$context['path']]);
+  }
+
+  // Set the active path for the rule's menu.
+  menu_tree_set_path($rule->menu_name, $menu_item['link_path']);
+
+  // Get the default preferred link and save it so that it can be used in
+  // place of the rule's menu link when menu trees are rendered.
+  menu_position_set_link($rule->rid, menu_link_get_preferred());
+
+  // Allow the rule's parent menu item to show "expanded" status.
+  menu_position_expand_parent_link($rule->plid);
+
+  // Alter the active trail if breadcrumbs still need to be set.
+  if ($set_breadcrumb) {
+    // Manually set the preferred link for this path so that
+    // menu_get_active_trail() returns the proper trail.
+    $preferred_links = &drupal_static('menu_link_get_preferred');
+    $preferred_links[$_GET['q']] = menu_link_get_preferred($menu_item['link_path']);
+
+    // Remove the menu position router from the end of the trail.
+    $active_trail = menu_set_active_trail();
+    array_pop($active_trail);
+    menu_set_active_trail($active_trail);
+  }
+
+  return TRUE;
 }
 
 /**
