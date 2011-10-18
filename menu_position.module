@@ -195,12 +195,14 @@ function menu_position_menu_link_update($link) {
 }
 
 /**
- * Evaluates all rules based on the given path.
+ * Evaluates all rules based on a given context.
  *
- * @param $path
- *   The path used to evaluate all rules.
  * @param $context
- *   The full node object if the path is a node page.
+ *   A small context variable which contains:
+ *   - path: The path of the current page.
+ *   - entity_type: If the current page is an "entity" page, the type of entity.
+ *   - bundle_name: The bundle (entity type) of the current page's entity.
+ *   - [entity]: The page's entity object, such as "node", "user", etc.
  */
 function menu_position_evaluate_rules($context = array()) {
   // Sanity check: if there is no existing menu item, Drupal won't display any
