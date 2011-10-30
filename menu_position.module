@@ -74,6 +74,21 @@ function menu_position_menu() {
     'type' => MENU_NORMAL_ITEM,
     'file' => 'menu_position.admin.inc',
   );
+  $items['admin/structure/menu-position/list'] = array(
+    'title' => 'List',
+    'type' => MENU_DEFAULT_LOCAL_TASK,
+    'weight' => -10,
+  );
+  $items['admin/structure/menu-position/settings'] = array(
+    'title' => 'Settings',
+    'description' => 'Configure settings for menu positions.',
+    'access arguments' => array('administer menu positions'),
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('menu_position_settings_form'),
+    'type' => MENU_LOCAL_TASK,
+    'file' => 'menu_position.admin.inc',
+    'weight' => 10,
+  );
   $items['admin/structure/menu-position/add'] = array(
     'title' => 'Add menu position rule',
     'description' => 'Add a new menu position rule.',
@@ -366,24 +381,34 @@ function menu_position_get_link($path, $link = NULL) {
 }
 
 /**
- * Implements hook_translated_menu_link().
+ * Implements hook_translated_menu_link_alter().
  *
  * All of the menu items of menu position rules have their "alter" option set
  * which allows them to be altered with this hook. We "translate" the menu item
  * to have the proper URL and title for the current page.
  */
 function menu_position_translated_menu_link_alter(&$item, &$map) {
-  if ($item['module'] == 'menu_position') {
-    $menu_item = menu_position_get_link($item['link_path']);
-    // We only alter the link after its replacement has been set.
-    if (!empty($menu_item['title'])) {
-      $item['title'] = $menu_item['title'];
-      $item['href'] = $menu_item['href'];
-      $item['hidden'] = 0;
-    }
-  }
-  elseif ($item['mlid'] == menu_position_expand_parent_link()) {
-    $item['has_children'] = 1;
+  // Check if the rule's links are configured to be hidden.
+  switch (variable_get('menu_position_active_link_display', 'child')) {
+    case 'child':
+      if ($item['module'] == 'menu_position') {
+        $menu_item = menu_position_get_link($item['link_path']);
+        // We only alter the link after its replacement has been set.
+        if (!empty($menu_item['title'])) {
+          $item['title'] = $menu_item['title'];
+          $item['href'] = $menu_item['href'];
+          $item['hidden'] = 0;
+        }
+      }
+      elseif ($item['mlid'] == menu_position_expand_parent_link()) {
+        $item['has_children'] = 1;
+      }
+      break;
+    case 'parent':
+      if ($item['mlid'] == menu_position_expand_parent_link()) {
+        $item['localized_options']['attributes']['class'][] = 'active';
+      }
+      break;
   }
 }
 

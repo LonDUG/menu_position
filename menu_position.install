@@ -124,3 +124,10 @@ function menu_position_enable() {
       ->execute();
   }
 }
+
+/**
+ * Implements hook_uninstall().
+ */
+function menu_position_uninstall() {
+  variable_del('menu_position_active_link_display');
+}

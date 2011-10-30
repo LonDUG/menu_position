@@ -12,6 +12,25 @@ function menu_position_router() {
 }
 
 /**
+ * Form definition: global settings for Menu position rules.
+ */
+function menu_position_settings_form($form, &$form_state) {
+  $form = array();
+  $form['menu_position_active_link_display'] = array(
+    '#type' => 'radios',
+    '#title' => t('When a menu position rule matches:'),
+    '#options' => array(
+      'child' => t("Insert the current page's title into the menu tree."),
+      'parent' => t('Mark the rule\'s parent menu item as being "active".'),
+      'none' => t('Don\'t mark any menu as being "active".'),
+    ),
+    '#default_value' => variable_get('menu_position_active_link_display', 'child'),
+    '#description' => t("By default, a matching menu position rule will insert the current page's title into the menu tree just below the rule's parent menu item."),
+  );
+  return system_settings_form($form);
+}
+
+/**
  * Implements hook_form_FORM_ID_alter().
  */
 function _menu_position_form_menu_overview_form_alter(&$form, &$form_state) {
