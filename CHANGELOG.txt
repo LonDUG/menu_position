@@ -1,6 +1,12 @@
 Menu Position 7.x-1.x-dev, xxxx-xx-xx (development release)
 -------------------------------------
--
+- #1309050 by Les Lim and JohnAlbin: Add an option for altering the active item when a rule matches
+- API CHANGE! Change breadcrumb parameter of hook_menu_position_rule_alter()
+- #963856 by JohnAlbin and artis.bajars: Add taxonomy/vocabulary plug-in
+- Add user entity page to context
+- Add entity_type and bundle_name to context array
+- #979464: Use menu_tree_set_path() to set the active trail of menu trees
+- Add dependency on Drupal 7.9-dev or later
 
 Menu Position 7.x-1.0-beta4, 2011-10-14
 ---------------------------------------
