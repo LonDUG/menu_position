@@ -1,3 +1,7 @@
+Menu Position 7.x-1.x-dev, xxxx-xx-xx (development release)
+-------------------------------------
+-
+
 Menu Position 7.x-1.0, 2011-11-01
 ---------------------------------
 - by davereid and JohnAlbin: rowCount doesn't work when using sqlite
