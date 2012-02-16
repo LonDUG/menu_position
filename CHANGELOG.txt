@@ -1,6 +1,6 @@
 Menu Position 7.x-1.x-dev, xxxx-xx-xx (development release)
 -------------------------------------
--
+- #1336338 by miro_dietiker and rvilar: Adding a new menu item fails
 
 Menu Position 7.x-1.0, 2011-11-01
 ---------------------------------
