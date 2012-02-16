@@ -60,6 +60,9 @@ function _menu_position_form_menu_overview_form_alter(&$form, &$form_state) {
  * for the link to be edited.
  */
 function _menu_position_form_menu_edit_item_alter(&$form, &$form_state) {
+  if ($form['mlid']['#value'] == 0) {
+    return;
+  }
   // Retrieve all of the rules' mlids.
   $mlids = db_query('SELECT mlid FROM {menu_position_rules} WHERE mlid = :mlid ORDER BY weight, rid', array(':mlid' => (int) $form['mlid']['#value']))->fetchAll();
   if (!empty($mlids)) {
