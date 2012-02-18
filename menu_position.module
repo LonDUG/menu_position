@@ -324,7 +324,7 @@ function menu_position_activate_rule($rule, $context, $set_breadcrumb) {
     // Manually set the preferred link for this path so that
     // menu_get_active_trail() returns the proper trail.
     $preferred_links = &drupal_static('menu_link_get_preferred');
-    $preferred_links[$_GET['q']] = menu_link_get_preferred($menu_item['link_path']);
+    $preferred_links[$_GET['q']][MENU_PREFERRED_LINK] = menu_link_get_preferred($menu_item['link_path']);
 
     // Remove the menu position router from the end of the trail.
     $active_trail = menu_set_active_trail();
