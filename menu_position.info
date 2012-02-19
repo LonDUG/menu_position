@@ -2,7 +2,7 @@ name = Menu position
 description = Customize menu position of nodes depending on their content type, associated terms and others conditions.
 
 core = 7.x
-dependencies[] = menu (>7.8)
+dependencies[] = menu (>7.11)
 
 files[] = menu_position.module
 files[] = menu_position.admin.inc
