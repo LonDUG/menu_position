@@ -22,7 +22,7 @@ function menu_position_settings_form($form, &$form_state) {
     '#options' => array(
       'child' => t("Insert the current page's title into the menu tree."),
       'parent' => t('Mark the rule\'s parent menu item as being "active".'),
-      'none' => t('Don\'t mark any menu as being "active".'),
+      'none' => t('Don\'t mark any menu item as being "active".'),
     ),
     '#default_value' => variable_get('menu_position_active_link_display', 'child'),
     '#description' => t("By default, a matching menu position rule will insert the current page's title into the menu tree just below the rule's parent menu item."),
