@@ -39,11 +39,19 @@ function menu_position_page_delivery_callback_alter() {
   list($arg0, $arg1, ) = explode('/', $context['path'] . '//');
   if ($arg0 == 'node' && is_numeric($arg1)) {
     $context['node'] = node_load($arg1);
+    // Don't evaluate the rules on a 404 page.
+    if (!$context['node']) {
+      return;
+    }
     $context['entity_type'] = 'node';
     $context['bundle_name'] = $context['node']->type;
   }
   elseif ($arg0 == 'user' && is_numeric($arg1)) {
     $context['user'] = user_load($arg1);
+    // Don't evaluate the rules on a 404 page.
+    if (!$context['user']) {
+      return;
+    }
     $context['entity_type'] = 'user';
     $context['bundle_name'] = 'user';
   }
