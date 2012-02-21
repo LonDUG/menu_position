@@ -1,5 +1,6 @@
 Menu Position 7.x-1.x-dev, xxxx-xx-xx (development release)
 -------------------------------------
+- #1157564 by konordo, jwilson3 and JohnAlbin: Add user role based plugin
 - #1363392 by Les Lim: Fix PHP Notice on 404 pages
 - Add dependency on Drupal 7.12 or later
 - #1426482 by craigjones: Menu position module fails to provide correct active trail under Drupal 7.12
