@@ -134,6 +134,7 @@ function menu_position_menu_position_rule_taxonomy_form(&$form, &$form_state) {
   );
   $form['conditions']['taxonomy']['term'] = array(
     '#type' => 'textfield',
+    '#maxlength' => 1024,
     '#title' => t('Taxonomy term'),
     '#default_value' => $terms,
     '#autocomplete_path' => 'menu-position/taxonomy/autocomplete/' . (isset($form_state['input']['vid']) ? $form_state['input']['vid'] : $form['conditions']['taxonomy']['vid']['#default_value']),
