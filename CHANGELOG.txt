@@ -1,6 +1,6 @@
 Menu Position 7.x-1.x-dev, xxxx-xx-xx (development release)
 -------------------------------------
--
+- #1773890: Editing a rule with a deleted parent menu link causes fatal error
 
 Menu Position 7.x-1.1, 2012-02-22
 ---------------------------------
