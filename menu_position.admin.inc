@@ -181,6 +181,9 @@ function menu_position_rules_form($form, &$form_state) {
     );
     foreach ($rules as $rule) {
       $menu_link = menu_link_load($rule->plid);
+      if ($menu_link === FALSE) {
+        $menu_link = array('title' => '[' . t('deleted menu item') . ']');
+      }
       $form['rules'][$rule->rid] = array(
         'title' => array(
           '#markup' => '<strong>' . check_plain($rule->admin_title) . '</strong> (' . t('Positioned under: %title', array('%title' => check_plain($menu_link['title']))) . ')',
@@ -599,8 +602,10 @@ function menu_position_edit_menu_link($rid, $mlid, $plid, $admin_title) {
     // If the rule has a new parent, update the old parent.
     if ($existing_item['plid'] != $item['plid']) {
       $old_parent = menu_link_load($existing_item['plid']);
-      $old_parent['options']['alter'] = FALSE;
-      menu_link_save($old_parent);
+      if ($old_parent !== FALSE) {
+        $old_parent['options']['alter'] = FALSE;
+        menu_link_save($old_parent);
+      }
     }
   }
   // Update the new parent.
