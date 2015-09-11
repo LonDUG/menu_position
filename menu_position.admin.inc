@@ -530,8 +530,8 @@ function menu_position_read_rules() {
   $query = db_query('SELECT * FROM {menu_position_rules} ORDER BY weight, rid');
   $rules = array();
   foreach ($query as $rule) {
-    $rule['conditions'] = unserialize($rule['conditions']);
-    $rules[$rule['rid']] = $rule;
+    $rule->conditions = unserialize($rule->conditions);
+    $rules[$rule->rid] = $rule;
   }
   return $rules;
 }
