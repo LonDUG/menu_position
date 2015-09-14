@@ -333,6 +333,7 @@ function menu_position_rule_form($form, &$form_state) {
   // Set the default values.
   $rid          = !empty($form_state['#menu-position-rule']['rid'])         ? $form_state['#menu-position-rule']['rid'] : '';
   $admin_title  = !empty($form_state['#menu-position-rule']['admin_title']) ? $form_state['#menu-position-rule']['admin_title'] : '';
+  $machine_name = !empty($form_state['#menu-position-rule']['machine_name'])   ? $form_state['#menu-position-rule']['machine_name'] : '';
   $menu_name    = !empty($form_state['#menu-position-rule']['menu_name'])   ? $form_state['#menu-position-rule']['menu_name'] : '';
   $plid         = !empty($form_state['#menu-position-rule']['plid'])        ? $form_state['#menu-position-rule']['plid'] : NULL;
   $mlid         = !empty($form_state['#menu-position-rule']['mlid'])        ? $form_state['#menu-position-rule']['mlid'] : NULL;
@@ -347,6 +348,18 @@ function menu_position_rule_form($form, &$form_state) {
     '#title' => t('Administrative title'),
     '#description' => t('This title will be used administratively to identify this rule.'),
     '#required' => TRUE,
+  );
+  $form['machine_name'] = array(
+    '#type' => 'machine_name',
+    '#default_value' => $machine_name,
+    '#title' => t('Machine name'),
+    '#required' => TRUE,
+    '#size' => 15,
+    '#maxlength' => 255,
+    '#machine_name' => array(
+      'exists' => 'menu_position_machine_name_exists',
+      'source' => array('admin_title'),
+    ),
   );
   // Parent menu item.
   if ($mlid) {
@@ -414,6 +427,18 @@ function menu_position_rule_form($form, &$form_state) {
 }
 
 /**
+ * Helper function to check if a given machine name already exists.
+ */
+function menu_position_machine_name_exists($machine_name) {
+  $result = db_select('menu_position_rules', 'menu_position_rules')
+    ->fields('menu_position_rules')
+    ->condition('machine_name', $machine_name)
+    ->execute();
+  $num_of_results = $result->rowCount();
+  return ($num_of_results == 1) ? TRUE : FALSE;
+}
+
+/**
  * Validates the form for menu_position_rule_form().
  */
 function menu_position_rule_form_validate($form, &$form_state) {
@@ -439,6 +464,7 @@ function menu_position_rule_form_submit($form, &$form_state) {
     'conditions'  => isset($form_state['values']['conditions']) ? $form_state['values']['conditions'] : array(),
     'menu_name'   => $menu_name,
     'plid'        => $plid,
+    'machine_name' => $form_state['values']['machine_name'],
   );
   // Add the rule to the database.
   if ($form_state['values']['rid'] == '') {
@@ -474,6 +500,7 @@ function menu_position_add_rule($rule) {
     'conditions'  => serialize($rule['conditions']),
     'menu_name'   => $rule['menu_name'],
     'plid'        => $rule['plid'],
+    'machine_name' => $rule['machine_name'],
   );
   $rid = db_insert('menu_position_rules')
     ->fields($fields)
@@ -556,6 +583,7 @@ function menu_position_edit_rule($rule) {
     'conditions'  => serialize($rule['conditions']),
     'menu_name'   => $rule['menu_name'],
     'plid'        => $rule['plid'],
+    'machine_name' => $rule['machine_name'],
   );
   // Update the rule.
   db_update('menu_position_rules')
