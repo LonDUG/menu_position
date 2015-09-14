@@ -169,6 +169,9 @@ function menu_position_menu_position_rule_plugins() {
     'pages' => array(
       'file' => 'plugins/menu_position.pages.inc',
     ),
+    'user_page' => array(
+      'file' => 'plugins/menu_position.user_page.inc',
+    ),
     'user_role' => array(
       'file' => 'plugins/menu_position.user_roles.inc',
     ),
