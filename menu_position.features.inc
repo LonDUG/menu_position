@@ -79,8 +79,27 @@ function menu_position_features_revert($module) {
  *   The field data to save.
  */
 function _menu_position_save_rule($field_data) {
+  module_load_include('inc', 'menu_position', 'menu_position.admin');
+
+  // Update/insert the rule.
   db_merge('menu_position_rules')
     ->key(array('machine_name' => $field_data['machine_name']))
     ->fields($field_data)
     ->execute();
+
+  // Update the menu link.
+  $result = db_query('SELECT rid FROM {menu_position_rules} WHERE machine_name = :machine_name', array(
+    ':machine_name' => $field_data['machine_name'],
+  ))->fetchAssoc();
+  menu_position_edit_menu_link($result['rid'], $field_data['mlid'], $field_data['plid'], $field_data['admin_title']);
+
+  // Override the menu link id.
+  $query = db_update('menu_links')
+    ->fields(array(
+      'mlid' => $field_data['mlid'],
+    ))
+    ->condition('menu_name', $field_data['menu_name'])
+    ->condition('plid', $field_data['plid'])
+    ->condition('module', 'menu_position');
+    $query->execute();
 }
