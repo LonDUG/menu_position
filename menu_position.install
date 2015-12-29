@@ -114,21 +114,26 @@ function menu_position_update_7102() {
  * Adding the machine_name field.
  */
 function menu_position_update_7103() {
-  db_add_field(
-    'menu_position_rules',
-    'machine_name',
-    array(
-      'description' => 'The machine name.',
-      'type' => 'varchar',
-      'length' => 255,
-      'default' => NULL,
-    )
-  );
-
+  // Add the 'machine_name' column if needed.
+  if (!db_field_exists('menu_position_rules', 'machine_name')) {
+    db_add_field(
+      'menu_position_rules',
+      'machine_name',
+      array(
+        'description' => 'The machine name.',
+        'type' => 'varchar',
+        'length' => 255,
+        'default' => NULL,
+      )
+    );
+  }
   $result = db_query('SELECT admin_title, rid FROM {menu_position_rules}')->fetchAll();
 
   foreach ($result as $rule) {
     $rule->machine_name = substr(preg_replace('/[^a-z0-9_]+/', '_', drupal_strtolower($rule->admin_title)), 0, 255);
+    if (trim($rule->machine_name, '_') == '') {
+      $rule->machine_name .= $rule->rid;
+    }
     db_update('menu_position_rules')
       ->fields(array('machine_name' => $rule->machine_name))
       ->condition('rid', $rule->rid)
