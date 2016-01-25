@@ -248,20 +248,90 @@ function menu_position_menu_link_update($link) {
 }
 
 /**
- * Evaluates all rules based on a given context.
+ * Return the activated rule(s) for the specified context.
+ *
+ * @see menu_position_evaluate_rules().
+ */
+function menu_position_get_activated_rules($context) {
+  return menu_position_evaluate_rules($context, TRUE);
+}
+
+/**
+ * Evaluate all rules based on a given context.
+ *
+ * Multiple rules may be activated, but only if they are all assigned to
+ * different menus (no more than one rule will be activated for any given
+ * menu).
+ *
+ * Existing menu links for the context's path take precedence over menu
+ * position rules. Rules assigned to the menus associated with those links
+ * will be ignored.
+ *
+ * The breadcrumb will be set according to the first matching rule, unless
+ * an existing menu link has been found for the context's path in one of the
+ * menus considered so far. (n.b. The order of the rules, and each rule's
+ * associated menu, determines the order in which menus are considered for
+ * this purpose.)
  *
  * @param $context
- *   A small context variable which contains:
- *   - path: The path of the current page.
- *   - entity_type: If the current page is an "entity" page, the type of entity.
- *   - bundle_name: The bundle (entity type) of the current page's entity.
- *   - [entity]: The page's entity object, such as "node", "user", etc.
+ *   A small context array containing the following data:
+ *     - 'path'        => The path of the current page.
+ *     - 'entity_type' => The type of the current page's entity.
+ *     - 'bundle_name' => The bundle of the current page's entity.
+ *     - [entity]      => The current page's entity object. The key is the
+ *                        entity type value (i.e. "node", "user", etc).
+ *
+ *   n.b. Only 'path' is guaranteed to be populated. The other values
+ *   will be available only if the current page is an "entity" page.
+ *
+ * @param boolean $use_cache
+ *   If TRUE and the specified context has already been processed, then
+ *   simply return the cached array of rules which were activated for that
+ *   context. If the context has not yet been processed, normal processing
+ *   will take place.
+ *
+ * @return
+ *   An array of the rules which were activated for the specified context.
  */
-function menu_position_evaluate_rules($context = array()) {
+function menu_position_evaluate_rules($context = array(), $use_cache = FALSE) {
+  $cache = &drupal_static(__FUNCTION__);
+  if (!isset($cache)) {
+    $cache = array();
+  }
+  if (empty($context)) {
+    return array();
+  }
+
+  // Hash the context array to generate a cache key.
+  $cache_key = array(
+    'path' => $context['path'],
+  );
+  if (!empty($context['entity_type'])) {
+    $entity_type = $context['entity_type'];
+    $entity = $context[$entity_type];
+    list($id, $vid, $bundle) = entity_extract_ids($entity_type, $entity);
+    $cache_key += array(
+      'entity_type' => $entity_type,
+      'bundle_name' => $bundle,
+      'entity_id'   => $id,
+    );
+  }
+  $cache_key = md5(serialize($cache_key));
+
+  // If we just want the rules and we have a cached value, return immediately.
+  if ($use_cache) {
+    if (array_key_exists($cache_key, $cache)) {
+      return $cache[$cache_key];
+    }
+  }
+
+  // Otherwise process the context as normal, cache the result, and return that.
+  $cache[$cache_key] = array();
+
   // Sanity check: if there is no existing menu item, Drupal won't display any
   // navigation menus anyway and will error out when we try methods below.
-  if (menu_get_item() === FALSE) {
-    return;
+  if (menu_get_item($context['path']) === FALSE) {
+    return $cache[$cache_key];
   }
 
   // Retrieve the rules from the database. For speed, we don't call
@@ -276,7 +346,8 @@ function menu_position_evaluate_rules($context = array()) {
 
   // Examine each rule and check its conditions.
   foreach ($rules as $rule) {
-    if (in_array($rule->menu_name, $menu_names)) {
+
+    if (in_array($rule->menu_name, $menu_names, TRUE)) {
       // If the page is already placed in the rule's menu, skip the rule.
       $rule_matches = FALSE;
       $set_breadcrumb = FALSE;
@@ -300,6 +371,7 @@ function menu_position_evaluate_rules($context = array()) {
           // If the callback cannot be found, the condition has failed.
           $rule_matches = FALSE;
         }
+
         // No need to check other conditions if this condition failed.
         if (!$rule_matches) {
           break;
@@ -307,11 +379,13 @@ function menu_position_evaluate_rules($context = array()) {
       }
     }
 
-    // Let other modules manipulate the rule.
+    // Let other modules manipulate the rule (or any of the other parameters).
     drupal_alter('menu_position_rule', $rule, $context, $rule_matches, $set_breadcrumb);
 
-    // We've found a matching rule.
     if ($rule_matches && menu_position_activate_rule($rule, $context, $set_breadcrumb)) {
+      $rule->set_breadcrumb = $set_breadcrumb;
+      $cache[$cache_key][] = $rule;
+
       // Don't let other rules set the breadcrumb.
       $set_breadcrumb = FALSE;
 
@@ -319,17 +393,21 @@ function menu_position_evaluate_rules($context = array()) {
       $menu_names[] = $rule->menu_name;
     }
   }
+
+  return $cache[$cache_key];
 }
 
 /**
- * Evaluates all rules based on the given path.
+ * Activates a specific rule for the given context.
+ *
+ * May additionally set the active trail.
  *
  * @param $rule
  *   The rule that should be activated.
  * @param $context
  *   A small context variable used by the menu_position module.
  * @param $set_breadcrumb
- *   Whether the breadcrumb still needs to be set or not.
+ *   Whether to set the active trail / breadcrumb.
  */
 function menu_position_activate_rule($rule, $context, $set_breadcrumb) {
   // Retrieve menu item specified in the rule.
@@ -509,4 +587,89 @@ function menu_position_get_condition_callback($plugin) {
   }
 
   return $callback;
+}
+
+/**
+ * Return a menu link for the given node, using the first menu position rule
+ * activated for that node.
+ */
+function menu_position_token_menu_link_load($node) {
+  $cache = &drupal_static(__FUNCTION__);
+  if (!isset($cache)) {
+    $cache = array();
+  }
+  if (!array_key_exists($node->nid, $cache)) {
+    // Check for a menu position menu link.
+    $context = array(
+      'path'        => sprintf('node/%d', $node->nid),
+      'entity_type' => 'node',
+      'bundle_name' => $node->type,
+      'node'        => $node,
+    );
+    if ($rules = menu_position_get_activated_rules($context)) {
+      $rule = array_shift($rules);
+      $link = token_menu_link_load($rule->mlid);
+    }
+    else {
+      $link = NULL;
+    }
+    $cache[$node->nid] = $link;
+  }
+  return $cache[$node->nid];
+}
+
+/**
+ * Implements hook_tokens_alter().
+ */
+function menu_position_tokens_alter(array &$replacements, array $context) {
+  // This behaviour depends upon the contrib tokens module.
+  // @see menu_tokens() in token.tokens.inc
+  if (!module_exists('token')) {
+    return;
+  }
+
+  $options = $context['options'];
+  $sanitize = !empty($options['sanitize']);
+
+  if ($context['type'] == 'node' && !empty($context['data']['node'])) {
+    $node = $context['data']['node'];
+    $tokens = $context['tokens'];
+
+    // If the 'menu-link' token is present and no replacement value was
+    // generated for it, try using the menu position rules instead.
+    if (array_key_exists('menu-link', $tokens)) {
+      $original = $tokens['menu-link'];
+      if (empty($replacements[$original])) {
+        if ($link = menu_position_token_menu_link_load($node)) {
+          // We found a menu position rule, but the chances of us ever
+          // wanting to use the *title* of a menu position rule's menu link
+          // are vanishingly small, so we'll use the node title instead.
+          $replacements[$original] = $sanitize ? check_plain($node->title) : $node->title;
+        }
+      }
+    }
+
+    // Process tokens that chain from a 'menu-link' token.
+    if ($menu_tokens = token_find_with_prefix($tokens, 'menu-link')) {
+      foreach ($menu_tokens as $token => $original) {
+        if (empty($replacements[$original])) {
+          // No replacement value was generated for this token, so now we
+          // want to try the menu position rules. We need to unset its key
+          // from the replacements array in order to merge in a new value.
+          unset($replacements[$original]);
+        }
+        else {
+          // This token was successfully replaced using the standard
+          // 'menu-link' processing, so do not re-process it here.
+          unset($menu_tokens[$token]);
+        }
+      }
+      if ($menu_tokens) {
+        if ($link = menu_position_token_menu_link_load($node)) {
+          $data = array('menu-link' => $link);
+          $replacements += token_generate('menu-link', $menu_tokens, $data, $options);
+        }
+      }
+    }
+  }
 }
