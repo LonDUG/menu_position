@@ -12,16 +12,16 @@
 /**
  * Allow a rule to be altered after it is evaluated but before action is taken.
  *
- * @param $rule
+ * @param object $rule
  *   The rule that was just evaulated.
- * @param $context
+ * @param array $context
  *   A small context variable used by the menu_position module.
- * @param $rule_matches
+ * @param bool $rule_matches
  *   Whether we have a matching rule or not.
- * @param $set_breadcrumb
+ * @param bool $set_breadcrumb
  *   Whether the breadcrumb still needs to be set or not.
  */
-function hook_menu_position_rule_alter(&$rule, &$context, &$rule_matches, &$set_breadcrumb) {
+function hook_menu_position_rule_alter(&$rule, array &$context, &$rule_matches, &$set_breadcrumb) {
   // Disable the rule if we're looking at a node with a certain id.
   if ($context['node']->nid == 119) {
     $rule_matches = FALSE;
@@ -46,7 +46,7 @@ function hook_menu_position_rule_alter(&$rule, &$context, &$rule_matches, &$set_
  *   but the include file will only be loaded if a rule is configured to use the
  *   plugin's condition.
  *
- * @return
+ * @return array
  *   An associative array containing the information about each plugin.
  */
 function hook_menu_position_rule_plugins() {
@@ -58,7 +58,8 @@ function hook_menu_position_rule_plugins() {
       'file' => 'my_module.foo.inc',
     ),
     // Register the "bar" plugin.
-    'bar' => array(), // Use the defaults for all options.
+    // Use the defaults for all options.
+    'bar' => array(),
   );
 }
 

@@ -71,7 +71,15 @@ function _menu_position_form_menu_edit_item_alter(&$form, &$form_state) {
       drupal_set_message(t('This menu item cannot be edited.'), 'warning');
     }
     // Disable all the normal form elements.
-    foreach (array('link_title', 'description', 'enabled', 'expanded', 'parent', 'weight') as $key) {
+    $keys = array(
+      'link_title',
+      'description',
+      'enabled',
+      'expanded',
+      'parent',
+      'weight',
+    );
+    foreach ($keys as $key) {
       $form[$key]['#disabled'] = TRUE;
     }
     // Remove the validator.
@@ -118,7 +126,7 @@ function _menu_position_menu_link_update($link) {
  */
 function menu_position_edit_item_submit($form, &$form_state) {
   // Redirect to the menu edit form and display a message.
-  list($menu_name, ) = explode(':', $form['parent']['#default_value']);
+  list($menu_name,) = explode(':', $form['parent']['#default_value']);
   $form_state['redirect'] = 'admin/structure/menu/manage/' . $menu_name;
   drupal_set_message(t('Your configuration was not saved.'), 'error');
 }
@@ -331,12 +339,12 @@ function menu_position_edit_rule_form($form, &$form_state, $rid = 0) {
  */
 function menu_position_rule_form($form, &$form_state) {
   // Set the default values.
-  $rid          = !empty($form_state['#menu-position-rule']['rid'])         ? $form_state['#menu-position-rule']['rid'] : '';
+  $rid          = !empty($form_state['#menu-position-rule']['rid']) ? $form_state['#menu-position-rule']['rid'] : '';
   $admin_title  = !empty($form_state['#menu-position-rule']['admin_title']) ? $form_state['#menu-position-rule']['admin_title'] : '';
-  $machine_name = !empty($form_state['#menu-position-rule']['machine_name'])   ? $form_state['#menu-position-rule']['machine_name'] : '';
-  $menu_name    = !empty($form_state['#menu-position-rule']['menu_name'])   ? $form_state['#menu-position-rule']['menu_name'] : '';
-  $plid         = !empty($form_state['#menu-position-rule']['plid'])        ? $form_state['#menu-position-rule']['plid'] : NULL;
-  $mlid         = !empty($form_state['#menu-position-rule']['mlid'])        ? $form_state['#menu-position-rule']['mlid'] : NULL;
+  $machine_name = !empty($form_state['#menu-position-rule']['machine_name']) ? $form_state['#menu-position-rule']['machine_name'] : '';
+  $menu_name    = !empty($form_state['#menu-position-rule']['menu_name']) ? $form_state['#menu-position-rule']['menu_name'] : '';
+  $plid         = !empty($form_state['#menu-position-rule']['plid']) ? $form_state['#menu-position-rule']['plid'] : NULL;
+  $mlid         = !empty($form_state['#menu-position-rule']['mlid']) ? $form_state['#menu-position-rule']['mlid'] : NULL;
 
   $form['rid'] = array(
     '#type' => 'hidden',
@@ -484,7 +492,7 @@ function menu_position_rule_form_submit($form, &$form_state) {
 /**
  * Adds a menu position rule.
  *
- * @param $rule
+ * @param array $rule
  *   An associate array defining the new rule to be created. Must contain the
  *   following keys:
  *   - admin_title: The administrative title of the rule.
@@ -494,7 +502,7 @@ function menu_position_rule_form_submit($form, &$form_state) {
  *   - menu_name: The machine name of the menu where this rule is positioned.
  *   - plid: The mlid of the parent menu link specified in the rule.
  */
-function menu_position_add_rule($rule) {
+function menu_position_add_rule(array $rule) {
   $fields = array(
     'admin_title' => $rule['admin_title'],
     'conditions'  => serialize($rule['conditions']),
@@ -518,13 +526,14 @@ function menu_position_add_rule($rule) {
 /**
  * Adds a menu position rule.
  *
- * @param $rid
+ * @param int $rid
  *   ID of the rule needing a menu link.
- * @param $plid
+ * @param int $plid
  *   The mlid of the parent menu link specified in the rule.
- * @param $admin_title
+ * @param string $admin_title
  *   The administrative title of the rule.
- * @return
+ *
+ * @return int
  *   The mlid of the rule's new menu link.
  */
 function menu_position_add_menu_link($rid, $plid, $admin_title) {
@@ -536,9 +545,10 @@ function menu_position_add_menu_link($rid, $plid, $admin_title) {
 /**
  * Retrieves a menu position rule from the database.
  *
- * @param $rid
+ * @param int $rid
  *   The ID of the requested rule.
- * @return
+ *
+ * @return array
  *   An associative array for the requested rule.
  */
 function menu_position_read_rule($rid) {
@@ -550,7 +560,7 @@ function menu_position_read_rule($rid) {
 /**
  * Retrieves a menu position rule from the database.
  *
- * @return
+ * @return array
  *   An associative array for all rules with keys equal to the rid of each rule.
  */
 function menu_position_read_rules() {
@@ -566,7 +576,7 @@ function menu_position_read_rules() {
 /**
  * Edits a menu position rule.
  *
- * @param $rule
+ * @param array $rule
  *   An associate array defining the rule to be edited. Must contain the
  *   following keys:
  *   - rid: The rule ID.
@@ -577,7 +587,7 @@ function menu_position_read_rules() {
  *   - menu_name: The machine name of the menu where this rule is positioned.
  *   - plid: The mlid of the parent menu link specified in the rule.
  */
-function menu_position_edit_rule($rule) {
+function menu_position_edit_rule(array $rule) {
   $fields = array(
     'admin_title' => $rule['admin_title'],
     'conditions'  => serialize($rule['conditions']),
@@ -598,15 +608,16 @@ function menu_position_edit_rule($rule) {
 /**
  * Adds a menu position rule.
  *
- * @param $rid
+ * @param int $rid
  *   ID of the rule needing a menu link.
- * @param $mlid
+ * @param int $mlid
  *   The mlid of the menu link used in the rule.
- * @param $plid
+ * @param int $plid
  *   The mlid of the parent menu link specified in the rule.
- * @param $admin_title
+ * @param string $admin_title
  *   The administrative title of the rule.
- * @return
+ *
+ * @return int
  *   The mlid of the rule's new menu link.
  */
 function menu_position_edit_menu_link($rid, $mlid, $plid, $admin_title) {

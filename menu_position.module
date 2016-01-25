@@ -1,7 +1,7 @@
 <?php
 /**
  * @file
- * Provides menu links for dynamic positioning of nodes based on configurable rules.
+ * Provides dynamic menu links based on configurable rules.
  */
 
 /**
@@ -72,10 +72,10 @@ function menu_position_page_delivery_callback_alter() {
   }
   elseif ($arg0 == 'taxonomy' && $arg1 == 'term' && is_numeric($arg2)) {
     $context['taxonomy_term'] = taxonomy_term_load($arg2);
-     // Don't evaluate the rules on a 404 page.
-     if (!$context['taxonomy_term']) {
-       return;
-     }
+    // Don't evaluate the rules on a 404 page.
+    if (!$context['taxonomy_term']) {
+      return;
+    }
     $context['entity_type'] = 'taxonomy_term';
     $context['bundle_name'] = $context['taxonomy_term']->vocabulary_machine_name;
   }
@@ -250,7 +250,7 @@ function menu_position_menu_link_update($link) {
 /**
  * Return the activated rule(s) for the specified context.
  *
- * @see menu_position_evaluate_rules().
+ * @see menu_position_evaluate_rules()
  */
 function menu_position_get_activated_rules($context) {
   return menu_position_evaluate_rules($context, TRUE);
@@ -273,7 +273,7 @@ function menu_position_get_activated_rules($context) {
  * associated menu, determines the order in which menus are considered for
  * this purpose.)
  *
- * @param $context
+ * @param array $context
  *   A small context array containing the following data:
  *     - 'path'        => The path of the current page.
  *     - 'entity_type' => The type of the current page's entity.
@@ -283,14 +283,13 @@ function menu_position_get_activated_rules($context) {
  *
  *   n.b. Only 'path' is guaranteed to be populated. The other values
  *   will be available only if the current page is an "entity" page.
- *
- * @param boolean $use_cache
+ * @param bool $use_cache
  *   If TRUE and the specified context has already been processed, then
  *   simply return the cached array of rules which were activated for that
  *   context. If the context has not yet been processed, normal processing
  *   will take place.
  *
- * @return
+ * @return array
  *   An array of the rules which were activated for the specified context.
  */
 function menu_position_evaluate_rules($context = array(), $use_cache = FALSE) {
@@ -402,14 +401,14 @@ function menu_position_evaluate_rules($context = array(), $use_cache = FALSE) {
  *
  * May additionally set the active trail.
  *
- * @param $rule
+ * @param object $rule
  *   The rule that should be activated.
- * @param $context
+ * @param array $context
  *   A small context variable used by the menu_position module.
- * @param $set_breadcrumb
+ * @param bool $set_breadcrumb
  *   Whether to set the active trail / breadcrumb.
  */
-function menu_position_activate_rule($rule, $context, $set_breadcrumb) {
+function menu_position_activate_rule($rule, array $context, $set_breadcrumb) {
   // Retrieve menu item specified in the rule.
   $menu_item = menu_link_load($rule->mlid);
 
@@ -458,7 +457,7 @@ function menu_position_activate_rule($rule, $context, $set_breadcrumb) {
 /**
  * Dynamically expands the parent menu item for a rule.
  *
- * @param $plid
+ * @param int $plid
  *   The parent menu item's mlid.
  */
 function menu_position_expand_parent_link($plid = NULL) {
@@ -473,9 +472,9 @@ function menu_position_expand_parent_link($plid = NULL) {
 /**
  * Dynamically sets the menu item for a specified rule.
  *
- * @param $rid
+ * @param int $rid
  *   The rule ID.
- * @param $link
+ * @param string $link
  *   The menu item that should be used for the rule.
  */
 function menu_position_set_link($rid, $link) {
@@ -485,9 +484,10 @@ function menu_position_set_link($rid, $link) {
 /**
  * Returns the dynamically set menu item for a specified rule.
  *
- * @param $path
+ * @param string $path
  *   The path of the requested rule, e.g. menu-position/10.
- * @return
+ *
+ * @return string
  *   The title that should be used for the rule's menu item.
  */
 function menu_position_get_link($path, $link = NULL) {
@@ -524,6 +524,7 @@ function menu_position_translated_menu_link_alter(&$item, &$map) {
         $item['has_children'] = 1;
       }
       break;
+
     case 'parent':
       if ($item['mlid'] == menu_position_expand_parent_link()) {
         $item['localized_options']['attributes']['class'][] = 'active';
@@ -561,9 +562,10 @@ function menu_position_get_plugins() {
 /**
  * Loads the include file containing a condition's callback function definition.
  *
- * @param $plugin
+ * @param string $plugin
  *   The name of the plugin.
- * @return
+ *
+ * @return string/bool
  *   The name of the callback function, or FALSE if it could not be found.
  */
 function menu_position_get_condition_callback($plugin) {
@@ -590,8 +592,9 @@ function menu_position_get_condition_callback($plugin) {
 }
 
 /**
- * Return a menu link for the given node, using the first menu position rule
- * activated for that node.
+ * Return a menu link for the given node.
+ *
+ * It uses the first menu position rule activated for that node.
  */
 function menu_position_token_menu_link_load($node) {
   $cache = &drupal_static(__FUNCTION__);

@@ -78,7 +78,7 @@ function menu_position_features_revert($module) {
  * @param array $field_data
  *   The field data to save.
  */
-function _menu_position_save_rule($field_data) {
+function _menu_position_save_rule(array $field_data) {
   module_load_include('inc', 'menu_position', 'menu_position.admin');
 
   // Update/insert the rule.
@@ -102,5 +102,5 @@ function _menu_position_save_rule($field_data) {
     ->condition('plid', $field_data['plid'])
     ->condition('module', 'menu_position')
     ->condition('link_title', $field_data['admin_title'] . ' (menu position rule)');
-    $query->execute();
+  $query->execute();
 }
