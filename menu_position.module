@@ -51,7 +51,7 @@ function menu_position_page_delivery_callback_alter() {
     'bundle_name' => NULL,
   );
   // Determine what kind of entity page this is.
-  list($arg0, $arg1, ) = explode('/', $context['path'] . '//');
+  list($arg0, $arg1, $arg2) = explode('/', $context['path'] . '//');
   if ($arg0 == 'node' && is_numeric($arg1)) {
     $context['node'] = node_load($arg1);
     // Don't evaluate the rules on a 404 page.
@@ -69,6 +69,15 @@ function menu_position_page_delivery_callback_alter() {
     }
     $context['entity_type'] = 'user';
     $context['bundle_name'] = 'user';
+  }
+  elseif ($arg0 == 'taxonomy' && $arg1 == 'term' && is_numeric($arg2)) {
+    $context['taxonomy_term'] = taxonomy_term_load($arg2);
+     // Don't evaluate the rules on a 404 page.
+     if (!$context['taxonomy_term']) {
+       return;
+     }
+    $context['entity_type'] = 'taxonomy_term';
+    $context['bundle_name'] = $context['taxonomy_term']->vocabulary_machine_name;
   }
 
   menu_position_evaluate_rules($context);
