@@ -100,6 +100,7 @@ function _menu_position_save_rule($field_data) {
     ))
     ->condition('menu_name', $field_data['menu_name'])
     ->condition('plid', $field_data['plid'])
-    ->condition('module', 'menu_position');
+    ->condition('module', 'menu_position')
+    ->condition('link_title', $field_data['admin_title'] . ' (menu position rule)');
     $query->execute();
 }
