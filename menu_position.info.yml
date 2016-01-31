@@ -2,4 +2,4 @@ name: 'Menu position'
 type: module
 description: 'Customize menu position of nodes depending on their content type, associated terms and others conditions.'
 core: '8.x'
-configure: menu_position.settings
+configure: menu_position.admin_settings
