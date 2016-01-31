@@ -1,0 +1,621 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <link href='http://fonts.googleapis.com/css?family=Open+Sans:600italic,400,700,600' rel='stylesheet' type='text/css' />
+    <style type="text/css">
+    <!--
+
+body {
+  width: 80%;
+  color: #343434;
+  margin: 1em auto;
+  font-family: 'Open Sans', Verdana, sans-serif;
+}
+
+details {
+  font-size: 18px;
+  line-height: 25px;
+  margin-bottom: 2em;
+  display: block;
+}
+
+details summary {
+  padding: 1em;
+  margin-bottom: 1em;
+  display: block;
+}
+
+details.error summary {
+  background-color: #ffd5d5;
+}
+
+details.warning summary {
+  background-color: #fff3bb;
+}
+
+a {
+  color: #095cb1;
+  font-weight: bold;
+  text-decoration: none;
+}
+
+h5 {
+  font-size: 1em;
+}
+
+aside {
+  font-style: italic;
+  line-height: 20px;
+  font-size: 15px;
+}
+
+.group {
+  border: 1px solid #ececec;
+  padding: 1em;
+  display: block;
+}
+
+.group > summary {
+  padding: 0;
+  color: #c8c8c8;
+  margin-bottom: 0;;
+  font-weight: bold;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  display: block;
+}
+
+.group[open] > summary {
+  margin-bottom: 1em;
+}
+
+.group > details:last-child {
+  margin-bottom: 0;
+}
+
+    -->
+    </style>
+  </head>
+  <body>
+      <details open="true" class="group">
+      <summary></summary>
+          <details class="error">
+      <summary><code>hook_menu()</code> has been removed from Drupal 8.</summary>
+
+      
+            <h5>Documentation</h5>
+      <ul>
+                <li><a target="_blank" href="https://www.drupal.org/node/1800686">All functionality of <code>hook_menu()</code> replaced</a></li>
+                <li><a target="_blank" href="https://www.drupal.org/node/2177901">Dynamic routes are now defined in <code>MODULE.routing.yml</code></a></li>
+                <li><a target="_blank" href="https://www.drupal.org/node/2119699">Page callbacks have been converted to controller classes</a></li>
+                <li><a target="_blank" href="https://www.drupal.org/node/2089605">Route naming convention</a></li>
+                <li><a target="_blank" href="https://www.drupal.org/node/2165243">Contextual links are now plugins defined in <code>MODULE.links.contextual.yml</code></a></li>
+                <li><a target="_blank" href="https://www.drupal.org/node/2007444">Local actions are now plugins defined in <code>MODULE.links.action.yml</code></a></li>
+                <li><a target="_blank" href="https://www.drupal.org/node/2044515">Local tasks and now plugins defined in <code>MODULE.links.task.yml</code></a></li>
+                <li><a target="_blank" href="https://www.drupal.org/node/2228089">Menu links are now defined in <code>MODULE.links.menu.yml</code></a></li>
+              </ul>
+      
+            <h5>Files Affected</h5>
+      <ul>
+              <li>/Users/Scott/Sites/d8.dev/modules/menu_position/menu_position.module, line 97</li>
+            </ul>
+                  <aside>Flagged by _flag_hook:menu</aside>    </details>
+    <details class="error">
+      <summary><code>confirm_form()</code> is now <code>\Drupal\Core\Form\ConfirmFormBase</code></summary>
+
+      
+            <h5>Documentation</h5>
+      <ul>
+                <li><a target="_blank" href="https://www.drupal.org/node/1945416"><code>confirm_form()</code> removed</a></li>
+              </ul>
+      
+            <h5>Files Affected</h5>
+      <ul>
+              <li>/Users/Scott/Sites/d8.dev/modules/menu_position/menu_position.admin.inc, line 670</li>
+            </ul>
+                  <aside>Flagged by _function_call:confirm_form</aside>    </details>
+    <details class="error">
+      <summary><code>drupal_add_tabledrag()</code> is now the <code>#tabledrag</code> property of a render array.</summary>
+
+      
+            <h5>Documentation</h5>
+      <ul>
+                <li><a target="_blank" href="https://www.drupal.org/node/2160571"><code>drupal_add_tabledrag()</code> replaced by render array attachment</a></li>
+              </ul>
+      
+            <h5>Files Affected</h5>
+      <ul>
+              <li>/Users/Scott/Sites/d8.dev/modules/menu_position/menu_position.admin.inc, line 266</li>
+            </ul>
+                  <aside>Flagged by _function_call:drupal_add_tabledrag</aside>    </details>
+    <details class="error">
+      <summary><code>drupal_goto()</code> has been removed.</summary>
+
+      
+            <h5>Documentation</h5>
+      <ul>
+                <li><a target="_blank" href="https://www.drupal.org/node/2023537"><code>drupal_goto()</code> removed</a></li>
+              </ul>
+      
+            <h5>Files Affected</h5>
+      <ul>
+              <li>/Users/Scott/Sites/d8.dev/modules/menu_position/menu_position.admin.inc, line 11</li>
+              <li>/Users/Scott/Sites/d8.dev/modules/menu_position/menu_position.admin.inc, line 329</li>
+              <li>/Users/Scott/Sites/d8.dev/modules/menu_position/menu_position.admin.inc, line 455</li>
+              <li>/Users/Scott/Sites/d8.dev/modules/menu_position/menu_position.admin.inc, line 663</li>
+            </ul>
+                  <aside>Flagged by _function_call:drupal_goto</aside>    </details>
+    <details class="error">
+      <summary><code>drupal_render()</code> has been removed.</summary>
+
+      
+      
+            <h5>Files Affected</h5>
+      <ul>
+              <li>/Users/Scott/Sites/d8.dev/modules/menu_position/menu_position.admin.inc, line 292</li>
+              <li>/Users/Scott/Sites/d8.dev/modules/menu_position/menu_position.admin.inc, line 293</li>
+              <li>/Users/Scott/Sites/d8.dev/modules/menu_position/menu_position.admin.inc, line 295</li>
+              <li>/Users/Scott/Sites/d8.dev/modules/menu_position/menu_position.admin.inc, line 298</li>
+              <li>/Users/Scott/Sites/d8.dev/modules/menu_position/menu_position.admin.inc, line 303</li>
+            </ul>
+                  <aside>Flagged by _function_call:drupal_render</aside>    </details>
+    <details class="error">
+      <summary><code>element_children()</code> is now a method of the <code>Element</code> class.</summary>
+
+      
+            <h5>Documentation</h5>
+      <ul>
+                <li><a target="_blank" href="https://www.drupal.org/node/2173683"><code>element_*</code> functions moved into <code>Element</code> class</a></li>
+              </ul>
+      
+            <h5>Files Affected</h5>
+      <ul>
+              <li>/Users/Scott/Sites/d8.dev/modules/menu_position/menu_position.admin.inc, line 287</li>
+              <li>/Users/Scott/Sites/d8.dev/modules/menu_position/menu_position.admin.inc, line 301</li>
+            </ul>
+                  <aside>Flagged by _function_call:element_children</aside>    </details>
+    <details class="error">
+      <summary><code>entity_extract_ids()</code> replaced by methods of <code>EntityInterface</code></summary>
+
+      
+            <h5>Documentation</h5>
+      <ul>
+                <li><a target="_blank" href="https://www.drupal.org/node/1724986"><code>entity_extract_ids()</code> removed</a></li>
+              </ul>
+      
+            <h5>Files Affected</h5>
+      <ul>
+              <li>/Users/Scott/Sites/d8.dev/modules/menu_position/menu_position.module, line 311</li>
+            </ul>
+                  <aside>Flagged by _function_call:entity_extract_ids</aside>    </details>
+    <details class="error">
+      <summary><code>node_load()</code> has been removed.</summary>
+
+      
+            <h5>Documentation</h5>
+      <ul>
+                <li><a target="_blank" href="https://www.drupal.org/node/2266845">Entities are now classed objects implementing <code>EntityInterface</code></a></li>
+              </ul>
+      
+            <h5>Files Affected</h5>
+      <ul>
+              <li>/Users/Scott/Sites/d8.dev/modules/menu_position/menu_position.module, line 56</li>
+            </ul>
+                  <aside>Flagged by _function_call:node_load</aside>    </details>
+    <details class="error">
+      <summary><code>user_load()</code> has been removed.</summary>
+
+      
+            <h5>Documentation</h5>
+      <ul>
+                <li><a target="_blank" href="https://www.drupal.org/node/2266845">Entities are now classed objects implementing <code>EntityInterface</code></a></li>
+              </ul>
+      
+            <h5>Files Affected</h5>
+      <ul>
+              <li>/Users/Scott/Sites/d8.dev/modules/menu_position/menu_position.module, line 65</li>
+            </ul>
+                  <aside>Flagged by _function_call:user_load</aside>    </details>
+    <details class="error">
+      <summary><code>taxonomy_term_load()</code> has been removed.</summary>
+
+      
+            <h5>Documentation</h5>
+      <ul>
+                <li><a target="_blank" href="https://www.drupal.org/node/2266845">Entities are now classed objects implementing <code>EntityInterface</code></a></li>
+              </ul>
+      
+            <h5>Files Affected</h5>
+      <ul>
+              <li>/Users/Scott/Sites/d8.dev/modules/menu_position/menu_position.module, line 74</li>
+            </ul>
+                  <aside>Flagged by _function_call:taxonomy_term_load</aside>    </details>
+    <details class="error">
+      <summary><code>taxonomy_term_load_multiple()</code> has been removed.</summary>
+
+      
+            <h5>Documentation</h5>
+      <ul>
+                <li><a target="_blank" href="https://www.drupal.org/node/2266845">Entities are now classed objects implementing <code>EntityInterface</code></a></li>
+              </ul>
+      
+            <h5>Files Affected</h5>
+      <ul>
+              <li>/Users/Scott/Sites/d8.dev/modules/menu_position/plugins/menu_position.taxonomy.inc, line 121</li>
+              <li>/Users/Scott/Sites/d8.dev/modules/menu_position/plugins/menu_position.taxonomy.inc, line 291</li>
+            </ul>
+                  <aside>Flagged by _function_call:taxonomy_term_load_multiple</aside>    </details>
+    <details class="error">
+      <summary>The Field API CRUD functions have been removed.</summary>
+
+      
+            <h5>Documentation</h5>
+      <ul>
+                <li><a target="_blank" href="https://www.drupal.org/node/2012896">Fields and field instances are now entities</a></li>
+              </ul>
+      
+            <h5>Files Affected</h5>
+      <ul>
+              <li>/Users/Scott/Sites/d8.dev/modules/menu_position/plugins/menu_position.taxonomy.inc, line 41</li>
+            </ul>
+                  <aside>Flagged by _function_call:field_info_fields</aside>    </details>
+    <details class="error">
+      <summary><code>drupal_get_form()</code> has moved into the FormBuilder service.</summary>
+
+      
+            <h5>Documentation</h5>
+      <ul>
+                <li><a target="_blank" href="https://www.drupal.org/node/2121003">Form generation functions moved into FormBuilder service</a></li>
+              </ul>
+      
+            <h5>Files Affected</h5>
+      <ul>
+              <li>/Users/Scott/Sites/d8.dev/modules/menu_position/menu_position.admin.inc, line 164</li>
+            </ul>
+                  <aside>Flagged by _function_call:drupal_get_form</aside>    </details>
+    <details class="error">
+      <summary><code>form_error()</code> is now a method of <code>FormStateInterface</code>.</summary>
+
+      
+            <h5>Documentation</h5>
+      <ul>
+                <li><a target="_blank" href="https://www.drupal.org/node/2121003">Form functions moved into <code>FormStateInterface</code></a></li>
+              </ul>
+      
+            <h5>Files Affected</h5>
+      <ul>
+              <li>/Users/Scott/Sites/d8.dev/modules/menu_position/plugins/menu_position.example_plugin.inc, line 92</li>
+            </ul>
+                  <aside>Flagged by _function_call:form_error</aside>    </details>
+    <details class="error">
+      <summary><code>form_set_error()</code> is now a method of <code>FormStateInterface</code>.</summary>
+
+      
+            <h5>Documentation</h5>
+      <ul>
+                <li><a target="_blank" href="https://www.drupal.org/node/2121003">Form functions moved into <code>FormStateInterface</code></a></li>
+              </ul>
+      
+            <h5>Files Affected</h5>
+      <ul>
+              <li>/Users/Scott/Sites/d8.dev/modules/menu_position/menu_position.admin.inc, line 461</li>
+              <li>/Users/Scott/Sites/d8.dev/modules/menu_position/plugins/menu_position.taxonomy.inc, line 296</li>
+            </ul>
+                  <aside>Flagged by _function_call:form_set_error</aside>    </details>
+    <details class="error">
+      <summary><code>form_set_value()</code> is now a method of <code>FormStateInterface</code>.</summary>
+
+      
+            <h5>Documentation</h5>
+      <ul>
+                <li><a target="_blank" href="https://www.drupal.org/node/2121003">Form functions moved into <code>FormStateInterface</code></a></li>
+              </ul>
+      
+            <h5>Files Affected</h5>
+      <ul>
+              <li>/Users/Scott/Sites/d8.dev/modules/menu_position/plugins/menu_position.taxonomy.inc, line 304</li>
+            </ul>
+                  <aside>Flagged by _function_call:form_set_value</aside>    </details>
+    <details class="error">
+      <summary><code>menu_link_get_preferred()</code> has been removed.</summary>
+
+      
+            <h5>Documentation</h5>
+      <ul>
+                <li><a target="_blank" href="https://www.drupal.org/node/2240003">Active trail functions replaced by <code>menu.active_trail</code> service.</a></li>
+              </ul>
+      
+            <h5>Files Affected</h5>
+      <ul>
+              <li>/Users/Scott/Sites/d8.dev/modules/menu_position/menu_position.module, line 432</li>
+              <li>/Users/Scott/Sites/d8.dev/modules/menu_position/menu_position.module, line 442</li>
+            </ul>
+                  <aside>Flagged by _function_call:menu_link_get_preferred</aside>    </details>
+    <details class="error">
+      <summary><code>menu_set_active_trail()</code> has been removed.</summary>
+
+      
+            <h5>Documentation</h5>
+      <ul>
+                <li><a target="_blank" href="https://www.drupal.org/node/2240003">Active trail functions replaced by <code>menu.active_trail</code> service.</a></li>
+              </ul>
+      
+            <h5>Files Affected</h5>
+      <ul>
+              <li>/Users/Scott/Sites/d8.dev/modules/menu_position/menu_position.module, line 449</li>
+              <li>/Users/Scott/Sites/d8.dev/modules/menu_position/menu_position.module, line 451</li>
+            </ul>
+                  <aside>Flagged by _function_call:menu_set_active_trail</aside>    </details>
+    <details class="error">
+      <summary><code>menu_get_item()</code> has been removed.</summary>
+
+      
+            <h5>Documentation</h5>
+      <ul>
+                <li><a target="_blank" href="https://www.drupal.org/node/2203305"><code>menu_get_item()</code> removed</a></li>
+              </ul>
+      
+            <h5>Files Affected</h5>
+      <ul>
+              <li>/Users/Scott/Sites/d8.dev/modules/menu_position/menu_position.module, line 332</li>
+              <li>/Users/Scott/Sites/d8.dev/modules/menu_position/menu_position.module, line 421</li>
+            </ul>
+                  <aside>Flagged by _function_call:menu_get_item</aside>    </details>
+    <details class="error">
+      <summary><code>menu_parent_options()</code> has been replaced by <code>menu.link_tree</code> service.</summary>
+
+      
+            <h5>Documentation</h5>
+      <ul>
+                <li><a target="_blank" href="https://www.drupal.org/node/2226481">Menu tree building is now a service</a></li>
+                <li><a target="_blank" href="https://api.drupal.org/api/drupal/core%21lib%21Drupal%21Core%21Menu%21MenuLinkTree.php/class/MenuLinkTree/8"><code>MenuLinkTree</code> documentation</a></li>
+              </ul>
+      
+            <h5>Files Affected</h5>
+      <ul>
+              <li>/Users/Scott/Sites/d8.dev/modules/menu_position/menu_position.admin.inc, line 374</li>
+              <li>/Users/Scott/Sites/d8.dev/modules/menu_position/menu_position.admin.inc, line 378</li>
+            </ul>
+                  <aside>Flagged by _function_call:menu_parent_options</aside>    </details>
+    <details class="error">
+      <summary><code>menu_tree_set_path()</code> has been replaced by <code>menu.link_tree</code> service.</summary>
+
+      
+            <h5>Documentation</h5>
+      <ul>
+                <li><a target="_blank" href="https://www.drupal.org/node/2226481">Menu tree building is now a service</a></li>
+                <li><a target="_blank" href="https://api.drupal.org/api/drupal/core%21lib%21Drupal%21Core%21Menu%21MenuLinkTree.php/class/MenuLinkTree/8"><code>MenuLinkTree</code> documentation</a></li>
+              </ul>
+      
+            <h5>Files Affected</h5>
+      <ul>
+              <li>/Users/Scott/Sites/d8.dev/modules/menu_position/menu_position.module, line 428</li>
+            </ul>
+                  <aside>Flagged by _function_call:menu_tree_set_path</aside>    </details>
+    <details class="error">
+      <summary><code>theme()</code> has been renamed to <code>_theme()</code>, and should never be called directly.</summary>
+
+      
+            <h5>Documentation</h5>
+      <ul>
+                <li><a target="_blank" href="https://www.drupal.org/node/2195739"><code>theme()</code> renamed to <code>_theme()</code> and should not be called directly</a></li>
+              </ul>
+      
+            <h5>Files Affected</h5>
+      <ul>
+              <li>/Users/Scott/Sites/d8.dev/modules/menu_position/menu_position.admin.inc, line 313</li>
+            </ul>
+                  <aside>Flagged by _function_call:theme</aside>    </details>
+    <details class="error">
+      <summary>The core token API is now a service.</summary>
+
+      
+            <h5>Documentation</h5>
+      <ul>
+                <li><a target="_blank" href="https://www.drupal.org/node/1973488">Token API is now a service</a></li>
+              </ul>
+      
+            <h5>Files Affected</h5>
+      <ul>
+              <li>/Users/Scott/Sites/d8.dev/modules/menu_position/menu_position.module, line 656</li>
+            </ul>
+                  <aside>Flagged by _function_call:token_find_with_prefix</aside>    </details>
+    <details class="error">
+      <summary>The core token API is now a service.</summary>
+
+      
+            <h5>Documentation</h5>
+      <ul>
+                <li><a target="_blank" href="https://www.drupal.org/node/1973488">Token API is now a service</a></li>
+              </ul>
+      
+            <h5>Files Affected</h5>
+      <ul>
+              <li>/Users/Scott/Sites/d8.dev/modules/menu_position/menu_position.module, line 673</li>
+            </ul>
+                  <aside>Flagged by _function_call:token_generate</aside>    </details>
+    <details class="error">
+      <summary><code>drupal_strtolower()</code> has been moved into the Unicode utility class.</summary>
+
+      
+            <h5>Documentation</h5>
+      <ul>
+                <li><a target="_blank" href="https://www.drupal.org/node/1992584"><code>drupal_strtolower()</code> moved into Unicode component</a></li>
+              </ul>
+      
+            <h5>Files Affected</h5>
+      <ul>
+              <li>/Users/Scott/Sites/d8.dev/modules/menu_position/plugins/menu_position.taxonomy.inc, line 239</li>
+              <li>/Users/Scott/Sites/d8.dev/modules/menu_position/menu_position.install, line 133</li>
+              <li>/Users/Scott/Sites/d8.dev/modules/menu_position/plugins/menu_position.pages.inc, line 21</li>
+              <li>/Users/Scott/Sites/d8.dev/modules/menu_position/plugins/menu_position.pages.inc, line 78</li>
+            </ul>
+                  <aside>Flagged by _function_call:drupal_strtolower</aside>    </details>
+    <details class="error">
+      <summary><code>url()</code> has been removed.</summary>
+
+      
+            <h5>Documentation</h5>
+      <ul>
+                <li><a target="_blank" href="https://www.drupal.org/node/2346779"><code>url()</code> replaced by URL generation API</a></li>
+              </ul>
+      
+            <h5>Files Affected</h5>
+      <ul>
+              <li>/Users/Scott/Sites/d8.dev/modules/menu_position/plugins/menu_position.taxonomy.inc, line 179</li>
+              <li>/Users/Scott/Sites/d8.dev/modules/menu_position/menu_position.install, line 109</li>
+              <li>/Users/Scott/Sites/d8.dev/modules/menu_position/menu_position.install, line 160</li>
+            </ul>
+                  <aside>Flagged by _function_call:url</aside>    </details>
+    <details class="error">
+      <summary><code>variable_del()</code> has been removed.</summary>
+
+      
+            <h5>Documentation</h5>
+      <ul>
+                <li><a target="_blank" href="https://www.drupal.org/node/2183531">The Variable API has been removed</a></li>
+              </ul>
+      
+            <h5>Files Affected</h5>
+      <ul>
+              <li>/Users/Scott/Sites/d8.dev/modules/menu_position/menu_position.install, line 178</li>
+            </ul>
+                  <aside>Flagged by _function_call:variable_del</aside>    </details>
+    <details class="error">
+      <summary><code>variable_get()</code> has been removed.</summary>
+
+      
+            <h5>Documentation</h5>
+      <ul>
+                <li><a target="_blank" href="https://www.drupal.org/node/2183531">The Variable API has been removed</a></li>
+              </ul>
+      
+            <h5>Files Affected</h5>
+      <ul>
+              <li>/Users/Scott/Sites/d8.dev/modules/menu_position/menu_position.admin.inc, line 27</li>
+              <li>/Users/Scott/Sites/d8.dev/modules/menu_position/menu_position.module, line 512</li>
+            </ul>
+                  <aside>Flagged by _function_call:variable_get</aside>    </details>
+    <details class="warning">
+      <summary>Many common functions, shared variables, and constants have been renamed.</summary>
+
+      
+            <h5>Documentation</h5>
+      <ul>
+                <li><a target="_blank" href="https://www.drupal.org/node/2324935">The global theme variables have been replaced by an ActiveTheme object</a></li>
+              </ul>
+      
+                      </details>
+    <details class="warning">
+      <summary>Static permissions are now defined in <code>MODULE.permissions.yml</code>.</summary>
+
+      
+            <h5>Documentation</h5>
+      <ul>
+                <li><a target="_blank" href="https://www.drupal.org/node/2311427">Defining permissions in <code>MODULE.permissions.yml</code></a></li>
+              </ul>
+      
+            <h5>Files Affected</h5>
+      <ul>
+              <li>/Users/Scott/Sites/d8.dev/modules/menu_position/menu_position.module, line 86</li>
+            </ul>
+            <p class="fixable">This issue can be fixed automatically.</p>      <aside>Flagged by hook_permission</aside>    </details>
+    <details class="warning">
+      <summary>Default configuration is deleted automatically.</summary>
+
+      
+      
+            <h5>Files Affected</h5>
+      <ul>
+              <li>/Users/Scott/Sites/d8.dev/modules/menu_position/menu_position.install, line 178</li>
+            </ul>
+                  <aside>Flagged by hook_uninstall</aside>    </details>
+    <details class="error">
+      <summary>Module info files' <code>core</code> key must have a value of <code>8.x</code>.</summary>
+
+      
+            <h5>Documentation</h5>
+      <ul>
+                <li><a target="_blank" href="https://www.drupal.org/node/1935708"><code>.info</code> files are now <code>.info.yml</code> files</a></li>
+              </ul>
+      
+            <h5>Files Affected</h5>
+      <ul>
+              <li>/Users/Scott/Sites/d8.dev/modules/menu_position/menu_position.info</li>
+            </ul>
+                  <aside>Flagged by info</aside>    </details>
+    <details class="error">
+      <summary>Info files must contain a <code>type</code> key.</summary>
+
+      
+            <h5>Documentation</h5>
+      <ul>
+                <li><a target="_blank" href="https://www.drupal.org/node/1935708#type"><code>.info</code> files are now <code>.info.yml</code> files</a></li>
+              </ul>
+      
+            <h5>Files Affected</h5>
+      <ul>
+              <li>/Users/Scott/Sites/d8.dev/modules/menu_position/menu_position.info</li>
+            </ul>
+                  <aside>Flagged by info</aside>    </details>
+    <details class="error">
+      <summary>Many common dependencies have moved into core.</summary>
+
+      
+            <h5>Documentation</h5>
+      <ul>
+                <li><a target="_blank" href="https://www.drupal.org/node/1935708"><code>.info</code> files are now <code>.info.yml</code> files</a></li>
+              </ul>
+      
+            <h5>Files Affected</h5>
+      <ul>
+              <li>/Users/Scott/Sites/d8.dev/modules/menu_position/menu_position.info</li>
+            </ul>
+                  <aside>Flagged by info</aside>    </details>
+    <details class="error">
+      <summary>Modules no longer declare classes in their info file.</summary>
+
+      
+            <h5>Documentation</h5>
+      <ul>
+                <li><a target="_blank" href="https://www.drupal.org/node/1935708#files"><code>.info</code> files are now <code>.info.yml</code> files</a></li>
+              </ul>
+      
+            <h5>Files Affected</h5>
+      <ul>
+              <li>/Users/Scott/Sites/d8.dev/modules/menu_position/menu_position.info</li>
+            </ul>
+                  <aside>Flagged by info</aside>    </details>
+    <details class="error">
+      <summary>Module info files' <code>configure</code> key must be a route name, not a path.</summary>
+
+      
+            <h5>Documentation</h5>
+      <ul>
+                <li><a target="_blank" href="https://www.drupal.org/node/1935708#configure"><code>.info</code> files are now <code>.info.yml</code> files</a></li>
+              </ul>
+      
+            <h5>Files Affected</h5>
+      <ul>
+              <li>/Users/Scott/Sites/d8.dev/modules/menu_position/menu_position.info</li>
+            </ul>
+                  <aside>Flagged by info</aside>    </details>
+    <details class="error">
+      <summary>Automated web tests must be in a PSR-4 namespace, and unit tests must be converted to PHPUnit.</summary>
+
+      
+            <h5>Documentation</h5>
+      <ul>
+                <li><a target="_blank" href="https://www.drupal.org/node/1543796">Namespacing of automated tests has changed</a></li>
+                <li><a target="_blank" href="https://www.drupal.org/node/2301125"><code>getInfo()</code> in test classes replaced by doc comments</a></li>
+                <li><a target="_blank" href="https://www.drupal.org/node/1710766">Test classes should define a <code>$modules</code> property declaring dependencies</a></li>
+                <li><a target="_blank" href="https://www.drupal.org/node/1911318">SimpleTest tests now use empty &quot;testing&quot; profile by default</a></li>
+                <li><a target="_blank" href="https://www.drupal.org/node/1829160">New <code>KernelTestBase</code> class for API-level integration tests</a></li>
+                <li><a target="_blank" href="https://www.drupal.org/node/2012184">PHPUnit added to Drupal core</a></li>
+              </ul>
+      
+                      </details>
+
+    </details>
+    </body>
+</html>
