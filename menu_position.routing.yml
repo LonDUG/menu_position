@@ -41,4 +41,4 @@ menu_position.taxonomy_autocomplete:
   path: '/admin/structure/menu-position/taxonomy/autocomplete'
   defaults:
     _controller: '\Drupal\menu_position\Controller\MenuPositionRouter::autocomplete'
-    _title: 'Autocomplete taxonomy'
+    _title: 'Autocomplete taxonomy
