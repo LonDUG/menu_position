@@ -35,10 +35,10 @@ menu_position.router:
   path: '/menu-position/{params}'
   defaults:
     params: ""
-    _controller: '\Drupal\menu_position\Controller\MenuPositionRouter::route'
+    # _controller: '\Drupal\menu_position\Controller\MenuPositionRouter::route'
     _title: 'Menu position router'
 menu_position.taxonomy_autocomplete:
   path: '/admin/structure/menu-position/taxonomy/autocomplete'
   defaults:
-    _controller: '\Drupal\menu_position\Controller\MenuPositionRouter::autocomplete'
-    _title: 'Autocomplete taxonomy
+    # _controller: '\Drupal\menu_position\Controller\MenuPositionRouter::autocomplete'
+    _title: 'Autocomplete taxonomy'
