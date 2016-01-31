@@ -523,6 +523,8 @@ function menu_position_token_menu_link_load($node) {
  * Implements hook_tokens_alter().
  */
 function menu_position_tokens_alter(array &$replacements, array $context) {
+  // @todo See what needs to be done here if anything.
+  return;
   // This behaviour depends upon the contrib tokens module.
   // @see menu_tokens() in token.tokens.inc
   if (!module_exists('token')) {
