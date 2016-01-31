@@ -1,0 +1,4 @@
+menu_position.admin_rules:
+  route_name: menu_position.admin_list
+  base_route: menu_position.admin_rules
+  title: List
