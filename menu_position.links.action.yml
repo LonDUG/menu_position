@@ -1,0 +1,5 @@
+menu_position.add:
+  route_name: 'menu_position.add'
+  title: 'Add menu position rule'
+  appears_on:
+    - menu_position.list
