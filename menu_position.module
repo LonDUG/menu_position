@@ -69,18 +69,6 @@ function menu_position_page_delivery_callback_alter() {
 }
 
 /**
- * Implements hook_permission().
- */
-function menu_position_permission() {
-  return array(
-    'administer menu positions' => array(
-      'title' => t('Administer menu position rules'),
-    ),
-  );
-}
-
-
-/**
  * Implements hook_theme().
  */
 function menu_position_theme() {
