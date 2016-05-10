@@ -1,44 +1,44 @@
 menu_position.admin_rules:
   path: '/admin/structure/menu-position'
   defaults:
-    _entity_list: 'menu_position'
+    _form: '\Drupal\menu_position\RulesForm'
     _title: 'Menu position rules'
   requirements:
     _permission: 'administer menu positions'
-menu_position.list:
+menu_position.admin_list:
   path: '/admin/structure/menu-position/list'
   defaults:
     _title: 'List'
 menu_position.admin_settings:
   path: '/admin/structure/menu-position/settings'
-  defaults: 
+  defaults:
     _form: '\Drupal\menu_position\SettingsForm'
     _title: 'Settings'
   requirements:
     _permission: 'administer menu positions'
-menu_position.add:
+menu_position.admin_add:
   path: '/admin/structure/menu-position/add'
   defaults:
-    _entity_form: '\Drupal\menu_position\menu_position.add'
+    _form: '\Drupal\menu_position\AddRuleForm'
     _title: 'Add menu position rule'
-menu_position.edit:
-  path: '/admin/structure/menu-position/{menu_positon}/edit'
+menu_position.admin_edit:
+  path: '/admin/structure/menu-position/edit'
   defaults:
-    _enitity_form: '\Drupal\menu_position\menu_position.edit'
+    _form: '\Drupal\menu_position\EditRuleForm'
     _title: 'Edit menu position rule'
-menu_position.delete:
-  path: '/admin/structure/menu-position/{menu_position}/delete'
+menu_position.admin_delete:
+  path: '/admin/structure/menu-position/delete'
   defaults:
-    _entity_form: '\Drupal\menu_position\menu_position.delete'
+    _form: '\Drupal\menu_position\DeleteRuleForm'
     _title: 'Delete menu position rule'
 menu_position.router:
   path: '/menu-position/{params}'
   defaults:
     params: ""
-    _controller: '\Drupal\menu_position\Controller\MenuPositionRouter::route'
+    # _controller: '\Drupal\menu_position\Controller\MenuPositionRouter::route'
     _title: 'Menu position router'
 menu_position.taxonomy_autocomplete:
   path: '/admin/structure/menu-position/taxonomy/autocomplete'
   defaults:
-    _controller: '\Drupal\menu_position\Controller\MenuPositionRouter::autocomplete'
-    _title: 'Autocomplete taxonomy
+    # _controller: '\Drupal\menu_position\Controller\MenuPositionRouter::autocomplete'
+    _title: 'Autocomplete taxonomy'
