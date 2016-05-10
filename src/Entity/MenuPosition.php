@@ -35,21 +35,188 @@ use Drupal\menu_position\MenuPositionInterface;
  *   }
  * )
  */
-class Example extends ConfigEntityBase implements MenuPositionInterface {
+class MenuPosition extends ConfigEntityBase implements MenuPositionInterface {
 
   /**
    * The MenuPosition ID.
    *
    * @var string
    */
-  public $id;
+  protected $id;
 
   /**
    * The MenuPosition label.
    *
    * @var string
    */
-  public $label;
+  protected $label;
 
-  
+  /**
+   * Whether the rule is enabled or not.
+   *
+   * @var boolean
+   */
+  protected $enabled;
+
+  /**
+   * The serialized conditions for this rule.
+   *
+   * @var sequence
+   */
+  protected $conditions;
+
+  /**
+   * The menu of the menu link for this rule.
+   *
+   * @var string
+   */
+  protected $menu_name;
+
+  /**
+   * The parent menu link id for this rule.
+   *
+   * @var integer
+   */
+  protected $plid;
+
+  /**
+   * The menu link id for this rule.
+   *
+   * @var integer
+   */
+  protected $mlid;
+
+  /**
+   * The weight of this rule.
+   *
+   * @var integer
+   */
+  protected $weight;
+
+  /**
+   * The machine name.
+   *
+   * @var string
+   */
+  protected $machine_name;
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getId() {
+    return $this->id;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getLabel() {
+    return $this->label;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getEnabled() {
+    return $this->enabled;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getConditions($plugin) {
+    return $this->conditions;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getMenuName() {
+    return $this->menu_name;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getPlid() {
+    return $this->plid;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getMlid() {
+    return $this->mlid;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getWeight() {
+    return $this->weight;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getMachineName() {
+    return $this->machine_name;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function setLabel($label) {
+
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function setEnabled() {
+
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function setConditions($conditions, $plugin) {
+
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function setMenuName() {
+
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function setPlid($plid) {
+
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function setMlid() {
+
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function setWeight($weight) {
+
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function setMachineName() {
+
+  }
+
 }

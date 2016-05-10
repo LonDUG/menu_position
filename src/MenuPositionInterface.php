@@ -13,11 +13,41 @@ use Drupal\Core\Config\Entity\ConfigEntityInterface;
  */
 interface MenuPositionInterface extends ConfigEntityInterface {
   /**
+   * Returns the ID of the menu position rule
+   * @return integer
+   *    The unique identifier of the menu position rule
+   */
+  public function getId();
+
+  /**
    * Returns the administrative title of the menu position rule
    * @return string
    *    The administrative title of the menu position rule
    */
-  public function getAdminTitle();
+  public function getLabel();
+
+  /**
+   * Returns the status of the menu position rule
+   * @return boolean
+   *    The status of the menu position rule
+   */
+  public function getEnabled();
+
+  /**
+   * Returns the content type conditions
+   * @param string $plugin
+   *    machine_name of plugin
+   * @return array
+   *    The array of configuration for content types
+   */
+  public function getConditions($plugin);
+
+  /**
+   * Returns the name of the menu where the position rule lives
+   * @return string
+   *    The name of the menu where the position rule lives
+   */
+  public function getMenuName();
 
   /**
    * Returns the parent menu item
@@ -27,13 +57,11 @@ interface MenuPositionInterface extends ConfigEntityInterface {
   public function getPlid();
 
   /**
-   * Returns the content type conditions
-   * @param string $plugin
-   *    machine_name of plugin
-   * @return array
-   *    The array of configuration for content types
+   * Returns the menu item
+   * @return integer
+   *    The menu item
    */
-  public function getConfigOptions($plugin);
+  public function getMlid();
 
   /**
    * Returns weight for the particular menu position rule
@@ -43,11 +71,41 @@ interface MenuPositionInterface extends ConfigEntityInterface {
   public function getWeight();
 
   /**
+   * Returns machine name for the particular menu position rule
+   * @return string
+   *    Machine name for the particular rule
+   */
+  public function getMachineName();
+
+  /**
    * Sets the administrative title of the menu position rule
-   * @param string $admin_title
+   * @param string $label
    *    The administrative title of the menu position rule
    */
-  public function setAdminTitle($admin_title);
+  public function setLabel($label);
+
+  /**
+   * Sets the status menu position rule
+   * @param boolean
+   *    The status of the menu position rule
+   */
+  public function setEnabled();
+
+  /**
+   * Sets the configuration options for the menu position rules
+   * @param array $conditions
+   *    array of $conditions
+   * @param string $plugin
+   *    machine plugin name
+   */
+  public function setConditions($conditions, $plugin);
+
+  /**
+   * Sets the name of the menu where the position rule lives
+   * @return string
+   *    The name of menu where the position rule lives
+   */
+  public function setMenuName();
 
   /**
    * Sets the parent menu item
@@ -57,13 +115,11 @@ interface MenuPositionInterface extends ConfigEntityInterface {
   public function setPlid($plid);
 
   /**
-   * Sets the configuration options for the menu position rules
-   * @param array $config_options
-   *    array of $config_options
-   * @param string $plugin
-   *    machine plugin name
+   * Sets the menu item
+   * @return integer
+   *    The menu item
    */
-  public function setConfigOptions($config_options, $plugin);
+  public function setMlid();
 
   /**
    * Sets weight for the particular menu position rule
@@ -71,5 +127,12 @@ interface MenuPositionInterface extends ConfigEntityInterface {
    *    Weight for the particular rule
    */
   public function setWeight($weight);
+
+  /**
+   * Sets machine name for the particular menu position rule
+   * @param string
+   *    Machine name for the particular rule
+   */
+  public function setMachineName();
 
 }
