@@ -8,9 +8,9 @@
 namespace Drupal\menu_position\Form;
 
 use Drupal\Core\Config\ConfigFactoryInterface;
-use Drupal\Core\Entity\EntityRepository;
+use Drupal\Core\Entity\EntityManager;
 use Drupal\Core\Entity\Query\QueryFactory;
-use Drupal\Core\Form\ConfigFormBase;
+use Drupal\Core\Form\FormBase;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Url;
 use Symfony\Component\DependencyInjection\ContainerInterface;
@@ -20,42 +20,18 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
  *
  * @package Drupal\menu_position\Form
  */
-class MenuPositionRuleOrderForm extends ConfigFormBase {
+class MenuPositionRuleOrderForm extends FormBase {
 
-  /**
-   * Drupal\Core\Entity\Query\QueryFactory definition.
-   *
-   * @var Drupal\Core\Entity\Query\QueryFactory
-   */
-  protected $entity_query;
-  protected $entity_repository;
-
-  public function __construct(
-    ConfigFactoryInterface $config_factory,
-    QueryFactory $entity_query,
-    EntityRepository $entity_repository
-  ) {
-    parent::__construct($config_factory);
+  public function __construct(QueryFactory $entity_query, EntityManager $entity_manager) {
     $this->entity_query = $entity_query;
-    $this->entity_repository = $entity_repository;
+    $this->entity_manager = $entity_manager;
   }
 
   public static function create(ContainerInterface $container) {
     return new static(
-      $container->get('config.factory'),
       $container->get('entity.query'),
-      $container->get('entity.repository')
+      $container->get('entity.manager')
     );
-  }
-
-
-  /**
-   * {@inheritdoc}
-   */
-  protected function getEditableConfigNames() {
-    return [
-      'menu_position.menupositionruleorder_config'
-    ];
   }
 
   /**
@@ -70,11 +46,14 @@ class MenuPositionRuleOrderForm extends ConfigFormBase {
    */
   public function buildForm(array $form, FormStateInterface $form_state) {
     $config = $this->config('menu_position.menupositionruleorder_config');
+
+    // Get all the rules.
     $query = $this->entity_query->get('menu_position_rule');
     $results = $query->execute();
+    $rules = $this->entity_manager->getStorage('menu_position_rule')->loadMultiple($results);
 
-    $form['#tree'] = TRUE;
     // Menu Position rules order (tabledrag).
+    $form['#tree'] = TRUE;
     $form['rules'] = array(
       '#type' => 'table',
       '#empty' => $this->t('No rules have been created yet.'),
@@ -99,8 +78,7 @@ class MenuPositionRuleOrderForm extends ConfigFormBase {
     );
 
     // Display table of rules.
-    foreach ($results as $result) {
-      $rule = $this->entity_repository->loadEntityByConfigTarget('menu_position_rule', $result);
+    foreach ($rules as $rule) {
       $menu_link['title'] = $rule->getPlid();
       if ($menu_link === FALSE) {
         $menu_link = array('title' => '[' . $this->t('deleted menu item') . ']');
@@ -143,24 +121,29 @@ class MenuPositionRuleOrderForm extends ConfigFormBase {
       );
     }
 
-    return parent::buildForm($form, $form_state);
+    $form['actions']['#type'] = 'actions';
+    $form['actions']['submit'] = array(
+      '#type' => 'submit',
+      '#value' => $this->t('Save configuration'),
+      '#button_type' => 'primary',
+    );
+
+    // By default, render the form using theme_system_config_form().
+    $form['#theme'] = 'system_config_form';
+    return $form;
   }
 
   /**
    * {@inheritdoc}
    */
   public function validateForm(array &$form, FormStateInterface $form_state) {
-    parent::validateForm($form, $form_state);
+
   }
 
   /**
    * {@inheritdoc}
    */
   public function submitForm(array &$form, FormStateInterface $form_state) {
-    parent::submitForm($form, $form_state);
 
-    $this->config('menu_position.menupositionruleorder_config')
-      ->save();
   }
-
 }

@@ -7,11 +7,13 @@
 
 namespace Drupal\menu_position\Form;
 
-use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Entity\EntityForm;
-use Symfony\Component\DependencyInjection\ContainerInterface;
+use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Entity\Query\QueryFactory;
 use Drupal\Core\Form\FormStateInterface;
+use Drupal\Core\Menu\MenuLinkTree;
+use Drupal\Core\Menu\MenuTreeParameters;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 
 class MenuPositionRuleForm extends EntityForm {
 
@@ -19,8 +21,9 @@ class MenuPositionRuleForm extends EntityForm {
    * @param \Drupal\Core\Entity\Query\QueryFactory $entity_query
    *   The entity query.
    */
-  public function __construct(QueryFactory $entity_query) {
+  public function __construct(QueryFactory $entity_query, MenuLinkTree $menu_tree) {
     $this->entityQuery = $entity_query;
+    $this->menu_tree = $menu_tree;
   }
 
   /**
@@ -28,7 +31,8 @@ class MenuPositionRuleForm extends EntityForm {
    */
   public static function create(ContainerInterface $container) {
     return new static(
-      $container->get('entity.query')
+      $container->get('entity.query'),
+      $container->get('menu.link_tree')
     );
   }
 
@@ -39,6 +43,31 @@ class MenuPositionRuleForm extends EntityForm {
     $form = parent::form($form, $form_state);
 
     $menu_position = $this->entity;
+    $menu_tree = \Drupal::menuTree();
+    $parameters = new MenuTreeParameters();
+    $parameters->onlyEnabledLinks();
+    $tree = $menu_tree->load('main', $parameters);
+    dpm($tree);
+    $manipulators = array(
+      array('callable' => 'menu.default_tree_manipulators:checkAccess'),
+      array('callable' => 'menu.default_tree_manipulators:generateIndexAndSort'),
+      array('callable' => 'toolbar_menu_navigation_links'),
+    );
+    $tree = $menu_tree->transform($tree, $manipulators);
+    $subtrees = array();
+    foreach ($tree as $element) {
+      /** @var \Drupal\Core\Menu\MenuLinkInterface $link */
+      $link = $element->link;
+      if ($element->subtree) {
+        $subtree = $menu_tree->build($element->subtree);
+        $output = drupal_render($subtree);
+      }
+      else {
+        $output = '';
+      }
+    }
+
+    dpm($output);
 
     $form['label'] = array(
       '#type' => 'textfield',
@@ -56,13 +85,7 @@ class MenuPositionRuleForm extends EntityForm {
       ),
       '#disabled' => !$menu_position->isNew(),
     );
-    $form['enabled'] = array(
-      '#type' => 'checkbox',
-      '#title' => $this->t('Enabled'),
-      '#default_value' => $menu_position->getEnabled(),
-      '#description' => $this->t('Whether or not this menu position is enabled.'),
-    );
-    $form['menu_name'] = array(
+    $form['plid'] = array(
       '#type' => 'select',
       '#title' => $this->t('Menu'),
       '#default_value' => $menu_position->getMenuName(),
