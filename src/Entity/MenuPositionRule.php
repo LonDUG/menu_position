@@ -31,7 +31,7 @@ use Drupal\menu_position\MenuPositionRuleInterface;
  *   links = {
  *     "edit-form" = "/admin/structure/menu-position/{menu_position_rule}/edit",
  *     "delete-form" = "/admin/strcuture/menu-position/{menu_position_rule}/delete",
- *     "collection" = "/admin/strcuture/menu-position"
+ *     "collection" = "/admin/structure/menu-position"
  *   }
  * )
  */
