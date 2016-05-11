@@ -28,7 +28,7 @@ class MenuPositionRuleDeleteForm extends EntityConfirmFormBase {
    * {@inheritdoc}
    */
   public function getCancelUrl() {
-    return new Url('entity.menu_position.collection');
+    return new Url('entity.menu_position_rule.order_form');
   }
 
   /**

@@ -135,7 +135,7 @@ class MenuPositionRuleOrderForm extends ConfigFormBase {
               'url' => Url::fromRoute('entity.menu_position_rule.edit_form', array('menu_position_rule' => $rule->getId())),
             ),
             'delete' => array(
-              'title' => $this->t('delete'),
+              'title' => $this->t('Delete'),
               'url' => Url::fromRoute('entity.menu_position_rule.delete_form', array('menu_position_rule' => $rule->getId())),
             ),
           ),

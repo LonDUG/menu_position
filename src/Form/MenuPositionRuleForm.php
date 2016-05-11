@@ -39,7 +39,6 @@ class MenuPositionRuleForm extends EntityForm {
     $form = parent::form($form, $form_state);
 
     $menu_position = $this->entity;
-    dpm($menu_position);
 
     $form['label'] = array(
       '#type' => 'textfield',
