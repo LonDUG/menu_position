@@ -5,6 +5,6 @@ menu_position_rule.admin_rules:
   route_name: entity.menu_position_rule.order_form
 menu_position_rule.admin_settings:
   title: 'Settings'
-  parent: system.admin_structure
+  parent: menu_position_rule.admin_rules
   description: 'Configure settings for menu positions.'
-  route_name: entity.menu_position_rule.order_form
+  route_name: menu_position.settings

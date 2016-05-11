@@ -30,14 +30,10 @@ entity.menu_position_rule.delete_form:
   requirements:
     _permission: 'administer menu positions'
 
-# menu_position.router:
-#   path: '/menu-position/{params}'
-#   defaults:
-#     params: ""
-#     # _controller: '\Drupal\menu_position\Controller\MenuPositionRouter::route'
-#     _title: 'Menu position router'
-# menu_position.taxonomy_autocomplete:
-#   path: '/admin/structure/menu-position/taxonomy/autocomplete'
-#   defaults:
-#     # _controller: '\Drupal\menu_position\Controller\MenuPositionRouter::autocomplete'
-#     _title: 'Autocomplete taxonomy'
+menu_position.settings:
+  path: '/admin/structure/menu-position/settings'
+  defaults:
+    _form: '\Drupal\menu_position\Form\MenuPositionSettings'
+    _title: 'Settings'
+  requirements:
+    _permission: 'administer site configuration'
