@@ -40,7 +40,7 @@ interface MenuPositionInterface extends ConfigEntityInterface {
    * @return array
    *    The array of configuration for content types
    */
-  public function getConditions($plugin);
+  public function getConditions();
 
   /**
    * Returns the name of the menu where the position rule lives
@@ -89,7 +89,7 @@ interface MenuPositionInterface extends ConfigEntityInterface {
    * @param boolean
    *    The status of the menu position rule
    */
-  public function setEnabled();
+  public function setEnabled($enabled);
 
   /**
    * Sets the configuration options for the menu position rules
@@ -105,7 +105,7 @@ interface MenuPositionInterface extends ConfigEntityInterface {
    * @return string
    *    The name of menu where the position rule lives
    */
-  public function setMenuName();
+  public function setMenuName($menu_name);
 
   /**
    * Sets the parent menu item
@@ -119,7 +119,7 @@ interface MenuPositionInterface extends ConfigEntityInterface {
    * @return integer
    *    The menu item
    */
-  public function setMlid();
+  public function setMlid($mlid);
 
   /**
    * Sets weight for the particular menu position rule
@@ -133,6 +133,5 @@ interface MenuPositionInterface extends ConfigEntityInterface {
    * @param string
    *    Machine name for the particular rule
    */
-  public function setMachineName();
-
+  public function setMachineName($machine_name);
 }

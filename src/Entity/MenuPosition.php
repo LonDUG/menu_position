@@ -1,7 +1,7 @@
 <?php
 /**
  * @file
- * Contains \Drupal\example\Entity\Example.
+ * Contains \Drupal\example\Entity\MenuPosition.
  */
 
 namespace Drupal\menu_position\Entity;
@@ -16,22 +16,31 @@ use Drupal\menu_position\MenuPositionInterface;
  *   id = "menu_position",
  *   label = @Translation("Menu Position"),
  *   handlers = {
- *     "list_builder" = "Drupal\menu_postion\Controller\MenuPositionListBuilder",
+ *     "access" = "Drupal\menu_postion\MenuPositionAccessControlHandler",
+ *     "view_builder" = "Drupal\menu_postion\MenuPositionViewBuilder",
+ *     "list_builder" = "Drupal\menu_postion\MenuPositionListBuilder",
  *     "form" = {
- *       "add" = "Drupal\menu_position\Form\MenuPositionForm",
- *       "edit" = "Drupal\menu_position\Form\MenuPositionEditForm",
+ *       "default" = "Drupal\menu_position\Form\MenuPositionForm",
  *       "delete" = "Drupal\menu_position\Form\MenuPositionDeleteForm"
  *     }
  *   },
- *   config_prefix = "menu_position",
  *   admin_permission = "administer menu positions",
  *   entity_keys = {
- *     "id" = "id",
- *     "label" = "label",
+ *     "id" = "id"
  *   },
  *   links = {
  *     "edit-form" = "/admin/structure/menu-position/{menu_position}/edit",
  *     "delete-form" = "/admin/config/system/example/{menu_position}/delete"
+ *   },
+ *   config_export = {
+ *     "id",
+ *     "label",
+ *     "enabled",
+ *     "conditions",
+ *     "plid",
+ *     "mlid",
+ *     "weight",
+ *     "machine_name"
  *   }
  * )
  */
@@ -124,7 +133,7 @@ class MenuPosition extends ConfigEntityBase implements MenuPositionInterface {
   /**
    * {@inheritdoc}
    */
-  public function getConditions($plugin) {
+  public function getConditions() {
     return $this->conditions;
   }
 
@@ -167,56 +176,55 @@ class MenuPosition extends ConfigEntityBase implements MenuPositionInterface {
    * {@inheritdoc}
    */
   public function setLabel($label) {
-
+    $this->label = $label;
   }
 
   /**
    * {@inheritdoc}
    */
-  public function setEnabled() {
-
+  public function setEnabled($enabled) {
+    $this->enabled = $enabled;
   }
 
   /**
    * {@inheritdoc}
    */
   public function setConditions($conditions, $plugin) {
-
+    $this->conditions = $conditions;
   }
 
   /**
    * {@inheritdoc}
    */
-  public function setMenuName() {
-
+  public function setMenuName($menu_name) {
+    $this->menu_name = $menu_name;
   }
 
   /**
    * {@inheritdoc}
    */
   public function setPlid($plid) {
-
+    $this->plid = $plid;
   }
 
   /**
    * {@inheritdoc}
    */
-  public function setMlid() {
-
+  public function setMlid($mlid) {
+    $this->mlid = $mlid;
   }
 
   /**
    * {@inheritdoc}
    */
   public function setWeight($weight) {
-
+    $this->weight = $weight;
   }
 
   /**
    * {@inheritdoc}
    */
-  public function setMachineName() {
-
+  public function setMachineName($machine_name) {
+    $this->machine_name = $machine_name;
   }
-
 }

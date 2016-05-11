@@ -1,0 +1,23 @@
+uuid: a1b2c52c-1783-11e6-9fa8-0bc63dd4bbf9
+langcode: en
+status: true
+dependencies:
+  module:
+    - node
+    - system
+id: default_config
+label: 'Test Configuration'
+enabled: true
+conditions:
+  node_type:
+    id: node_type
+    bundles:
+      article: article
+    negate: false
+    context_mapping:
+      node: '@node.node_route_context:node'
+menu_name: 'main'
+plid: 'standard.front_page'
+mlid: 'menu_position.default_config'
+weight: 0
+machine_name: 'default_config'

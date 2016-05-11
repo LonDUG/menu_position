@@ -13,17 +13,18 @@ menu_position.menu_position.*:
       label: 'Whether the rule is enabled or not'
     conditions:
       type: sequence
-      label: 'The serialized conditions for this rule'
+      label: 'Conditions'
       sequence:
-        type: 'string'
+        type: condition.plugin.[id]
+        label: 'Condition'
     menu_name:
       type: string
       label: 'The menu of the menu link for this rule'
     plid:
-      type: integer
+      type: string
       label: 'The parent menu link id for this rule'
     mlid:
-      type: integer
+      type: string
       label: 'The menu link id for this rule'
     weight:
       type: integer
