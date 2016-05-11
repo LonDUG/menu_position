@@ -1,7 +1,7 @@
 <?php
 /**
  * @file
- * Contains \Drupal\menu_position\MenuPositionInterface.
+ * Contains \Drupal\menu_position\MenuPositionRuleInterface.
  */
 
 namespace Drupal\menu_position;
@@ -11,7 +11,7 @@ use Drupal\Core\Config\Entity\ConfigEntityInterface;
 /**
  * Provides an interface defining a Example entity.
  */
-interface MenuPositionInterface extends ConfigEntityInterface {
+interface MenuPositionRuleInterface extends ConfigEntityInterface {
   /**
    * Returns the ID of the menu position rule
    * @return integer

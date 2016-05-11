@@ -1,6 +1,6 @@
-menu_position.menu_position.*:
+menu_position.menu_position_rule.*:
   type: config_entity
-  label: 'Menu position config'
+  label: 'Menu position rule config'
   mapping:
     id:
       type: string

@@ -1,50 +1,51 @@
 <?php
 /**
  * @file
- * Contains \Drupal\example\Entity\MenuPosition.
+ * Contains \Drupal\example\Entity\MenuPositionRule.
  */
 
 namespace Drupal\menu_position\Entity;
 
 use Drupal\Core\Config\Entity\ConfigEntityBase;
-use Drupal\menu_position\MenuPositionInterface;
+use Drupal\menu_position\MenuPositionRuleInterface;
 
 /**
- * Defines the MenuPosition entity.
+ * Defines the MenuPositionRule entity.
  *
  * @ConfigEntityType(
- *   id = "menu_position",
- *   label = @Translation("Menu Position"),
+ *   id = "menu_position_rule",
+ *   label = @Translation("Menu Position Rule"),
  *   handlers = {
- *     "list_builder" = "Drupal\menu_position\MenuPositionListBuilder",
+ *     "list_builder" = "Drupal\menu_position\Controller\MenuPositionRuleListBuilder",
  *     "form" = {
- *       "default" = "Drupal\menu_position\Form\MenuPositionForm",
- *       "delete" = "Drupal\menu_position\Form\MenuPositionDeleteForm"
+ *       "add" = "Drupal\menu_position\Form\MenuPositionRuleForm",
+ *       "edit" = "Drupal\menu_position\Form\MenuPositionRuleForm",
+ *       "delete" = "Drupal\menu_position\Form\MenuPositionRuleDeleteForm"
  *     }
  *   },
- *   config_prefix = "menu_position",
+ *   config_prefix = "menu_position_rule",
  *   admin_permission = "administer menu positions",
  *   entity_keys = {
  *     "id" = "id"
  *   },
  *   links = {
- *     "edit-form" = "/admin/structure/menu-position/{menu_position}/edit",
- *     "delete-form" = "/admin/strcuture/menu-position/{menu_position}/delete",
+ *     "edit-form" = "/admin/structure/menu-position/{menu_position_rule}/edit",
+ *     "delete-form" = "/admin/strcuture/menu-position/{menu_position_rule}/delete",
  *     "collection" = "/admin/strcuture/menu-position"
  *   }
  * )
  */
-class MenuPosition extends ConfigEntityBase implements MenuPositionInterface {
+class MenuPositionRule extends ConfigEntityBase implements MenuPositionRuleInterface {
 
   /**
-   * The MenuPosition ID.
+   * The MenuPositionRule ID.
    *
    * @var string
    */
   protected $id;
 
   /**
-   * The MenuPosition label.
+   * The MenuPositionRule label.
    *
    * @var string
    */

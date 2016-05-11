@@ -2,10 +2,10 @@
 
 /**
  * @file
- * Contains \Drupal\menu_position\MenuPositionListBuilder.
+ * Contains \Drupal\menu_position\Controller\MenuPositionRuleListBuilder.
  */
 
-namespace Drupal\menu_position;
+namespace Drupal\menu_position\Controller;
 
 use Drupal\Core\Config\Entity\ConfigEntityListBuilder;
 use Drupal\Core\Entity\EntityInterface;
@@ -13,7 +13,7 @@ use Drupal\Core\Entity\EntityInterface;
 /**
  * Provides a listing of Example.
  */
-class MenuPositionListBuilder extends ConfigEntityListBuilder {
+class MenuPositionRuleListBuilder extends ConfigEntityListBuilder {
 
   /**
    * {@inheritdoc}

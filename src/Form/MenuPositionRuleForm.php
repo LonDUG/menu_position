@@ -2,7 +2,7 @@
 
 /**
  * @file
- * Contains \Drupal\menu_position\Form\MenuPositionForm.
+ * Contains \Drupal\menu_position\Form\MenuPositionRuleForm.
  */
 
 namespace Drupal\menu_position\Form;
@@ -13,7 +13,7 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 use Drupal\Core\Entity\Query\QueryFactory;
 use Drupal\Core\Form\FormStateInterface;
 
-class MenuPositionForm extends EntityForm {
+class MenuPositionRuleForm extends EntityForm {
 
   /**
    * @param \Drupal\Core\Entity\Query\QueryFactory $entity_query
@@ -38,23 +38,37 @@ class MenuPositionForm extends EntityForm {
   public function form(array $form, FormStateInterface $form_state) {
     $form = parent::form($form, $form_state);
 
-    $example = $this->entity;
+    $menu_position = $this->entity;
+    dpm($menu_position);
 
     $form['label'] = array(
       '#type' => 'textfield',
       '#title' => $this->t('Label'),
       '#maxlength' => 255,
-      '#default_value' => $example->label(),
-      '#description' => $this->t("Label for the Example."),
+      '#default_value' => $menu_position->getLabel(),
+      '#description' => $this->t("Label for the Menu Position rule."),
       '#required' => TRUE,
     );
     $form['id'] = array(
       '#type' => 'machine_name',
-      '#default_value' => $example->id(),
+      '#default_value' => $menu_position->getId(),
       '#machine_name' => array(
         'exists' => array($this, 'exist'),
       ),
-      '#disabled' => !$example->isNew(),
+      '#disabled' => !$menu_position->isNew(),
+    );
+    $form['enabled'] = array(
+      '#type' => 'checkbox',
+      '#title' => $this->t('Enabled'),
+      '#default_value' => $menu_position->getEnabled(),
+      '#description' => $this->t('Whether or not this menu position is enabled.'),
+    );
+    $form['menu_name'] = array(
+      '#type' => 'select',
+      '#title' => $this->t('Menu'),
+      '#default_value' => $menu_position->getMenuName(),
+      '#options' => array(),
+      '#description' => $this->t('Things and stuff.'),
     );
 
     // You will need additional form elements for your custom properties.
@@ -66,17 +80,17 @@ class MenuPositionForm extends EntityForm {
    * {@inheritdoc}
    */
   public function save(array $form, FormStateInterface $form_state) {
-    $example = $this->entity;
-    $status = $example->save();
+    $menu_position = $this->entity;
+    $status = $menu_position->save();
 
     if ($status) {
       drupal_set_message($this->t('Saved the %label Example.', array(
-        '%label' => $example->label(),
+        '%label' => $menu_position->label(),
       )));
     }
     else {
       drupal_set_message($this->t('The %label Example was not saved.', array(
-        '%label' => $example->label(),
+        '%label' => $menu_position->label(),
       )));
     }
 

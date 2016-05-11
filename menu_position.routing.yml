@@ -1,31 +1,31 @@
-entity.menu_position.collection:
+entity.menu_position_rule.collection:
   path: '/admin/structure/menu-position'
   defaults:
-    _entity_list: 'menu_position'
+    _entity_list: 'menu_position_rule'
     _title: 'Menu Position Configuration'
   requirements:
     _permission: 'administer site configuration'
 
-entity.menu_position.add_form:
+entity.menu_position_rule.add_form:
   path: '/admin/structure/menu-position/add'
   defaults:
-    _entity_form: 'entity.menu_position.add_form'
+    _entity_form: 'entity.menu_position_rule.add_form'
     _title: 'Add Menu Position'
   requirements:
     _permission: 'administer site configuration'
 
-entity.menu_position.edit_form:
-  path: '/admin/structure/menu-position/{menu_position}'
+entity.menu_position_rule.edit_form:
+  path: '/admin/structure/menu-position/{menu_position_rule}'
   defaults:
-    _entity_form: 'menu_position.edit'
+    _entity_form: 'menu_position_rule.edit'
     _title: 'Edit Menu Position'
   requirements:
     _permission: 'administer site configuration'
 
-entity.menu_position.delete_form:
-  path: '/admin/structure/menu-position/{menu_position}/delete'
+entity.menu_position_rule.delete_form:
+  path: '/admin/structure/menu-position/{menu_position_rule}/delete'
   defaults:
-    _entity_form: 'menu_position.delete'
+    _entity_form: 'menu_position_rule.delete'
     _title: 'Delete Menu Position'
   requirements:
     _permission: 'administer site configuration'

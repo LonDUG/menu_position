@@ -2,7 +2,7 @@
 
 /**
  * @file
- * Contains \Drupal\menu_position\Form\MenuPositionDeleteForm.
+ * Contains \Drupal\menu_position\Form\MenuPositionRuleDeleteForm.
  */
 
 namespace Drupal\menu_position\Form;
@@ -15,7 +15,7 @@ use Drupal\Core\Form\FormStateInterface;
  * Builds the form to delete a Example.
  */
 
-class MenuPositionDeleteForm extends EntityConfirmFormBase {
+class MenuPositionRuleDeleteForm extends EntityConfirmFormBase {
 
   /**
    * {@inheritdoc}
