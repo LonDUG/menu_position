@@ -2,9 +2,9 @@ menu_position.admin_rules:
   title: 'Menu position rules'
   parent: system.admin_structure
   description: 'Configure rules for menu positions.'
-  route_name: menu_position.admin_rules
+  route_name: entity.menu_position.collection
 menu_position.admin_settings:
   title: 'Settings'
   parent: system.admin_structure
   description: 'Configure settings for menu positions.'
-  route_name: menu_position.admin_settings
+  route_name: entity.menu_position.collection

@@ -1,44 +1,76 @@
-menu_position.admin_rules:
+entity.menu_position.collection:
   path: '/admin/structure/menu-position'
   defaults:
-    _form: '\Drupal\menu_position\RulesForm'
-    _title: 'Menu position rules'
+    _entity_list: 'menu_position'
+    _title: 'Menu Position Configuration'
   requirements:
-    _permission: 'administer menu positions'
-menu_position.admin_list:
-  path: '/admin/structure/menu-position/list'
-  defaults:
-    _title: 'List'
-menu_position.admin_settings:
-  path: '/admin/structure/menu-position/settings'
-  defaults:
-    _form: '\Drupal\menu_position\SettingsForm'
-    _title: 'Settings'
-  requirements:
-    _permission: 'administer menu positions'
-menu_position.admin_add:
+    _permission: 'administer site configuration'
+
+entity.menu_position.add_form:
   path: '/admin/structure/menu-position/add'
   defaults:
-    _form: '\Drupal\menu_position\AddRuleForm'
-    _title: 'Add menu position rule'
-menu_position.admin_edit:
-  path: '/admin/structure/menu-position/edit'
+    _entity_form: 'entity.menu_position.add_form'
+    _title: 'Add Menu Position'
+  requirements:
+    _permission: 'administer site configuration'
+
+entity.menu_position.edit_form:
+  path: '/admin/structure/menu-position/{menu_position}'
   defaults:
-    _form: '\Drupal\menu_position\EditRuleForm'
-    _title: 'Edit menu position rule'
-menu_position.admin_delete:
-  path: '/admin/structure/menu-position/delete'
+    _entity_form: 'menu_position.edit'
+    _title: 'Edit Menu Position'
+  requirements:
+    _permission: 'administer site configuration'
+
+entity.menu_position.delete_form:
+  path: '/admin/structure/menu-position/{menu_position}/delete'
   defaults:
-    _form: '\Drupal\menu_position\DeleteRuleForm'
-    _title: 'Delete menu position rule'
-menu_position.router:
-  path: '/menu-position/{params}'
-  defaults:
-    params: ""
-    # _controller: '\Drupal\menu_position\Controller\MenuPositionRouter::route'
-    _title: 'Menu position router'
-menu_position.taxonomy_autocomplete:
-  path: '/admin/structure/menu-position/taxonomy/autocomplete'
-  defaults:
-    # _controller: '\Drupal\menu_position\Controller\MenuPositionRouter::autocomplete'
-    _title: 'Autocomplete taxonomy'
+    _entity_form: 'menu_position.delete'
+    _title: 'Delete Menu Position'
+  requirements:
+    _permission: 'administer site configuration'
+
+# menu_position.admin_rules:
+#   path: '/admin/structure/menu-position'
+#   defaults:
+#     _form: '\Drupal\menu_position\RulesForm'
+#     _title: 'Menu position rules'
+#   requirements:
+#     _permission: 'administer menu positions'
+# menu_position.admin_list:
+#   path: '/admin/structure/menu-position/list'
+#   defaults:
+#     _title: 'List'
+# menu_position.admin_settings:
+#   path: '/admin/structure/menu-position/settings'
+#   defaults:
+#     _form: '\Drupal\menu_position\SettingsForm'
+#     _title: 'Settings'
+#   requirements:
+#     _permission: 'administer menu positions'
+# menu_position.admin_add:
+#   path: '/admin/structure/menu-position/add'
+#   defaults:
+#     _form: '\Drupal\menu_position\AddRuleForm'
+#     _title: 'Add menu position rule'
+# menu_position.admin_edit:
+#   path: '/admin/structure/menu-position/edit'
+#   defaults:
+#     _form: '\Drupal\menu_position\EditRuleForm'
+#     _title: 'Edit menu position rule'
+# menu_position.admin_delete:
+#   path: '/admin/structure/menu-position/delete'
+#   defaults:
+#     _form: '\Drupal\menu_position\DeleteRuleForm'
+#     _title: 'Delete menu position rule'
+# menu_position.router:
+#   path: '/menu-position/{params}'
+#   defaults:
+#     params: ""
+#     # _controller: '\Drupal\menu_position\Controller\MenuPositionRouter::route'
+#     _title: 'Menu position router'
+# menu_position.taxonomy_autocomplete:
+#   path: '/admin/structure/menu-position/taxonomy/autocomplete'
+#   defaults:
+#     # _controller: '\Drupal\menu_position\Controller\MenuPositionRouter::autocomplete'
+#     _title: 'Autocomplete taxonomy'

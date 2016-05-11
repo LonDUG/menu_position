@@ -16,31 +16,21 @@ use Drupal\menu_position\MenuPositionInterface;
  *   id = "menu_position",
  *   label = @Translation("Menu Position"),
  *   handlers = {
- *     "access" = "Drupal\menu_postion\MenuPositionAccessControlHandler",
- *     "view_builder" = "Drupal\menu_postion\MenuPositionViewBuilder",
- *     "list_builder" = "Drupal\menu_postion\MenuPositionListBuilder",
+ *     "list_builder" = "Drupal\menu_position\MenuPositionListBuilder",
  *     "form" = {
  *       "default" = "Drupal\menu_position\Form\MenuPositionForm",
  *       "delete" = "Drupal\menu_position\Form\MenuPositionDeleteForm"
  *     }
  *   },
+ *   config_prefix = "menu_position",
  *   admin_permission = "administer menu positions",
  *   entity_keys = {
  *     "id" = "id"
  *   },
  *   links = {
  *     "edit-form" = "/admin/structure/menu-position/{menu_position}/edit",
- *     "delete-form" = "/admin/config/system/example/{menu_position}/delete"
- *   },
- *   config_export = {
- *     "id",
- *     "label",
- *     "enabled",
- *     "conditions",
- *     "plid",
- *     "mlid",
- *     "weight",
- *     "machine_name"
+ *     "delete-form" = "/admin/strcuture/menu-position/{menu_position}/delete",
+ *     "collection" = "/admin/strcuture/menu-position"
  *   }
  * )
  */
