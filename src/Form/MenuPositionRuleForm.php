@@ -9,6 +9,7 @@ namespace Drupal\menu_position\Form;
 
 use Drupal\Core\Entity\EntityForm;
 use Drupal\Core\Entity\EntityInterface;
+use Drupal\Core\Entity\EntityManager;
 use Drupal\Core\Entity\Query\QueryFactory;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Menu\MenuLinkTree;
@@ -21,9 +22,10 @@ class MenuPositionRuleForm extends EntityForm {
    * @param \Drupal\Core\Entity\Query\QueryFactory $entity_query
    *   The entity query.
    */
-  public function __construct(QueryFactory $entity_query, MenuLinkTree $menu_tree) {
+  public function __construct(QueryFactory $entity_query, MenuLinkTree $menu_tree, EntityManager $entity_manager) {
     $this->entityQuery = $entity_query;
     $this->menu_tree = $menu_tree;
+    $this->entity_manager = $entity_manager;
   }
 
   /**
@@ -32,7 +34,8 @@ class MenuPositionRuleForm extends EntityForm {
   public static function create(ContainerInterface $container) {
     return new static(
       $container->get('entity.query'),
-      $container->get('menu.link_tree')
+      $container->get('menu.link_tree'),
+      $container->get('entity.manager')
     );
   }
 
@@ -67,7 +70,7 @@ class MenuPositionRuleForm extends EntityForm {
       '#type' => 'select',
       '#title' => $this->t('Parent menu item'),
       '#required' => TRUE,
-      '#default_value' => $menu_position_rule->getPlid(),
+      '#default_value' => $menu_position_rule->getMenuName() . ':' . $menu_position_rule->getPlid(),
       '#options' => $options,
       '#description' => $this->t('Select the place in the menu where the rule should position its menu links.'),
       '#attributes' => array(
@@ -90,6 +93,11 @@ class MenuPositionRuleForm extends EntityForm {
     if ($menu_position_rule->isNew()) {
       $menu_position_rule->setEnabled(TRUE);
     }
+
+    // Load the plid to get the menu name and save it on our rule.
+    $menu_link = explode(':', $form_state->getValue('plid'));
+    $menu_position_rule->setMenuName($menu_link[0]);
+    $menu_position_rule->setPlid($menu_link[1]);
 
     $status = $menu_position_rule->save();
 
