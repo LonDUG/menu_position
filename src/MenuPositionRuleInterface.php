@@ -51,14 +51,14 @@ interface MenuPositionRuleInterface extends ConfigEntityInterface {
 
   /**
    * Returns the parent menu item
-   * @return integer
+   * @return string
    *    The parent menu item
    */
   public function getParent();
 
   /**
    * Returns the menu item
-   * @return integer
+   * @return string
    *    The menu item
    */
   public function getMenuLinkId();
@@ -79,7 +79,7 @@ interface MenuPositionRuleInterface extends ConfigEntityInterface {
 
   /**
    * Sets the status menu position rule
-   * @param boolean
+   * @param boolean $enabled
    *    The status of the menu position rule
    */
   public function setEnabled($enabled);
@@ -95,7 +95,7 @@ interface MenuPositionRuleInterface extends ConfigEntityInterface {
 
   /**
    * Sets the name of the menu where the position rule lives
-   * @return string
+   * @return string $menu_name
    *    The name of menu where the position rule lives
    */
   public function setMenuName($menu_name);
@@ -109,8 +109,8 @@ interface MenuPositionRuleInterface extends ConfigEntityInterface {
 
   /**
    * Sets the menu item
-   * @return integer
-   *    The menu item
+   * @return string $menu_link_id
+   *    The menu link id
    */
   public function setMenuLinkId($menu_link_id);
 
