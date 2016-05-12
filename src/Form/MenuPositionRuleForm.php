@@ -44,29 +44,8 @@ class MenuPositionRuleForm extends EntityForm {
 
     $menu_position_rule = $this->entity;
 
-    $menu_tree = \Drupal::menuTree();
-    $parameters = new MenuTreeParameters();
-    $parameters->onlyEnabledLinks();
-    $tree = $menu_tree->load('main', $parameters);
-
-    $manipulators = array(
-      array('callable' => 'menu.default_tree_manipulators:checkAccess'),
-      array('callable' => 'menu.default_tree_manipulators:generateIndexAndSort'),
-      array('callable' => 'toolbar_menu_navigation_links'),
-    );
-    $tree = $menu_tree->transform($tree, $manipulators);
-    $subtrees = array();
-    foreach ($tree as $element) {
-      /** @var \Drupal\Core\Menu\MenuLinkInterface $link */
-      $link = $element->link;
-      if ($element->subtree) {
-        $subtree = $menu_tree->build($element->subtree);
-        $output = drupal_render($subtree);
-      }
-      else {
-        $output = '';
-      }
-    }
+    $menu_parent_selector = \Drupal::service('menu.parent_form_selector');
+    $options = $menu_parent_selector->getParentSelectOptions();
 
     $form['label'] = array(
       '#type' => 'textfield',
@@ -86,10 +65,14 @@ class MenuPositionRuleForm extends EntityForm {
     );
     $form['plid'] = array(
       '#type' => 'select',
-      '#title' => $this->t('Menu'),
-      '#default_value' => $menu_position_rule->getMenuName(),
-      '#options' => array(),
-      '#description' => $this->t('Things and stuff.'),
+      '#title' => $this->t('Parent menu item'),
+      '#required' => TRUE,
+      '#default_value' => $menu_position_rule->getPlid(),
+      '#options' => $options,
+      '#description' => $this->t('Select the place in the menu where the rule should position its menu links.'),
+      '#attributes' => array(
+        'class' => array('menu-parent-select'),
+      ),
     );
 
     // You will need additional form elements for your custom properties.
@@ -102,6 +85,12 @@ class MenuPositionRuleForm extends EntityForm {
    */
   public function save(array $form, FormStateInterface $form_state) {
     $menu_position_rule = $this->entity;
+
+    // Set default to enabled when creating a new rule.
+    if ($menu_position_rule->isNew()) {
+      $menu_position_rule->setEnabled(TRUE);
+    }
+
     $status = $menu_position_rule->save();
 
     if ($status) {
