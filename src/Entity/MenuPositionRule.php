@@ -77,14 +77,14 @@ class MenuPositionRule extends ConfigEntityBase implements MenuPositionRuleInter
    *
    * @var integer
    */
-  protected $plid;
+  protected $parent;
 
   /**
    * The menu link id for this rule.
    *
    * @var integer
    */
-  protected $mlid;
+  protected $menu_link_id;
 
   /**
    * The weight of this rule.
@@ -92,13 +92,6 @@ class MenuPositionRule extends ConfigEntityBase implements MenuPositionRuleInter
    * @var integer
    */
   protected $weight;
-
-  /**
-   * The machine name.
-   *
-   * @var string
-   */
-  protected $machine_name;
 
   /**
    * {@inheritdoc}
@@ -138,15 +131,15 @@ class MenuPositionRule extends ConfigEntityBase implements MenuPositionRuleInter
   /**
    * {@inheritdoc}
    */
-  public function getPlid() {
-    return $this->plid;
+  public function getParent() {
+    return $this->parent;
   }
 
   /**
    * {@inheritdoc}
    */
-  public function getMlid() {
-    return $this->mlid;
+  public function getMenuLinkId() {
+    return $this->menu_link_id;
   }
 
   /**
@@ -154,13 +147,6 @@ class MenuPositionRule extends ConfigEntityBase implements MenuPositionRuleInter
    */
   public function getWeight() {
     return $this->weight;
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function getMachineName() {
-    return $this->machine_name;
   }
 
   /**
@@ -194,15 +180,15 @@ class MenuPositionRule extends ConfigEntityBase implements MenuPositionRuleInter
   /**
    * {@inheritdoc}
    */
-  public function setPlid($plid) {
-    $this->plid = $plid;
+  public function setParent($parent) {
+    $this->parent = $parent;
   }
 
   /**
    * {@inheritdoc}
    */
-  public function setMlid($mlid) {
-    $this->mlid = $mlid;
+  public function setMenuLinkId($menu_link_id) {
+    $this->menu_link_id = $menu_link_id;
   }
 
   /**
@@ -212,10 +198,4 @@ class MenuPositionRule extends ConfigEntityBase implements MenuPositionRuleInter
     $this->weight = $weight;
   }
 
-  /**
-   * {@inheritdoc}
-   */
-  public function setMachineName($machine_name) {
-    $this->machine_name = $machine_name;
-  }
 }

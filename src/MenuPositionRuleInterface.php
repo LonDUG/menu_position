@@ -52,16 +52,16 @@ interface MenuPositionRuleInterface extends ConfigEntityInterface {
   /**
    * Returns the parent menu item
    * @return integer
-   *    The parent menu item plid
+   *    The parent menu item
    */
-  public function getPlid();
+  public function getParent();
 
   /**
    * Returns the menu item
    * @return integer
    *    The menu item
    */
-  public function getMlid();
+  public function getMenuLinkId();
 
   /**
    * Returns weight for the particular menu position rule
@@ -69,13 +69,6 @@ interface MenuPositionRuleInterface extends ConfigEntityInterface {
    *    Weight for the particular rule
    */
   public function getWeight();
-
-  /**
-   * Returns machine name for the particular menu position rule
-   * @return string
-   *    Machine name for the particular rule
-   */
-  public function getMachineName();
 
   /**
    * Sets the administrative title of the menu position rule
@@ -109,17 +102,17 @@ interface MenuPositionRuleInterface extends ConfigEntityInterface {
 
   /**
    * Sets the parent menu item
-   * @return integer $plid
-   *    The parent menu item plid
+   * @return string $parent
+   *    The parent menu item
    */
-  public function setPlid($plid);
+  public function setParent($parent);
 
   /**
    * Sets the menu item
    * @return integer
    *    The menu item
    */
-  public function setMlid($mlid);
+  public function setMenuLinkId($menu_link_id);
 
   /**
    * Sets weight for the particular menu position rule
@@ -128,10 +121,4 @@ interface MenuPositionRuleInterface extends ConfigEntityInterface {
    */
   public function setWeight($weight);
 
-  /**
-   * Sets machine name for the particular menu position rule
-   * @param string
-   *    Machine name for the particular rule
-   */
-  public function setMachineName($machine_name);
 }

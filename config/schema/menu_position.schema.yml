@@ -20,15 +20,12 @@ menu_position.menu_position_rule.*:
     menu_name:
       type: string
       label: 'The menu of the menu link for this rule'
-    plid:
+    parent:
       type: string
       label: 'The parent menu link id for this rule'
-    mlid:
+    menu_link_id:
       type: string
       label: 'The menu link id for this rule'
     weight:
       type: integer
       label: 'The weight of this rule'
-    machine_name:
-      type: string
-      label: 'The machine name'

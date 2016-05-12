@@ -76,14 +76,14 @@ class MenuPositionRuleOrderForm extends FormBase {
 
     // Display table of rules.
     foreach ($rules as $rule) {
-      $menu_link['title'] = $rule->getPlid();
+      $menu_link['title'] = $rule->getParent();
       if ($menu_link === FALSE) {
         $menu_link = array('title' => '[' . $this->t('deleted menu item') . ']');
       }
       $form['rules'][$rule->getId()] = array(
         '#attributes' => array('class' => array('draggable')),
         'title' => array(
-          '#markup' => '<strong>' . $rule->getLabel() . '</strong> (' . $this->t('Positioned under: %title', array('%title' => $rule->getPlid())) . ')',
+          '#markup' => '<strong>' . $rule->getLabel() . '</strong> (' . $this->t('Positioned under: %title', array('%title' => $rule->getParent())) . ')',
         ),
         'menu_name' => array(
           '#markup' => $rule->getMenuName(),

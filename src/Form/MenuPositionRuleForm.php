@@ -66,11 +66,11 @@ class MenuPositionRuleForm extends EntityForm {
       ),
       '#disabled' => !$menu_position_rule->isNew(),
     );
-    $form['plid'] = array(
+    $form['parent'] = array(
       '#type' => 'select',
       '#title' => $this->t('Parent menu item'),
       '#required' => TRUE,
-      '#default_value' => $menu_position_rule->getMenuName() . ':' . $menu_position_rule->getPlid(),
+      '#default_value' => $menu_position_rule->getMenuName() . ':' . $menu_position_rule->getParent(),
       '#options' => $options,
       '#description' => $this->t('Select the place in the menu where the rule should position its menu links.'),
       '#attributes' => array(
@@ -94,10 +94,10 @@ class MenuPositionRuleForm extends EntityForm {
       $menu_position_rule->setEnabled(TRUE);
     }
 
-    // Load the plid to get the menu name and save it on our rule.
-    $menu_link = explode(':', $form_state->getValue('plid'));
+    // Split the parent value to set menu name and save it on our rule.
+    $menu_link = explode(':', $form_state->getValue('parent'));
     $menu_position_rule->setMenuName($menu_link[0]);
-    $menu_position_rule->setPlid($menu_link[1]);
+    $menu_position_rule->setParent($menu_link[1]);
 
     $status = $menu_position_rule->save();
 
