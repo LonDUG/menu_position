@@ -11,8 +11,8 @@ use Drupal\Core\Entity\EntityForm;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Entity\EntityManager;
 use Drupal\Core\Entity\Query\QueryFactory;
-use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Menu\MenuLinkTree;
+use Drupal\Core\Menu\MenuParentFormSelector;
 use Drupal\Core\Menu\MenuTreeParameters;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
@@ -22,10 +22,16 @@ class MenuPositionRuleForm extends EntityForm {
    * @param \Drupal\Core\Entity\Query\QueryFactory $entity_query
    *   The entity query.
    */
-  public function __construct(QueryFactory $entity_query, MenuLinkTree $menu_tree, EntityManager $entity_manager) {
+  public function __construct(
+    QueryFactory $entity_query,
+    MenuLinkTree $menu_tree,
+    EntityManager $entity_manager,
+    MenuParentFormSelector $menu_parent_form_selector) {
+
     $this->entityQuery = $entity_query;
     $this->menu_tree = $menu_tree;
     $this->entity_manager = $entity_manager;
+    $this->menu_parent_form_selector = $menu_parent_form_selector;
   }
 
   /**
@@ -35,7 +41,8 @@ class MenuPositionRuleForm extends EntityForm {
     return new static(
       $container->get('entity.query'),
       $container->get('menu.link_tree'),
-      $container->get('entity.manager')
+      $container->get('entity.manager'),
+      $container->get('menu.parent_form_selector')
     );
   }
 
@@ -47,7 +54,8 @@ class MenuPositionRuleForm extends EntityForm {
 
     $menu_position_rule = $this->entity;
 
-    $menu_parent_selector = \Drupal::service('menu.parent_form_selector');
+    $menu_parent_selector = $this->menu_parent_form_selector;
+
     $options = $menu_parent_selector->getParentSelectOptions();
 
     $form['label'] = array(
@@ -121,4 +129,13 @@ class MenuPositionRuleForm extends EntityForm {
       ->execute();
     return (bool) $entity;
   }
+
+  public function menuPositionEditMenuLink($id, $menu_link_id, $parent, $label) {
+
+    $entity = $this->entityQuery->get('menu_position_rule')
+      ->condition('id', $id)
+      ->execute();
+    return (bool) $entity;
+  }
+
 }
