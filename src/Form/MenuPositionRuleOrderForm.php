@@ -49,7 +49,7 @@ class MenuPositionRuleOrderForm extends FormBase {
 
     // Get all the rules.
     $query = $this->entity_query->get('menu_position_rule');
-    $results = $query->execute();
+    $results = $query->sort('weight')->execute();
     $rules = $this->entity_manager->getStorage('menu_position_rule')->loadMultiple($results);
 
     // Menu Position rules order (tabledrag).
@@ -97,10 +97,8 @@ class MenuPositionRuleOrderForm extends FormBase {
           '#title' => $this->t('Weight for @title', array('@title' => $rule->getLabel())),
           '#title_display' => 'invisible',
           '#default_value' => $rule->getWeight(),
-          '#delta' => max($delta, 5),
-          '#id' => 'edit-rule-' . $rule->getId(),
-          '#parents' => array('menu_position', $rule->getId(), 'weight'),
-          '#attributes' => array('class' => array('menu_position-rules-weight')),
+          '#delta' => max($rule->getWeight(), 5),
+          '#attributes' => array('class' => array('rules-weight')),
         ),
         'operations' => array(
           '#type' => 'dropbutton',
@@ -133,14 +131,21 @@ class MenuPositionRuleOrderForm extends FormBase {
   /**
    * {@inheritdoc}
    */
-  public function validateForm(array &$form, FormStateInterface $form_state) {
-
-  }
+  public function validateForm(array &$form, FormStateInterface $form_state) {}
 
   /**
    * {@inheritdoc}
    */
   public function submitForm(array &$form, FormStateInterface $form_state) {
+    $storage = $this->entity_manager->getStorage('menu_position_rule');
+    $values = $form_state->getValue('rules');
+    $rules = $storage->loadMultiple(array_keys($values));
 
+    foreach ($rules as $rule) {
+      $value = $values[$rule->getId()];
+      $rule->setEnabled((bool) $value['enabled']);
+      $rule->setWeight((float) $value['weight']);
+      $storage->save($rule);
+    }
   }
 }
