@@ -72,9 +72,6 @@ class MenuPositionRuleOrderForm extends FormBase {
          'group' => 'rules-weight',
         ),
       ),
-      '#tree' => FALSE,
-      '#input' => FALSE,
-      '#theme_wrappers' => array('form_element'),
     );
 
     // Display table of rules.

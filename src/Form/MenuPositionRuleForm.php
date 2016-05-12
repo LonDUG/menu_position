@@ -42,12 +42,13 @@ class MenuPositionRuleForm extends EntityForm {
   public function form(array $form, FormStateInterface $form_state) {
     $form = parent::form($form, $form_state);
 
-    $menu_position = $this->entity;
+    $menu_position_rule = $this->entity;
+
     $menu_tree = \Drupal::menuTree();
     $parameters = new MenuTreeParameters();
     $parameters->onlyEnabledLinks();
     $tree = $menu_tree->load('main', $parameters);
-    dpm($tree);
+
     $manipulators = array(
       array('callable' => 'menu.default_tree_manipulators:checkAccess'),
       array('callable' => 'menu.default_tree_manipulators:generateIndexAndSort'),
@@ -67,28 +68,26 @@ class MenuPositionRuleForm extends EntityForm {
       }
     }
 
-    dpm($output);
-
     $form['label'] = array(
       '#type' => 'textfield',
       '#title' => $this->t('Label'),
       '#maxlength' => 255,
-      '#default_value' => $menu_position->getLabel(),
+      '#default_value' => $menu_position_rule->getLabel(),
       '#description' => $this->t("Label for the Menu Position rule."),
       '#required' => TRUE,
     );
     $form['id'] = array(
       '#type' => 'machine_name',
-      '#default_value' => $menu_position->getId(),
+      '#default_value' => $menu_position_rule->getId(),
       '#machine_name' => array(
         'exists' => array($this, 'exist'),
       ),
-      '#disabled' => !$menu_position->isNew(),
+      '#disabled' => !$menu_position_rule->isNew(),
     );
     $form['plid'] = array(
       '#type' => 'select',
       '#title' => $this->t('Menu'),
-      '#default_value' => $menu_position->getMenuName(),
+      '#default_value' => $menu_position_rule->getMenuName(),
       '#options' => array(),
       '#description' => $this->t('Things and stuff.'),
     );
@@ -102,25 +101,25 @@ class MenuPositionRuleForm extends EntityForm {
    * {@inheritdoc}
    */
   public function save(array $form, FormStateInterface $form_state) {
-    $menu_position = $this->entity;
-    $status = $menu_position->save();
+    $menu_position_rule = $this->entity;
+    $status = $menu_position_rule->save();
 
     if ($status) {
       drupal_set_message($this->t('Saved the %label Example.', array(
-        '%label' => $menu_position->label(),
+        '%label' => $menu_position_rule->label(),
       )));
     }
     else {
       drupal_set_message($this->t('The %label Example was not saved.', array(
-        '%label' => $menu_position->label(),
+        '%label' => $menu_position_rule->label(),
       )));
     }
 
-    $form_state->setRedirect('entity.example.collection');
+    $form_state->setRedirect('entity.menu_position_rule.order_form');
   }
 
   public function exist($id) {
-    $entity = $this->entityQuery->get('example')
+    $entity = $this->entityQuery->get('menu_position_rule')
       ->condition('id', $id)
       ->execute();
     return (bool) $entity;

@@ -18,8 +18,7 @@ use Drupal\menu_position\MenuPositionRuleInterface;
  *   handlers = {
  *     "list_builder" = "Drupal\menu_position\Controller\MenuPositionRuleListBuilder",
  *     "form" = {
- *       "add" = "Drupal\menu_position\Form\MenuPositionRuleForm",
- *       "edit" = "Drupal\menu_position\Form\MenuPositionRuleForm",
+ *       "default" = "Drupal\menu_position\Form\MenuPositionRuleForm",
  *       "delete" = "Drupal\menu_position\Form\MenuPositionRuleDeleteForm"
  *     }
  *   },
@@ -29,6 +28,7 @@ use Drupal\menu_position\MenuPositionRuleInterface;
  *     "id" = "id"
  *   },
  *   links = {
+ *     "add-form" = "/admin/structure/menu-position/add",
  *     "edit-form" = "/admin/structure/menu-position/{menu_position_rule}/edit",
  *     "delete-form" = "/admin/strcuture/menu-position/{menu_position_rule}/delete",
  *     "collection" = "/admin/structure/menu-position"
