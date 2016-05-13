@@ -43,7 +43,7 @@ class MenuPositionRuleDeleteForm extends EntityConfirmFormBase {
    */
   public function submitForm(array &$form, FormStateInterface $form_state) {
     $this->entity->delete();
-    drupal_set_message($this->t('Category %label has been deleted.', array('%label' => $this->entity->label())));
+    drupal_set_message($this->t('Rule %label has been deleted.', array('%label' => $this->entity->getLabel())));
 
     $form_state->setRedirectUrl($this->getCancelUrl());
   }

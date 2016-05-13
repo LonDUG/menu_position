@@ -82,7 +82,7 @@ class MenuPositionRule extends ConfigEntityBase implements MenuPositionRuleInter
   /**
    * The menu link id for this rule.
    *
-   * @var integer
+   * @var string
    */
   protected $menu_link_id;
 
@@ -197,5 +197,4 @@ class MenuPositionRule extends ConfigEntityBase implements MenuPositionRuleInter
   public function setWeight($weight) {
     $this->weight = $weight;
   }
-
 }

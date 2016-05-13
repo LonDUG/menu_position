@@ -11,9 +11,12 @@ use Drupal\Core\Entity\EntityForm;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Entity\EntityManager;
 use Drupal\Core\Entity\Query\QueryFactory;
+use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Menu\MenuLinkTree;
 use Drupal\Core\Menu\MenuParentFormSelector;
 use Drupal\Core\Menu\MenuTreeParameters;
+use Drupal\menu_link_content\Entity\MenuLinkContent;
+use Drupal\menu_position\Entity\MenuPositionRule;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 class MenuPositionRuleForm extends EntityForm {
@@ -53,8 +56,9 @@ class MenuPositionRuleForm extends EntityForm {
     $form = parent::form($form, $form_state);
 
     $menu_position_rule = $this->entity;
-
     $menu_parent_selector = $this->menu_parent_form_selector;
+
+    dpm($menu_position_rule);
 
     $options = $menu_parent_selector->getParentSelectOptions();
 
@@ -106,6 +110,7 @@ class MenuPositionRuleForm extends EntityForm {
     $menu_link = explode(':', $form_state->getValue('parent'));
     $menu_position_rule->setMenuName($menu_link[0]);
     $menu_position_rule->setParent($menu_link[1]);
+    $this->menuPositionEditMenuLink($menu_position_rule);
 
     $status = $menu_position_rule->save();
 
@@ -130,12 +135,21 @@ class MenuPositionRuleForm extends EntityForm {
     return (bool) $entity;
   }
 
-  public function menuPositionEditMenuLink($id, $menu_link_id, $parent, $label) {
+  public function menuPositionEditMenuLink(MenuPositionRule $menu_position_rule) {
+    if ($menu_position_rule->isNew()) {
+      $menu_link = MenuLinkContent::create();
+    } else {
+      $storage = $this->entity_manager->getStorage('menu_link_content');
+      $menu_link = $storage->load($menu_position_rule->getMenuLinkId());
+    }
 
-    $entity = $this->entityQuery->get('menu_position_rule')
-      ->condition('id', $id)
-      ->execute();
-    return (bool) $entity;
+    $menu_link->set('title', $this->t('@label  (menu position rule)', array('@label' => $menu_position_rule->getLabel())));
+    $menu_link->set('link', ['uri' => 'internal:/menu-position/' . $menu_position_rule->getId()]);
+    $menu_link->set('menu_name', $menu_position_rule->getMenuName());
+    $menu_link->set('parent', $menu_position_rule->getParent());
+
+    // Save the first level
+    $menu_link->save();
+    $menu_position_rule->setMenuLinkId($menu_link->get('id'));
   }
-
 }
