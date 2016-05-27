@@ -95,10 +95,48 @@ class MenuPositionRuleForm extends EntityForm {
       '#description' => t('All the conditions must be met before a rule is applied.'),
     );
 
-    $form['conditions'] = array(
+    $form['visibility_tabs'] = array(
       '#type' => 'vertical_tabs',
       '#default_tab' => 'edit-publication',
     );
+
+    $condition_plugin_manager = \Drupal::service('plugin.manager.condition');
+    foreach ($condition_plugin_manager->getDefinitions() as $condition_id => $definition)  {
+      $condition = $condition_plugin_manager->createInstance($definition['id']);
+      $condition_form = $condition->buildConfigurationForm([], $form_state);
+      $condition_form['#type'] = 'details';
+      $condition_form['#title'] = $condition->getPluginDefinition()['label'];
+      $condition_form['#group'] = 'visibility_tabs';
+      $form[$condition_id] = $condition_form;
+    }
+
+    if (isset($form['node_type'])) {
+      $form['node_type']['#title'] = $this->t('Content types');
+      $form['node_type']['bundles']['#title'] = $this->t('Content types');
+      $form['node_type']['negate']['#type'] = 'value';
+      $form['node_type']['negate']['#title_display'] = 'invisible';
+      $form['node_type']['negate']['#value'] = $form['node_type']['negate']['#default_value'];
+    }
+    if (isset($form['user_role'])) {
+      $form['user_role']['#title'] = $this->t('Roles');
+      unset($form['user_role']['roles']['#description']);
+      $form['user_role']['negate']['#type'] = 'value';
+      $form['user_role']['negate']['#value'] = $form['user_role']['negate']['#default_value'];
+    }
+    if (isset($form['request_path'])) {
+      $form['request_path']['#title'] = $this->t('Pages');
+      $form['request_path']['negate']['#type'] = 'radios';
+      $form['request_path']['negate']['#default_value'] = (int) $form['request_path']['negate']['#default_value'];
+      $form['request_path']['negate']['#title_display'] = 'invisible';
+      $form['request_path']['negate']['#options'] = [
+        $this->t('Show for the listed pages'),
+        $this->t('Hide for the listed pages'),
+      ];
+    }
+    if (isset($form['language'])) {
+      $form['language']['negate']['#type'] = 'value';
+      $form['language']['negate']['#value'] = $form['language']['negate']['#default_value'];
+    }
 
     return $form;
   }
