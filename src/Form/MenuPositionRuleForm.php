@@ -58,8 +58,6 @@ class MenuPositionRuleForm extends EntityForm {
     $menu_position_rule = $this->entity;
     $menu_parent_selector = $this->menu_parent_form_selector;
 
-    dpm($menu_position_rule);
-
     $options = $menu_parent_selector->getParentSelectOptions();
 
     $form['label'] = array(
@@ -160,6 +158,6 @@ class MenuPositionRuleForm extends EntityForm {
 
     // Save the first level
     $menu_link->save();
-    $menu_position_rule->setMenuLinkId($menu_link->get('id'));
+    $menu_position_rule->setMenuLinkId($menu_link->id());
   }
 }
