@@ -90,7 +90,17 @@ class MenuPositionRuleForm extends EntityForm {
       ),
     );
 
-    // You will need additional form elements for your custom properties.
+    // Place holder for all condition plug-ins.
+    $form['conditions_title'] = array(
+      '#type' => 'item',
+      '#title' => t('Conditions'),
+      '#description' => t('All the conditions must be met before a rule is applied.'),
+    );
+
+    $form['conditions'] = array(
+      '#type' => 'vertical_tabs',
+      '#default_tab' => 'edit-publication',
+    );
 
     return $form;
   }
