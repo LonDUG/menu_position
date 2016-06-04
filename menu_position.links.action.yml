@@ -1,0 +1,5 @@
+entity.menu_position_rule.add_form:
+  route_name: 'entity.menu_position_rule.add_form'
+  title: 'Add Menu Position Rule'
+  appears_on:
+    - entity.menu_position_rule.order_form

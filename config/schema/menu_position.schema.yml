@@ -1,0 +1,31 @@
+menu_position.menu_position_rule.*:
+  type: config_entity
+  label: 'Menu position rule config'
+  mapping:
+    id:
+      type: string
+      label: 'ID'
+    label:
+      type: label
+      label: 'Label'
+    enabled:
+      type: boolean
+      label: 'Whether the rule is enabled or not'
+    conditions:
+      type: sequence
+      label: 'Conditions'
+      sequence:
+        type: condition.plugin.[id]
+        label: 'Condition'
+    menu_name:
+      type: string
+      label: 'The menu of the menu link for this rule'
+    parent:
+      type: string
+      label: 'The parent menu link id for this rule'
+    menu_link_id:
+      type: string
+      label: 'The menu link id for this rule'
+    weight:
+      type: integer
+      label: 'The weight of this rule'

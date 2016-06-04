@@ -1,0 +1,39 @@
+entity.menu_position_rule.order_form:
+  path: '/admin/structure/menu-position'
+  defaults:
+    _form: '\Drupal\menu_position\Form\MenuPositionRuleOrderForm'
+    _title: 'Menu Position Configuration'
+  requirements:
+    _permission: 'administer menu positions'
+
+entity.menu_position_rule.add_form:
+  path: '/admin/structure/menu-position/add'
+  defaults:
+    _entity_form: 'menu_position_rule.default'
+    _title: 'Add Menu Position'
+  requirements:
+    _permission: 'administer menu positions'
+
+entity.menu_position_rule.edit_form:
+  path: '/admin/structure/menu-position/{menu_position_rule}'
+  defaults:
+    _entity_form: 'menu_position_rule.default'
+    _title: 'Edit Menu Position'
+  requirements:
+    _permission: 'administer menu positions'
+
+entity.menu_position_rule.delete_form:
+  path: '/admin/structure/menu-position/{menu_position_rule}/delete'
+  defaults:
+    _entity_form: 'menu_position_rule.delete'
+    _title: 'Delete Menu Position'
+  requirements:
+    _permission: 'administer menu positions'
+
+menu_position.settings:
+  path: '/admin/structure/menu-position/settings'
+  defaults:
+    _form: '\Drupal\menu_position\Form\MenuPositionSettings'
+    _title: 'Settings'
+  requirements:
+    _permission: 'administer site configuration'
