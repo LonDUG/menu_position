@@ -4,7 +4,7 @@ namespace Drupal\menu_position;
 
 use Drupal\Core\Menu\MenuActiveTrail;
 
-class MyMenuActiveTrail extends MenuActiveTrail  {
+class MenuPositionActiveTrail extends MenuActiveTrail  {
 
   /**
    * {@inheritdoc}
@@ -12,5 +12,4 @@ class MyMenuActiveTrail extends MenuActiveTrail  {
   public function getActiveLink($menu_name = NULL) {
     parent::getActiveLink();
   }
-
 }
