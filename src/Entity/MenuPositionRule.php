@@ -6,7 +6,9 @@
 
 namespace Drupal\menu_position\Entity;
 
+use Drupal\Core\Condition\ConditionPluginCollection;
 use Drupal\Core\Config\Entity\ConfigEntityBase;
+use Drupal\Core\Entity\EntityWithPluginCollectionInterface;
 use Drupal\menu_position\MenuPositionRuleInterface;
 
 /**
@@ -35,7 +37,7 @@ use Drupal\menu_position\MenuPositionRuleInterface;
  *   }
  * )
  */
-class MenuPositionRule extends ConfigEntityBase implements MenuPositionRuleInterface {
+class MenuPositionRule extends ConfigEntityBase implements MenuPositionRuleInterface, EntityWithPluginCollectionInterface {
 
   /**
    * The MenuPositionRule ID.
@@ -118,7 +120,10 @@ class MenuPositionRule extends ConfigEntityBase implements MenuPositionRuleInter
    * {@inheritdoc}
    */
   public function getConditions() {
-    return $this->conditions;
+    if (!isset($this->conditionCollection)) {
+      $this->conditionCollection = new ConditionPluginCollection($this->conditionPluginManager(), $this->get('conditions'));
+    }
+    return $this->conditionCollection;
   }
 
   /**
@@ -196,5 +201,28 @@ class MenuPositionRule extends ConfigEntityBase implements MenuPositionRuleInter
    */
   public function setWeight($weight) {
     $this->weight = $weight;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getPluginCollections() {
+    return [
+      'conditions' => $this->getConditions(),
+    ];
+  }
+
+  /**
+   * Gets the condition plugin manager.
+   *
+   * @return \Drupal\Core\Executable\ExecutableManagerInterface
+   *   The condition plugin manager.
+   */
+  protected function conditionPluginManager() {
+    $this->conditionPluginManager;
+    if (!isset($this->conditionPluginManager)) {
+      $this->conditionPluginManager = \Drupal::service('plugin.manager.condition');
+    }
+    return $this->conditionPluginManager;
   }
 }
