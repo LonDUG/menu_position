@@ -7,14 +7,17 @@
 
 namespace Drupal\menu_position\Form;
 
+use Drupal\Core\Condition\ConditionManager;
 use Drupal\Core\Entity\EntityForm;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Entity\EntityManager;
 use Drupal\Core\Entity\Query\QueryFactory;
+use Drupal\Core\Form\FormState;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Menu\MenuLinkTree;
 use Drupal\Core\Menu\MenuParentFormSelector;
 use Drupal\Core\Menu\MenuTreeParameters;
+use Drupal\Core\Plugin\ContextAwarePluginInterface;
 use Drupal\menu_link_content\Entity\MenuLinkContent;
 use Drupal\menu_position\Entity\MenuPositionRule;
 use Symfony\Component\DependencyInjection\ContainerInterface;
@@ -29,12 +32,14 @@ class MenuPositionRuleForm extends EntityForm {
     QueryFactory $entity_query,
     MenuLinkTree $menu_tree,
     EntityManager $entity_manager,
-    MenuParentFormSelector $menu_parent_form_selector) {
+    MenuParentFormSelector $menu_parent_form_selector,
+    ConditionManager $condition_plugin_manager) {
 
     $this->entityQuery = $entity_query;
     $this->menu_tree = $menu_tree;
     $this->entity_manager = $entity_manager;
     $this->menu_parent_form_selector = $menu_parent_form_selector;
+    $this->condition_plugin_manager = $condition_plugin_manager;
   }
 
   /**
@@ -45,7 +50,8 @@ class MenuPositionRuleForm extends EntityForm {
       $container->get('entity.query'),
       $container->get('menu.link_tree'),
       $container->get('entity.manager'),
-      $container->get('menu.parent_form_selector')
+      $container->get('menu.parent_form_selector'),
+      $container->get('plugin.manager.condition')
     );
   }
 
@@ -54,6 +60,7 @@ class MenuPositionRuleForm extends EntityForm {
    */
   public function form(array $form, FormStateInterface $form_state) {
     $form = parent::form($form, $form_state);
+    $form['#tree'] = true;
 
     $menu_position_rule = $this->entity;
     $menu_parent_selector = $this->menu_parent_form_selector;
@@ -88,54 +95,53 @@ class MenuPositionRuleForm extends EntityForm {
       ),
     );
 
-    // Place holder for all condition plug-ins.
-    $form['conditions_title'] = array(
-      '#type' => 'item',
-      '#title' => t('Conditions'),
-      '#description' => t('All the conditions must be met before a rule is applied.'),
+    $form['conditions'] = array(
+      'conditions_tabs' => array(
+        '#type' => 'vertical_tabs',
+        '#title' => t('Conditions'),
+        '#description' => t('All the conditions must be met before a rule is applied.'),
+        '#parents' => array(
+          'conditions_tabs',
+        ),
+      ),
     );
 
-    $form['visibility_tabs'] = array(
-      '#type' => 'vertical_tabs',
-      '#default_tab' => 'edit-publication',
-    );
-
-    $condition_plugin_manager = \Drupal::service('plugin.manager.condition');
-    foreach ($condition_plugin_manager->getDefinitions() as $condition_id => $definition)  {
-      $condition = $condition_plugin_manager->createInstance($definition['id']);
+    foreach ($this->condition_plugin_manager->getDefinitions() as $condition_id => $definition)  {
+      $condition = $this->condition_plugin_manager->createInstance($definition['id']);
+      $form_state->set(['conditions', $condition_id], $condition);
       $condition_form = $condition->buildConfigurationForm([], $form_state);
       $condition_form['#type'] = 'details';
       $condition_form['#title'] = $condition->getPluginDefinition()['label'];
-      $condition_form['#group'] = 'visibility_tabs';
-      $form[$condition_id] = $condition_form;
+      $condition_form['#group'] = 'conditions_tabs';
+      $form['conditions'][$condition_id] = $condition_form;
     }
 
-    if (isset($form['node_type'])) {
-      $form['node_type']['#title'] = $this->t('Content types');
-      $form['node_type']['bundles']['#title'] = $this->t('Content types');
-      $form['node_type']['negate']['#type'] = 'value';
-      $form['node_type']['negate']['#title_display'] = 'invisible';
-      $form['node_type']['negate']['#value'] = $form['node_type']['negate']['#default_value'];
+    if (isset($form['conditions']['node_type'])) {
+      $form['conditions']['node_type']['#title'] = $this->t('Content types');
+      $form['conditions']['node_type']['bundles']['#title'] = $this->t('Content types');
+      $form['conditions']['node_type']['negate']['#type'] = 'value';
+      $form['conditions']['node_type']['negate']['#title_display'] = 'invisible';
+      $form['conditions']['node_type']['negate']['#value'] = $form['conditions']['node_type']['negate']['#default_value'];
     }
-    if (isset($form['user_role'])) {
-      $form['user_role']['#title'] = $this->t('Roles');
-      unset($form['user_role']['roles']['#description']);
-      $form['user_role']['negate']['#type'] = 'value';
-      $form['user_role']['negate']['#value'] = $form['user_role']['negate']['#default_value'];
+    if (isset($form['conditions']['user_role'])) {
+      $form['conditions']['user_role']['#title'] = $this->t('Roles');
+      unset($form['conditions']['user_role']['roles']['#description']);
+      $form['conditions']['user_role']['negate']['#type'] = 'value';
+      $form['conditions']['user_role']['negate']['#value'] = $form['conditions']['user_role']['negate']['#default_value'];
     }
-    if (isset($form['request_path'])) {
-      $form['request_path']['#title'] = $this->t('Pages');
-      $form['request_path']['negate']['#type'] = 'radios';
-      $form['request_path']['negate']['#default_value'] = (int) $form['request_path']['negate']['#default_value'];
-      $form['request_path']['negate']['#title_display'] = 'invisible';
-      $form['request_path']['negate']['#options'] = [
+    if (isset($form['conditions']['request_path'])) {
+      $form['conditions']['request_path']['#title'] = $this->t('Pages');
+      $form['conditions']['request_path']['negate']['#type'] = 'radios';
+      $form['conditions']['request_path']['negate']['#default_value'] = (int) $form['conditions']['request_path']['negate']['#default_value'];
+      $form['conditions']['request_path']['negate']['#title_display'] = 'invisible';
+      $form['conditions']['request_path']['negate']['#options'] = [
         $this->t('Show for the listed pages'),
         $this->t('Hide for the listed pages'),
       ];
     }
-    if (isset($form['language'])) {
-      $form['language']['negate']['#type'] = 'value';
-      $form['language']['negate']['#value'] = $form['language']['negate']['#default_value'];
+    if (isset($form['conditions']['language'])) {
+      $form['conditions']['language']['negate']['#type'] = 'value';
+      $form['conditions']['language']['negate']['#value'] = $form['conditions']['language']['negate']['#default_value'];
     }
 
     return $form;
@@ -158,6 +164,24 @@ class MenuPositionRuleForm extends EntityForm {
     $menu_position_rule->setParent($menu_link[1]);
     $this->menuPositionEditMenuLink($menu_position_rule);
 
+    // Submit visibility condition settings.
+    foreach ($form_state->getValue('conditions') as $condition_id => $values) {
+      // Allow the condition to submit the form.
+      $condition = $form_state->get(['conditions', $condition_id]);
+      $condition_values = (new FormState())
+        ->setValues($values);
+      $condition->submitConfigurationForm($form, $condition_values);
+      if ($condition instanceof ContextAwarePluginInterface) {
+        $context_mapping = isset($values['context_mapping']) ? $values['context_mapping'] : [];
+        $condition->setContextMapping($context_mapping);
+      }
+      // Update the original form values.
+      $condition_configuration = $condition->getConfiguration();
+      $form_state->setValue(['conditions', $condition_id], $condition_configuration);
+      // Update the visibility conditions on the block.
+      $menu_position_rule->getConditions()->addInstanceId($condition_id, $condition_configuration);
+    }
+
     $status = $menu_position_rule->save();
 
     if ($status) {
@@ -173,6 +197,7 @@ class MenuPositionRuleForm extends EntityForm {
 
     $form_state->setRedirect('entity.menu_position_rule.order_form');
   }
+
 
   public function exist($id) {
     $entity = $this->entityQuery->get('menu_position_rule')
