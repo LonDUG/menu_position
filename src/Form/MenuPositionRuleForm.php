@@ -106,8 +106,12 @@ class MenuPositionRuleForm extends EntityForm {
       ),
     );
 
-    foreach ($this->condition_plugin_manager->getDefinitions() as $condition_id => $definition)  {
-      $condition = $this->condition_plugin_manager->createInstance($definition['id']);
+    foreach ($this->condition_plugin_manager->getDefinitions() as $condition_id => $definition) {
+      if ($menu_position_rule->getConditions()->has($condition_id)) {
+        $condition = $menu_position_rule->getConditions()->get($condition_id);
+      } else {
+        $condition = $this->condition_plugin_manager->createInstance($definition['id']);
+      }
       $form_state->set(['conditions', $condition_id], $condition);
       $condition_form = $condition->buildConfigurationForm([], $form_state);
       $condition_form['#type'] = 'details';
