@@ -18,6 +18,7 @@ use Drupal\Core\Menu\MenuLinkTree;
 use Drupal\Core\Menu\MenuParentFormSelector;
 use Drupal\Core\Menu\MenuTreeParameters;
 use Drupal\Core\Plugin\ContextAwarePluginInterface;
+use Drupal\Core\Plugin\Context\ContextRepositoryInterface;
 use Drupal\menu_link_content\Entity\MenuLinkContent;
 use Drupal\menu_position\Entity\MenuPositionRule;
 use Symfony\Component\DependencyInjection\ContainerInterface;
@@ -33,13 +34,15 @@ class MenuPositionRuleForm extends EntityForm {
     MenuLinkTree $menu_tree,
     EntityManager $entity_manager,
     MenuParentFormSelector $menu_parent_form_selector,
-    ConditionManager $condition_plugin_manager) {
+    ConditionManager $condition_plugin_manager,
+    ContextRepositoryInterface $context_repository) {
 
     $this->entityQuery = $entity_query;
     $this->menu_tree = $menu_tree;
     $this->entity_manager = $entity_manager;
     $this->menu_parent_form_selector = $menu_parent_form_selector;
     $this->condition_plugin_manager = $condition_plugin_manager;
+    $this->context_repository = $context_repository;
   }
 
   /**
@@ -51,7 +54,8 @@ class MenuPositionRuleForm extends EntityForm {
       $container->get('menu.link_tree'),
       $container->get('entity.manager'),
       $container->get('menu.parent_form_selector'),
-      $container->get('plugin.manager.condition')
+      $container->get('plugin.manager.condition'),
+      $container->get('context.repository')
     );
   }
 
@@ -60,11 +64,13 @@ class MenuPositionRuleForm extends EntityForm {
    */
   public function form(array $form, FormStateInterface $form_state) {
     $form = parent::form($form, $form_state);
+
+    // Set these for use when attaching condition forms.
+    $form_state->setTemporaryValue('gathered_contexts', $this->context_repository->getAvailableContexts());
     $form['#tree'] = true;
 
     $menu_position_rule = $this->entity;
     $menu_parent_selector = $this->menu_parent_form_selector;
-
     $options = $menu_parent_selector->getParentSelectOptions();
 
     $form['label'] = array(
