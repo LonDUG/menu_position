@@ -27,10 +27,14 @@ class MenuPositionActiveTrail extends MenuActiveTrail  {
       foreach ($rule->getConditions() as $condition) {
         // Need to get context for this condition.
         if ($condition instanceof ContextAwarePluginInterface) {
-          $contexts = $context_repository->getRuntimeContexts($condition->getContextMapping());
+          $runtime_contexts = $context_repository->getRuntimeContexts($condition->getContextMapping());
+          $condition_contexts = $condition->getContextDefinitions();
           foreach ($condition->getContextMapping() as $name => $context) {
-            if (isset($contexts[$context])) {
-              $condition->setContext($name, $contexts[$context]);
+            if (isset($runtime_contexts[$context]) && $runtime_contexts[$context]->hasContextValue()) {
+              $condition->setContext($name, $runtime_contexts[$context]);
+            } else if ($condition_contexts[$name]->isRequired()) {
+              $active = false;
+              continue 2;
             }
           }
         }
@@ -44,6 +48,7 @@ class MenuPositionActiveTrail extends MenuActiveTrail  {
       // This rule is active.
       if ($active) {
         // Do something...
+        // $query = $entity_query->get('');
       }
     }
 

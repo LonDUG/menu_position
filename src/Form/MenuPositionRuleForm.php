@@ -14,9 +14,7 @@ use Drupal\Core\Entity\EntityManager;
 use Drupal\Core\Entity\Query\QueryFactory;
 use Drupal\Core\Form\FormState;
 use Drupal\Core\Form\FormStateInterface;
-use Drupal\Core\Menu\MenuLinkTree;
 use Drupal\Core\Menu\MenuParentFormSelector;
-use Drupal\Core\Menu\MenuTreeParameters;
 use Drupal\Core\Plugin\ContextAwarePluginInterface;
 use Drupal\Core\Plugin\Context\ContextRepositoryInterface;
 use Drupal\menu_link_content\Entity\MenuLinkContent;
@@ -31,14 +29,12 @@ class MenuPositionRuleForm extends EntityForm {
    */
   public function __construct(
     QueryFactory $entity_query,
-    MenuLinkTree $menu_tree,
     EntityManager $entity_manager,
     MenuParentFormSelector $menu_parent_form_selector,
     ConditionManager $condition_plugin_manager,
     ContextRepositoryInterface $context_repository) {
 
     $this->entityQuery = $entity_query;
-    $this->menu_tree = $menu_tree;
     $this->entity_manager = $entity_manager;
     $this->menu_parent_form_selector = $menu_parent_form_selector;
     $this->condition_plugin_manager = $condition_plugin_manager;
