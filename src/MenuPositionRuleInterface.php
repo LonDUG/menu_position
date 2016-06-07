@@ -12,6 +12,7 @@ use Drupal\Core\Config\Entity\ConfigEntityInterface;
  * Provides an interface defining a Example entity.
  */
 interface MenuPositionRuleInterface extends ConfigEntityInterface {
+
   /**
    * Returns the ID of the menu position rule
    * @return integer
@@ -61,7 +62,7 @@ interface MenuPositionRuleInterface extends ConfigEntityInterface {
    * @return string
    *    The menu item
    */
-  public function getMenuLinkId();
+  public function getMenuLink();
 
   /**
    * Returns weight for the particular menu position rule
@@ -112,7 +113,7 @@ interface MenuPositionRuleInterface extends ConfigEntityInterface {
    * @return string $menu_link_id
    *    The menu link id
    */
-  public function setMenuLinkId($menu_link_id);
+  public function setMenuLink($menu_link);
 
   /**
    * Sets weight for the particular menu position rule
@@ -120,5 +121,4 @@ interface MenuPositionRuleInterface extends ConfigEntityInterface {
    *    Weight for the particular rule
    */
   public function setWeight($weight);
-
 }

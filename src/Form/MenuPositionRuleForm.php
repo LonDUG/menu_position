@@ -7,11 +7,13 @@
 
 namespace Drupal\menu_position\Form;
 
+use Drupal\Component\Uuid\UuidInterface;
 use Drupal\Core\Condition\ConditionManager;
 use Drupal\Core\Entity\EntityForm;
 use Drupal\Core\Entity\EntityManager;
 use Drupal\Core\Form\FormState;
 use Drupal\Core\Form\FormStateInterface;
+use Drupal\Core\Menu\MenuLinkManagerInterface;
 use Drupal\Core\Menu\MenuParentFormSelector;
 use Drupal\Core\Plugin\ContextAwarePluginInterface;
 use Drupal\Core\Plugin\Context\ContextRepositoryInterface;
@@ -28,13 +30,17 @@ class MenuPositionRuleForm extends EntityForm {
   public function __construct(
     EntityManager $entity_manager,
     MenuParentFormSelector $menu_parent_form_selector,
+    MenuLinkManagerInterface $menu_link_manager,
     ConditionManager $condition_plugin_manager,
-    ContextRepositoryInterface $context_repository) {
+    ContextRepositoryInterface $context_repository,
+    UuidInterface $uuid) {
 
     $this->entity_manager = $entity_manager;
     $this->menu_parent_form_selector = $menu_parent_form_selector;
+    $this->menu_link_manager = $menu_link_manager;
     $this->condition_plugin_manager = $condition_plugin_manager;
     $this->context_repository = $context_repository;
+    $this->uuid = $uuid;
   }
 
   /**
@@ -44,8 +50,10 @@ class MenuPositionRuleForm extends EntityForm {
     return new static(
       $container->get('entity.manager'),
       $container->get('menu.parent_form_selector'),
+      $container->get('plugin.manager.menu.link'),
       $container->get('plugin.manager.condition'),
-      $container->get('context.repository')
+      $container->get('context.repository'),
+      $container->get('uuid')
     );
   }
 
@@ -229,20 +237,27 @@ class MenuPositionRuleForm extends EntityForm {
   protected function menuPositionEditMenuLink() {
     $menu_position_rule = $this->entity;
     if ($menu_position_rule->isNew()) {
-      $menu_link = MenuLinkContent::create();
+      $menu_link = $this->menu_link_manager->addDefinition('menu_position_link:' . $this->uuid->generate(), $this->getPluginDefinition());
     } else {
-      $storage = $this->entity_manager->getStorage('menu_link_content');
-      $menu_link = $storage->load($menu_position_rule->getMenuLinkId());
+      $menu_link = $this->menu_link_manager->updateDefinition($menu_position_rule->getMenuLink(), $this->getPluginDefinition());
     }
 
-    // Set basic menu fields.
-    $menu_link->set('title', $this->t('@label  (menu position rule)', array('@label' => $menu_position_rule->getLabel())));
-    $menu_link->set('link', ['uri' => 'internal:/menu-position/' . $menu_position_rule->getId()]);
-    $menu_link->set('menu_name', $menu_position_rule->getMenuName());
-    $menu_link->set('parent', $menu_position_rule->getParent());
-
     // Save the new menu link.
-    $menu_link->save();
-    $menu_position_rule->setMenuLinkId($menu_link->id());
+    $menu_position_rule->setMenuLink($menu_link->getPluginId());
+  }
+
+  protected function getPluginDefinition() {
+    $definition = array();
+    $definition['class'] = 'Drupal\menu_position\Plugin\Menu\MenuPositionLink';
+    $definition['menu_name'] = $this->entity->getMenuName();
+    $definition['link'] = ['uri' => 'internal:/menu-position/' . $this->uuid->generate()];
+    $definition['url'] = 'base:/menu-position/' . $this->uuid->generate();
+    $definition['title'] = $this->t('@label  (menu position rule)', array('@label' => $this->entity->getLabel()));
+    $definition['parent'] = $this->entity->getParent();
+    $definition['enabled'] = $this->entity->getEnabled();
+    $definition['route_name'] = null;
+    $definition['provider'] = 'menu_position';
+
+    return $definition;
   }
 }
