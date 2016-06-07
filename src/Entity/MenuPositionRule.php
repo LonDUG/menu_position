@@ -87,7 +87,7 @@ class MenuPositionRule extends ConfigEntityBase implements MenuPositionRuleInter
    *
    * @var string
    */
-  protected $menu_link_id;
+  protected $menu_link;
 
   /**
    * The weight of this rule.
@@ -144,8 +144,8 @@ class MenuPositionRule extends ConfigEntityBase implements MenuPositionRuleInter
   /**
    * {@inheritdoc}
    */
-  public function getMenuLinkId() {
-    return $this->menu_link_id;
+  public function getMenuLink() {
+    return $this->menu_link;
   }
 
   /**
@@ -193,8 +193,8 @@ class MenuPositionRule extends ConfigEntityBase implements MenuPositionRuleInter
   /**
    * {@inheritdoc}
    */
-  public function setMenuLinkId($menu_link_id) {
-    $this->menu_link_id = $menu_link_id;
+  public function setMenuLink($menu_link) {
+    $this->menu_link = $menu_link;
   }
 
   /**
