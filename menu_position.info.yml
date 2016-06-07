@@ -2,7 +2,4 @@ name: 'Menu position'
 type: module
 description: 'Customize menu position of nodes depending on their content type, associated terms and others conditions.'
 core: '8.x'
-configure: menu_position.admin_settings
-
-dependencies:
-  - menu_link_content
+configure: entity.menu_position_rule.order_form
