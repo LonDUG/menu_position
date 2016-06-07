@@ -9,6 +9,7 @@ namespace Drupal\menu_position\Entity;
 use Drupal\Core\Condition\ConditionPluginCollection;
 use Drupal\Core\Config\Entity\ConfigEntityBase;
 use Drupal\Core\Entity\EntityWithPluginCollectionInterface;
+use Drupal\Core\Plugin\ContextAwarePluginInterface;
 use Drupal\menu_position\MenuPositionRuleInterface;
 
 /**
@@ -65,7 +66,7 @@ class MenuPositionRule extends ConfigEntityBase implements MenuPositionRuleInter
    *
    * @var sequence
    */
-  protected $conditions;
+  protected $conditions = array();
 
   /**
    * The menu of the menu link for this rule.
@@ -213,6 +214,51 @@ class MenuPositionRule extends ConfigEntityBase implements MenuPositionRuleInter
   }
 
   /**
+   * Evaluates all conditions attached to this rule and determines if this rule
+   * is "active" or not.
+   *
+   * @return boolean Whether or not this rule is active.
+   */
+  public function isActive() {
+    // Must be enabled.
+    if (!$this->getEnabled()) {
+      return false;
+    }
+
+    // Rules are good unless told otherwise by the conditions.
+    foreach ($this->getConditions() as $condition) {
+      // Need to get context for this condition.
+      if ($condition instanceof ContextAwarePluginInterface) {
+        // Get runtime contexts and set them for this condition.
+        $runtime_contexts = $this
+          ->contextRepository()
+          ->getRuntimeContexts($condition->getContextMapping());
+        $condition_contexts = $condition->getContextDefinitions();
+
+        foreach ($condition->getContextMapping() as $name => $context) {
+          // Attach appropriate context.
+          if (isset($runtime_contexts[$context])
+            && $runtime_contexts[$context]->hasContextValue()) {
+            $condition->setContext($name, $runtime_contexts[$context]);
+
+          // Does not have context but is required means this rule is inactive.
+          } else if ($condition_contexts[$name]->isRequired()) {
+            return false;
+          }
+        }
+      }
+
+      // If this rule evaluates to false don't fire.
+      if (!$condition->evaluate()) {
+        return false;
+      }
+    }
+
+    // No objections, good to go.
+    return true;
+  }
+
+  /**
    * Gets the condition plugin manager.
    *
    * @return \Drupal\Core\Executable\ExecutableManagerInterface
@@ -224,5 +270,19 @@ class MenuPositionRule extends ConfigEntityBase implements MenuPositionRuleInter
       $this->conditionPluginManager = \Drupal::service('plugin.manager.condition');
     }
     return $this->conditionPluginManager;
+  }
+
+  /**
+   * Gets the condition plugin manager.
+   *
+   * @return \Drupal\Core\Plugin\Context\ContextRepositoryInterface
+   *   The condition plugin manager.
+   */
+  protected function contextRepository() {
+    $this->contextRepository;
+    if (!isset($this->contextRepository)) {
+      $this->contextRepository = \Drupal::service('context.repository');
+    }
+    return $this->contextRepository;
   }
 }
