@@ -61,7 +61,6 @@ class MenuPositionRuleDeleteForm extends EntityConfirmFormBase {
    * {@inheritdoc}
    */
   public function submitForm(array &$form, FormStateInterface $form_state) {
-    d($this->menu_link_manager);
     $this->menu_link_manager->removeDefinition($this->entity->getMenuLink());
     $this->entity->delete();
     drupal_set_message($this->t('The %label rule has been deleted.', array('%label' => $this->entity->getLabel())));
