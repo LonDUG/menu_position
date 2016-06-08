@@ -69,15 +69,14 @@ class MenuPositionRuleForm extends EntityForm {
     $form_state->setTemporaryValue('gathered_contexts', $this->context_repository->getAvailableContexts());
 
     // Get the menu position rule entity.
-    $menu_position_rule = $this->entity;
-
+    $rule = $this->entity;
 
     // Menu position label.
     $form['label'] = array(
       '#type' => 'textfield',
       '#title' => $this->t('Label'),
       '#maxlength' => 255,
-      '#default_value' => $menu_position_rule->getLabel(),
+      '#default_value' => $rule->getLabel(),
       '#description' => $this->t("Label for the Menu Position rule."),
       '#required' => TRUE,
     );
@@ -85,11 +84,11 @@ class MenuPositionRuleForm extends EntityForm {
     // Menu position machine name.
     $form['id'] = array(
       '#type' => 'machine_name',
-      '#default_value' => $menu_position_rule->getId(),
+      '#default_value' => $rule->getId(),
       '#machine_name' => array(
         'exists' => array($this, 'exist'),
       ),
-      '#disabled' => !$menu_position_rule->isNew(),
+      '#disabled' => !$rule->isNew(),
     );
 
     // Menu position parent menu tree item.
@@ -99,7 +98,7 @@ class MenuPositionRuleForm extends EntityForm {
       '#type' => 'select',
       '#title' => $this->t('Parent menu item'),
       '#required' => TRUE,
-      '#default_value' => $menu_position_rule->getMenuName() . ':' . $menu_position_rule->getParent(),
+      '#default_value' => $rule->getMenuName() . ':' . $rule->getParent(),
       '#options' => $options,
       '#description' => $this->t('Select the place in the menu where the rule should position its menu links.'),
       '#attributes' => array(
@@ -122,8 +121,8 @@ class MenuPositionRuleForm extends EntityForm {
     // Get all available plugins from the plugin manager.
     foreach ($this->condition_plugin_manager->getDefinitions() as $condition_id => $definition) {
       // If this condition exists already on the rule, use that.
-      if ($menu_position_rule->getConditions()->has($condition_id)) {
-        $condition = $menu_position_rule->getConditions()->get($condition_id);
+      if ($rule->getConditions()->has($condition_id)) {
+        $condition = $rule->getConditions()->get($condition_id);
       } else {
         $condition = $this->condition_plugin_manager->createInstance($definition['id']);
       }
@@ -176,17 +175,17 @@ class MenuPositionRuleForm extends EntityForm {
    */
   public function save(array $form, FormStateInterface $form_state) {
     // Get menu position rule.
-    $menu_position_rule = $this->entity;
+    $rule = $this->entity;
 
     // Set default to enabled when creating a new rule.
-    if ($menu_position_rule->isNew()) {
-      $menu_position_rule->setEnabled(TRUE);
+    if ($rule->isNew()) {
+      $rule->setEnabled(TRUE);
     }
 
     // Set the parent value for the menu position rule.
     $menu_link = explode(':', $form_state->getValue('parent'));
-    $menu_position_rule->setMenuName(array_shift($menu_link));
-    $menu_position_rule->setParent(implode(':', $menu_link));
+    $rule->setMenuName(array_shift($menu_link));
+    $rule->setParent(implode(':', $menu_link));
 
     // Call helper function to alter menu position rule.
     $this->menuPositionEditMenuLink();
@@ -210,20 +209,20 @@ class MenuPositionRuleForm extends EntityForm {
       $form_state->setValue(['conditions', $condition_id], $condition_configuration);
 
       // Update the conditions on the menu position rule.
-      $menu_position_rule->getConditions()->addInstanceId($condition_id, $condition_configuration);
+      $rule->getConditions()->addInstanceId($condition_id, $condition_configuration);
     }
 
     // Save the menu position rule and get the status for messaging.
-    $status = $menu_position_rule->save();
+    $status = $rule->save();
 
     if ($status) {
       drupal_set_message($this->t('Saved the %label Example.', array(
-        '%label' => $menu_position_rule->label(),
+        '%label' => $rule->label(),
       )));
     }
     else {
       drupal_set_message($this->t('The %label Example was not saved.', array(
-        '%label' => $menu_position_rule->label(),
+        '%label' => $rule->label(),
       )));
     }
 
@@ -235,15 +234,15 @@ class MenuPositionRuleForm extends EntityForm {
    * Alters the menu link for the menu position rule.
    */
   protected function menuPositionEditMenuLink() {
-    $menu_position_rule = $this->entity;
-    if ($menu_position_rule->isNew()) {
+    $rule = $this->entity;
+    if ($rule->isNew()) {
       $menu_link = $this->menu_link_manager->addDefinition('menu_position_link:' . $this->uuid->generate(), $this->getPluginDefinition());
     } else {
-      $menu_link = $this->menu_link_manager->updateDefinition($menu_position_rule->getMenuLink(), $this->getPluginDefinition());
+      $menu_link = $this->menu_link_manager->updateDefinition($rule->getMenuLink(), $this->getPluginDefinition());
     }
 
     // Save the new menu link.
-    $menu_position_rule->setMenuLink($menu_link->getPluginId());
+    $rule->setMenuLink($menu_link->getPluginId());
   }
 
   protected function getPluginDefinition() {
