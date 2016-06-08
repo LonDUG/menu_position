@@ -36,6 +36,7 @@ class MenuPositionActiveTrail extends MenuActiveTrail  {
     parent::__construct($menu_link_manager, $route_match, $cache, $lock);
     $this->entity_query = $entity_query;
     $this->entity_manager = $entity_manager;
+    $this->settings = \Drupal::config('menu_position.settings');
   }
 
   /**
@@ -52,9 +53,9 @@ class MenuPositionActiveTrail extends MenuActiveTrail  {
       // This rule is active.
       if ($rule->isActive()) {
         $menu_link = $this->menuLinkManager->createInstance($rule->getMenuLink());
-        $settings = \Drupal::config('menu_position.settings');
-        switch ($settings->get('link_display')) {
+        switch ($this->settings->get('link_display')) {
           case 'child':
+            // Set this menu link to active.
             return $menu_link;
             break;
           case 'parent':
