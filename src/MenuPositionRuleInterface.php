@@ -44,20 +44,6 @@ interface MenuPositionRuleInterface extends ConfigEntityInterface {
   public function getConditions();
 
   /**
-   * Returns the name of the menu where the position rule lives
-   * @return string
-   *    The name of the menu where the position rule lives
-   */
-  public function getMenuName();
-
-  /**
-   * Returns the parent menu item
-   * @return string
-   *    The parent menu item
-   */
-  public function getParent();
-
-  /**
    * Returns the menu item
    * @return string
    *    The menu item
@@ -93,20 +79,6 @@ interface MenuPositionRuleInterface extends ConfigEntityInterface {
    *    machine plugin name
    */
   public function setConditions($conditions, $plugin);
-
-  /**
-   * Sets the name of the menu where the position rule lives
-   * @return string $menu_name
-   *    The name of menu where the position rule lives
-   */
-  public function setMenuName($menu_name);
-
-  /**
-   * Sets the parent menu item
-   * @return string $parent
-   *    The parent menu item
-   */
-  public function setParent($parent);
 
   /**
    * Sets the menu item

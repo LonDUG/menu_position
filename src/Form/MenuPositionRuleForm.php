@@ -7,7 +7,6 @@
 
 namespace Drupal\menu_position\Form;
 
-use Drupal\Component\Uuid\UuidInterface;
 use Drupal\Core\Condition\ConditionManager;
 use Drupal\Core\Entity\EntityForm;
 use Drupal\Core\Entity\EntityManager;
@@ -32,15 +31,13 @@ class MenuPositionRuleForm extends EntityForm {
     MenuParentFormSelector $menu_parent_form_selector,
     MenuLinkManagerInterface $menu_link_manager,
     ConditionManager $condition_plugin_manager,
-    ContextRepositoryInterface $context_repository,
-    UuidInterface $uuid) {
+    ContextRepositoryInterface $context_repository) {
 
     $this->entity_manager = $entity_manager;
     $this->menu_parent_form_selector = $menu_parent_form_selector;
     $this->menu_link_manager = $menu_link_manager;
     $this->condition_plugin_manager = $condition_plugin_manager;
     $this->context_repository = $context_repository;
-    $this->uuid = $uuid;
   }
 
   /**
@@ -52,8 +49,7 @@ class MenuPositionRuleForm extends EntityForm {
       $container->get('menu.parent_form_selector'),
       $container->get('plugin.manager.menu.link'),
       $container->get('plugin.manager.condition'),
-      $container->get('context.repository'),
-      $container->get('uuid')
+      $container->get('context.repository')
     );
   }
 
@@ -70,6 +66,9 @@ class MenuPositionRuleForm extends EntityForm {
 
     // Get the menu position rule entity.
     $rule = $this->entity;
+
+    // Get the menu link for this rule.
+    $menu_link = $rule->getMenuLinkPlugin();
 
     // Menu position label.
     $form['label'] = array(
@@ -97,7 +96,7 @@ class MenuPositionRuleForm extends EntityForm {
       '#type' => 'select',
       '#title' => $this->t('Parent menu item'),
       '#required' => TRUE,
-      '#default_value' => $rule->getMenuName() . ':' . $rule->getParent(),
+      '#default_value' => (!$rule->isNew()) ? $menu_link->getMenuName() . ':' . $menu_link->getParent() : null,
       '#options' => $options,
       '#description' => $this->t('Select the place in the menu where the rule should position its menu links.'),
       '#attributes' => array(
@@ -175,7 +174,7 @@ class MenuPositionRuleForm extends EntityForm {
   public function validateForm(array &$form, FormStateInterface $form_state) {
     // Don't allow the user to select a menu name instead of a menu item.
     list($menu_name, $parent) = explode(':', $form_state->getValue('parent'));
-    if ($parent == 0) {
+    if (empty($parent)) {
       $form_state->setErrorByName('parent', $this->t('Please select a menu item. You have selected the name of a menu.'));
     }
   }
@@ -187,18 +186,20 @@ class MenuPositionRuleForm extends EntityForm {
     // Get menu position rule.
     $rule = $this->entity;
 
-    // Set default to enabled when creating a new rule.
+    // This is a new menu position rule.
     if ($rule->isNew()) {
+      // Set to enabled by default.
       $rule->setEnabled(TRUE);
+
+      // Break apart parent selector for menu link creation.
+      $link_parts = explode(':', $form_state->getValue('parent'));
+      $menu_name = array_shift($link_parts);
+      $parent= implode(':', $link_parts);
+
+      // Add new menu link plugin definition for this menu position rule.
+      $menu_link = $this->menu_link_manager->addDefinition('menu_position_link:' . $rule->getId(), $this->getPluginDefinition($menu_name, $parent));
+      $rule->setMenuLink($menu_link->getPluginId());
     }
-
-    // Set the parent value for the menu position rule.
-    $menu_link = explode(':', $form_state->getValue('parent'));
-    $rule->setMenuName(array_shift($menu_link));
-    $rule->setParent(implode(':', $menu_link));
-
-    // Call helper function to alter menu position rule.
-    $this->menuPositionEditMenuLink();
 
     // Submit visibility condition settings.
     foreach ($form_state->getValue('conditions') as $condition_id => $values) {
@@ -224,16 +225,12 @@ class MenuPositionRuleForm extends EntityForm {
 
     // Save the menu position rule and get the status for messaging.
     $status = $rule->save();
-
-    if ($status) {
-      drupal_set_message($this->t('Saved the %label Example.', array(
-        '%label' => $rule->label(),
-      )));
-    }
-    else {
-      drupal_set_message($this->t('The %label Example was not saved.', array(
-        '%label' => $rule->label(),
-      )));
+    if ($status && $rule->isNew()) {
+      drupal_set_message($this->t('Rule has been added.'));
+    } else if ($status) {
+      drupal_set_message($this->t('Rule has been modified.'));
+    } else {
+      drupal_set_message($this->t('Rule was not saved.'));
     }
 
     // Redirect back to the menu position rule order form.
@@ -241,31 +238,23 @@ class MenuPositionRuleForm extends EntityForm {
   }
 
   /**
-   * Alters the menu link for the menu position rule.
+   * Helper function that returns a plugin definition array for a menu position
+   * link.
+   *
+   * @return array MenuPositionLink plugin definition array.
    */
-  protected function menuPositionEditMenuLink() {
+  protected function getPluginDefinition($menu_name, $parent) {
     $rule = $this->entity;
-    if ($rule->isNew()) {
-      $menu_link = $this->menu_link_manager->addDefinition('menu_position_link:' . $this->uuid->generate(), $this->getPluginDefinition());
-    } else {
-      $menu_link = $this->menu_link_manager->updateDefinition($rule->getMenuLink(), $this->getPluginDefinition());
-    }
 
-    // Save the new menu link.
-    $rule->setMenuLink($menu_link->getPluginId());
-  }
-
-  protected function getPluginDefinition() {
     $definition = array();
-    $definition['class'] = 'Drupal\menu_position\Plugin\Menu\MenuPositionLink';
-    $definition['menu_name'] = $this->entity->getMenuName();
-    $definition['link'] = ['uri' => 'internal:/menu-position/' . $this->uuid->generate()];
-    $definition['url'] = 'base:/menu-position/' . $this->uuid->generate();
-    $definition['title'] = $this->t('@label  (menu position rule)', array('@label' => $this->entity->getLabel()));
-    $definition['parent'] = $this->entity->getParent();
-    $definition['enabled'] = $this->entity->getEnabled();
+    $definition['menu_name'] = $menu_name;
+    $definition['parent'] = $parent;
+    $definition['title'] = $this->t('@label  (menu position rule)', array('@label' => $rule->getLabel()));
+    $definition['url'] = 'base:/menu-position/' . $rule->getId();
     $definition['route_name'] = null;
+    $definition['enabled'] = false;
     $definition['provider'] = 'menu_position';
+    $definition['class'] = 'Drupal\menu_position\Plugin\Menu\MenuPositionLink';
 
     return $definition;
   }

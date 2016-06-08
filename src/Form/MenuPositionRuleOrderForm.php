@@ -76,17 +76,14 @@ class MenuPositionRuleOrderForm extends FormBase {
 
     // Display table of rules.
     foreach ($rules as $rule) {
-      $menu_link['title'] = $rule->getParent();
-      if ($menu_link === FALSE) {
-        $menu_link = array('title' => '[' . $this->t('deleted menu item') . ']');
-      }
+      $menu_link = $rule->getMenuLinkPlugin();
       $form['rules'][$rule->getId()] = array(
         '#attributes' => array('class' => array('draggable')),
         'title' => array(
-          '#markup' => '<strong>' . $rule->getLabel() . '</strong> (' . $this->t('Positioned under: %title', array('%title' => $rule->getParent())) . ')',
+          '#markup' => '<strong>' . $rule->getLabel() . '</strong> (' . $this->t('Positioned under: %title', array('%title' => $menu_link->getParent())) . ')',
         ),
         'menu_name' => array(
-          '#markup' => $rule->getMenuName(),
+          '#markup' => $menu_link->getMenuName(),
         ),
         'enabled' => array(
           '#type' => 'checkbox',
@@ -147,5 +144,7 @@ class MenuPositionRuleOrderForm extends FormBase {
       $rule->setWeight((float) $value['weight']);
       $storage->save($rule);
     }
+
+    drupal_set_message($this->t('The new rules ordering has been applied.'));
   }
 }

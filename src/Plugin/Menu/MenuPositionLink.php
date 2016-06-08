@@ -11,16 +11,40 @@ class MenuPositionLink extends MenuLinkBase {
    */
   protected $overrideAllowed = array();
 
+  /**
+   * {@inheritdoc}
+   */
   public function getTitle() {
-    return 'Menu Position Rule';
+    return $this->getPluginDefinition()['title'];
   }
 
+  /**
+   * {@inheritdoc}
+   */
   public function getDescription() {
-    return 'Menu Position Rule';
+    return $this->getPluginDefinition()['description'];
   }
 
+  /**
+   * {@inheritdoc}
+   */
   public function updateLink(array $new_definition_values, $persist) {
     return $new_definition_values;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function isDeletable() {
+    return TRUE;
+  }
+
+
+  /**
+   * {@inheritdoc}
+   */
+  public function deleteLink() {
+    // noop
   }
 }
 

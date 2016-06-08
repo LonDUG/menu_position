@@ -51,18 +51,18 @@ class MenuPositionActiveTrail extends MenuActiveTrail  {
     foreach ($rules as $rule) {
       // This rule is active.
       if ($rule->isActive()) {
+        $menu_link = $this->menuLinkManager->createInstance($rule->getMenuLink());
         switch (\Drupal::config('menu_position.settings')['link_display']) {
           case 'child':
-            $menu_link = $this->menuLinkManager->createInstance($rule->getMenuLinkId());
+            return $menu_link;
             break;
           case 'parent':
-            $menu_link = $this->menuLinkManager->createInstance($rule->getParent());
+            return $this->menuLinkManager->createInstance($menu_link->getParent());
             break;
           case 'none':
-            $menu_link = null;
+            return null;
             break;
         }
-        return $menu_link;
       }
     }
 

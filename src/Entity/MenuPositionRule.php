@@ -130,20 +130,6 @@ class MenuPositionRule extends ConfigEntityBase implements MenuPositionRuleInter
   /**
    * {@inheritdoc}
    */
-  public function getMenuName() {
-    return $this->menu_name;
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function getParent() {
-    return $this->parent;
-  }
-
-  /**
-   * {@inheritdoc}
-   */
   public function getMenuLink() {
     return $this->menu_link;
   }
@@ -179,20 +165,6 @@ class MenuPositionRule extends ConfigEntityBase implements MenuPositionRuleInter
   /**
    * {@inheritdoc}
    */
-  public function setMenuName($menu_name) {
-    $this->menu_name = $menu_name;
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function setParent($parent) {
-    $this->parent = $parent;
-  }
-
-  /**
-   * {@inheritdoc}
-   */
   public function setMenuLink($menu_link) {
     $this->menu_link = $menu_link;
   }
@@ -211,6 +183,13 @@ class MenuPositionRule extends ConfigEntityBase implements MenuPositionRuleInter
     return [
       'conditions' => $this->getConditions(),
     ];
+  }
+
+  public function getMenuLinkPlugin() {
+    if ($this->getMenuLink() === null) {
+      return null;
+    }
+    return $this->menuLinkManager()->createInstance($this->getMenuLink());
   }
 
   /**
@@ -248,13 +227,13 @@ class MenuPositionRule extends ConfigEntityBase implements MenuPositionRuleInter
         }
       }
 
-      // If this rule evaluates to false don't fire.
+      // If this condition evaluates to false, rule is inactive.
       if (!$condition->evaluate()) {
         return false;
       }
     }
 
-    // No objections, good to go.
+    // No objections, rule is active.
     return true;
   }
 
@@ -284,5 +263,19 @@ class MenuPositionRule extends ConfigEntityBase implements MenuPositionRuleInter
       $this->contextRepository = \Drupal::service('context.repository');
     }
     return $this->contextRepository;
+  }
+
+  /**
+   * Gets the condition plugin manager.
+   *
+   * @return \Drupal\Core\Plugin\Context\ContextRepositoryInterface
+   *   The condition plugin manager.
+   */
+  protected function menuLinkManager() {
+    $this->menuLinkManager;
+    if (!isset($this->menuLinkManager)) {
+      $this->menuLinkManager = \Drupal::service('plugin.manager.menu.link');
+    }
+    return $this->menuLinkManager;
   }
 }
