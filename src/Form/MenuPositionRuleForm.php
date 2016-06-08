@@ -92,8 +92,7 @@ class MenuPositionRuleForm extends EntityForm {
     );
 
     // Menu position parent menu tree item.
-    $menu_parent_selector = $this->menu_parent_form_selector;
-    $options = $menu_parent_selector->getParentSelectOptions();
+    $options = $this->menu_parent_form_selector->getParentSelectOptions();
     $form['parent'] = array(
       '#type' => 'select',
       '#title' => $this->t('Parent menu item'),
@@ -168,6 +167,17 @@ class MenuPositionRuleForm extends EntityForm {
     }
 
     return $form;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function validateForm(array &$form, FormStateInterface $form_state) {
+    // Don't allow the user to select a menu name instead of a menu item.
+    list($menu_name, $parent) = explode(':', $form_state->getValue('parent'));
+    if ($parent == 0) {
+      $form_state->setErrorByName('parent', $this->t('Please select a menu item. You have selected the name of a menu.'));
+    }
   }
 
   /**
