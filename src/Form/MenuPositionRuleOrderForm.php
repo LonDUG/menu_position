@@ -13,6 +13,7 @@ use Drupal\Core\Entity\Query\QueryFactory;
 use Drupal\Core\Form\FormBase;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Url;
+use Drupal\Core\Menu\MenuLinkManagerInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
@@ -22,14 +23,20 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
  */
 class MenuPositionRuleOrderForm extends FormBase {
 
-  public function __construct(QueryFactory $entity_query, EntityManager $entity_manager) {
+  public function __construct(
+    QueryFactory $entity_query,
+    MenuLinkManagerInterface $menu_link_manager,
+    EntityManager $entity_manager) {
+
     $this->entity_query = $entity_query;
+    $this->menu_link_manager = $menu_link_manager;
     $this->entity_manager = $entity_manager;
   }
 
   public static function create(ContainerInterface $container) {
     return new static(
       $container->get('entity.query'),
+      $container->get('plugin.manager.menu.link'),
       $container->get('entity.manager')
     );
   }
@@ -77,10 +84,11 @@ class MenuPositionRuleOrderForm extends FormBase {
     // Display table of rules.
     foreach ($rules as $rule) {
       $menu_link = $rule->getMenuLinkPlugin();
+      $parent = $this->menu_link_manager->createInstance($menu_link->getParent());
       $form['rules'][$rule->getId()] = array(
         '#attributes' => array('class' => array('draggable')),
         'title' => array(
-          '#markup' => '<strong>' . $rule->getLabel() . '</strong> (' . $this->t('Positioned under: %title', array('%title' => $menu_link->getParent())) . ')',
+          '#markup' => '<strong>' . $rule->getLabel() . '</strong> (' . $this->t('Positioned under: %title', array('%title' => $parent->getTitle())) . ')',
         ),
         'menu_name' => array(
           '#markup' => $menu_link->getMenuName(),
