@@ -30,10 +30,20 @@ class MenuPositionLink extends MenuLinkBase {
    * {@inheritdoc}
    */
   public function getTitle() {
-    $request = \Drupal::request();
-    $route_match = \Drupal::routeMatch();
-    $title = \Drupal::service('title_resolver')->getTitle($request, $route_match->getRouteObject());
-    return $title;
+    // When we're in an admin route we want to display the name of the menu
+    // position rule.
+    // @todo Ensure this translates properly when using configuration
+    //   translation.
+    if (\Drupal::service('router.admin_context')->isAdminRoute()) {
+      return $this->pluginDefinition['title'];
+    }
+    // When we're on a non-admin route we want to display the page title.
+    else {
+      $request = \Drupal::request();
+      $route_match = \Drupal::routeMatch();
+      $title = \Drupal::service('title_resolver')->getTitle($request, $route_match->getRouteObject());
+      return $title;
+    }
   }
 
   /**
