@@ -10,6 +10,7 @@ namespace Drupal\menu_position\Form;
 use Drupal\Core\Condition\ConditionManager;
 use Drupal\Core\Entity\EntityForm;
 use Drupal\Core\Entity\EntityManager;
+use Drupal\Core\Entity\Query\QueryFactory;
 use Drupal\Core\Form\FormState;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Menu\MenuLinkManagerInterface;
@@ -27,12 +28,14 @@ class MenuPositionRuleForm extends EntityForm {
    *   The entity query.
    */
   public function __construct(
+    QueryFactory $entity_query,
     EntityManager $entity_manager,
     MenuParentFormSelector $menu_parent_form_selector,
     MenuLinkManagerInterface $menu_link_manager,
     ConditionManager $condition_plugin_manager,
     ContextRepositoryInterface $context_repository) {
 
+    $this->entity_query = $entity_query;
     $this->entity_manager = $entity_manager;
     $this->menu_parent_form_selector = $menu_parent_form_selector;
     $this->menu_link_manager = $menu_link_manager;
@@ -45,6 +48,7 @@ class MenuPositionRuleForm extends EntityForm {
    */
   public static function create(ContainerInterface $container) {
     return new static(
+      $container->get('entity.query'),
       $container->get('entity.manager'),
       $container->get('menu.parent_form_selector'),
       $container->get('plugin.manager.menu.link'),
@@ -257,5 +261,18 @@ class MenuPositionRuleForm extends EntityForm {
     $definition['class'] = 'Drupal\menu_position\Plugin\Menu\MenuPositionLink';
 
     return $definition;
+  }
+
+  /**
+   * Returns boolean indicating whether or not this entity exists.
+   *
+   * @param  string $id The id of the entity.
+   * @return bool       Whether or not the entity exists already.
+   */
+  public function exist($id) {
+    $entity = $this->entity_query->get('menu_position_rule')
+      ->condition('id', $id)
+      ->execute();
+    return (bool) $entity;
   }
 }
