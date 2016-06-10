@@ -244,7 +244,6 @@ class MenuPositionRule extends ConfigEntityBase implements MenuPositionRuleInter
    *   The condition plugin manager.
    */
   protected function conditionPluginManager() {
-    $this->conditionPluginManager;
     if (!isset($this->conditionPluginManager)) {
       $this->conditionPluginManager = \Drupal::service('plugin.manager.condition');
     }
@@ -258,7 +257,6 @@ class MenuPositionRule extends ConfigEntityBase implements MenuPositionRuleInter
    *   The condition plugin manager.
    */
   protected function contextRepository() {
-    $this->contextRepository;
     if (!isset($this->contextRepository)) {
       $this->contextRepository = \Drupal::service('context.repository');
     }
@@ -272,7 +270,6 @@ class MenuPositionRule extends ConfigEntityBase implements MenuPositionRuleInter
    *   The condition plugin manager.
    */
   protected function menuLinkManager() {
-    $this->menuLinkManager;
     if (!isset($this->menuLinkManager)) {
       $this->menuLinkManager = \Drupal::service('plugin.manager.menu.link');
     }
