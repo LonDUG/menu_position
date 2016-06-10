@@ -97,6 +97,34 @@ class MenuPositionRule extends ConfigEntityBase implements MenuPositionRuleInter
   protected $weight;
 
   /**
+   * The condition plugin manager.
+   *
+   * @var \Drupal\Core\Executable\ExecutableManagerInterface
+   */
+  protected $conditionPluginManager;
+
+  /**
+   * The menu link plugin manager.
+   *
+   * @var \Drupal\Core\Menu\MenuLinkManagerInterface
+   */
+  protected $menuLinkManager;
+
+  /**
+   * The context manager service.
+   *
+   * @var \Drupal\Core\Plugin\Context\ContextRepositoryInterface
+   */
+  protected $contextRepository;
+
+  /**
+   * The collection of condition plugins.
+   *
+   * @var \Drupal\Core\Condition\ConditionPluginCollection
+   */
+  protected $conditionCollection;
+
+  /**
    * {@inheritdoc}
    */
   public function getId() {
