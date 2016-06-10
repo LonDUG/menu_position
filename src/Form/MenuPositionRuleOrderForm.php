@@ -85,13 +85,16 @@ class MenuPositionRuleOrderForm extends FormBase {
     foreach ($rules as $rule) {
       $menu_link = $rule->getMenuLinkPlugin();
       $parent = $this->menu_link_manager->createInstance($menu_link->getParent());
+      // @todo Because we're in a loop, try to cache this unless the entity
+      //   manager handles all that for us. At least only get the storage once?
+      $menu = $this->entity_manager->getStorage('menu')->load($menu_link->getMenuName());
       $form['rules'][$rule->getId()] = array(
         '#attributes' => array('class' => array('draggable')),
         'title' => array(
           '#markup' => '<strong>' . $rule->getLabel() . '</strong> (' . $this->t('Positioned under: %title', array('%title' => $parent->getTitle())) . ')',
         ),
         'menu_name' => array(
-          '#markup' => $menu_link->getMenuName(),
+          '#markup' => $menu->label(),
         ),
         'enabled' => array(
           '#type' => 'checkbox',
