@@ -10,6 +10,13 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 class MenuPositionLink extends MenuLinkBase implements ContainerFactoryPluginInterface {
 
   /**
+   * The entity manager.
+   *
+   * @var \Drupal\Core\Entity\EntityManagerInterface
+   */
+  protected $entityManager;
+
+  /**
    * Constructs a Drupal\Component\Plugin\PluginBase object.
    *
    * @param array $configuration
@@ -22,7 +29,7 @@ class MenuPositionLink extends MenuLinkBase implements ContainerFactoryPluginInt
   public function __construct(array $configuration, $plugin_id, $plugin_definition, EntityManagerInterface $entity_manager) {
     parent::__construct($configuration, $plugin_id, $plugin_definition);
 
-    $this->entity_manager = $entity_manager;
+    $this->entityManager = $entity_manager;
     $this->settings = \Drupal::config('menu_position.settings');
 
   }
@@ -100,7 +107,7 @@ class MenuPositionLink extends MenuLinkBase implements ContainerFactoryPluginInt
    * {@inheritdoc}
    */
   public function getEditRoute() {
-    $storage = $this->entity_manager->getStorage('menu_position_rule');
+    $storage = $this->entityManager->getStorage('menu_position_rule');
     $entity_id = $this->pluginDefinition['metadata']['entity_id'];
     $entity = $storage->load($entity_id);
     return $entity->urlInfo();
