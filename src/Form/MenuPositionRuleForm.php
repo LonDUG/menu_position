@@ -189,6 +189,7 @@ class MenuPositionRuleForm extends EntityForm {
   public function save(array $form, FormStateInterface $form_state) {
     // Get menu position rule.
     $rule = $this->entity;
+    $is_new = $rule->isNew();
 
     // Break apart parent selector for menu link creation.
     $link_parts = explode(':', $form_state->getValue('parent'));
@@ -196,7 +197,7 @@ class MenuPositionRuleForm extends EntityForm {
     $parent= implode(':', $link_parts);
 
     // This is a new menu position rule.
-    if ($rule->isNew()) {
+    if ($is_new) {
       // Set to enabled by default.
       $rule->setEnabled(TRUE);
 
@@ -233,12 +234,12 @@ class MenuPositionRuleForm extends EntityForm {
 
     // Save the menu position rule and get the status for messaging.
     $status = $rule->save();
-    if ($status && $rule->isNew()) {
-      drupal_set_message($this->t('Rule has been added.'));
+    if ($status && $is_new) {
+      drupal_set_message($this->t('Rule %label has been added.', ['%label' => $rule->getLabel()]));
     } else if ($status) {
-      drupal_set_message($this->t('Rule has been modified.'));
+      drupal_set_message($this->t('Rule %label has been updated.', ['%label' => $rule->getLabel()]));
     } else {
-      drupal_set_message($this->t('Rule was not saved.'));
+      drupal_set_message($this->t('Rule %label was not saved.', ['%label' => $rule->getLabel()]), 'warning');
     }
 
     // Redirect back to the menu position rule order form.
