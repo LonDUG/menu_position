@@ -154,6 +154,10 @@ class MenuPositionRuleForm extends EntityForm {
       $form['conditions']['user_role']['negate']['#type'] = 'value';
       $form['conditions']['user_role']['negate']['#value'] = $form['conditions']['user_role']['negate']['#default_value'];
     }
+    if (isset($form['conditions']['current_theme'])) {
+      $form['conditions']['current_theme']['theme']['#empty_value'] = '';
+      $form['conditions']['current_theme']['theme']['#empty_option'] = $this->t('- Any -');
+    }
     if (isset($form['conditions']['request_path'])) {
       $form['conditions']['request_path']['#title'] = $this->t('Pages');
       $form['conditions']['request_path']['negate']['#type'] = 'radios';
