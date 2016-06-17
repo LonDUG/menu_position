@@ -42,6 +42,9 @@ class MenuPositionLink extends MenuLinkBase {
       $request = \Drupal::request();
       $route_match = \Drupal::routeMatch();
       $title = \Drupal::service('title_resolver')->getTitle($request, $route_match->getRouteObject());
+      if (is_array($title)) {
+        $title = \Drupal::service('renderer')->renderPlain($title);
+      }
       return $title;
     }
   }
