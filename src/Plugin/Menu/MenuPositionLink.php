@@ -77,5 +77,16 @@ class MenuPositionLink extends MenuLinkBase {
   public function deleteLink() {
     // noop
   }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getEditRoute() {
+    list(, $identifier) = explode(':', $this->pluginId);
+    $url = \Drupal\Core\Url::fromRoute('entity.menu_position_rule.edit_form', [
+      'menu_position_rule' => $identifier,
+    ]);
+    return $url;
+  }
 }
 
