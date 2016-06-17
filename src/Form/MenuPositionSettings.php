@@ -44,12 +44,12 @@ class MenuPositionSettings extends ConfigFormBase {
       '#type' => 'radios',
       '#title' => t('When a menu position rule matches:'),
       '#options' => array(
-        'child' => t("Insert the current page's title into the menu tree."),
         'parent' => t('Mark the rule\'s parent menu item as being "active".'),
+        'child' => t("Insert the current page's title into the menu tree."),
         'none' => t('Don\'t mark any menu item as being "active".'),
       ),
       '#default_value' => $config->get('link_display'),
-      '#description' => t("By default, a matching menu position rule will insert the current page's title into the menu tree just below the rule's parent menu item."),
+      '#description' => t("By default, a matching menu position rule will mark the rule's parent menu item as active."),
     );
 
     return parent::buildForm($form, $form_state);
