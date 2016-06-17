@@ -1,0 +1,23 @@
+<?php
+
+use Drupal\Core\Form\FormStateInterface;
+use Drupal\Core\Render\Element;
+use Drupal\menu_position\Plugin\Menu\MenuPositionLink;
+
+/**
+ * @file
+ * Contains menu_position.module.
+ */
+
+/**
+ * Implements hook_form_FORM_ID_alter() for menu_edit_form().
+ */
+function menu_position_form_menu_edit_form_alter(&$form, FormStateInterface $form_state) {
+  foreach (Element::children($form['links']['links']) as $key) {
+    $menu_link = $form['links']['links'][$key];
+    if (isset($menu_link['#item']->link) && $menu_link['#item']->link instanceof MenuPositionLink) {
+      $form['links']['links'][$key]['enabled']['#disabled'] = TRUE;
+      $form['links']['links'][$key]['enabled']['#default_value'] = TRUE;
+    }
+  }
+}
