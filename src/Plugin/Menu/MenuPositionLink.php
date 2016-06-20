@@ -2,9 +2,19 @@
 
 namespace Drupal\menu_position\Plugin\Menu;
 
+use Drupal\Core\Entity\EntityManagerInterface;
 use Drupal\Core\Menu\MenuLinkBase;
+use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 
-class MenuPositionLink extends MenuLinkBase {
+class MenuPositionLink extends MenuLinkBase implements ContainerFactoryPluginInterface {
+
+  /**
+   * The entity manager.
+   *
+   * @var \Drupal\Core\Entity\EntityManagerInterface
+   */
+  protected $entityManager;
 
   /**
    * Constructs a Drupal\Component\Plugin\PluginBase object.
@@ -16,9 +26,24 @@ class MenuPositionLink extends MenuLinkBase {
    * @param mixed $plugin_definition
    *   The plugin implementation definition.
    */
-  public function __construct(array $configuration, $plugin_id, $plugin_definition) {
+  public function __construct(array $configuration, $plugin_id, $plugin_definition, EntityManagerInterface $entity_manager) {
     parent::__construct($configuration, $plugin_id, $plugin_definition);
+
+    $this->entityManager = $entity_manager;
     $this->settings = \Drupal::config('menu_position.settings');
+
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public static function create(ContainerInterface $container, array $configuration, $plugin_id, $plugin_definition) {
+    return new static(
+      $configuration,
+      $plugin_id,
+      $plugin_definition,
+      $container->get('entity.manager')
+    );
   }
 
   /**
@@ -76,6 +101,16 @@ class MenuPositionLink extends MenuLinkBase {
    */
   public function deleteLink() {
     // noop
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getEditRoute() {
+    $storage = $this->entityManager->getStorage('menu_position_rule');
+    $entity_id = $this->pluginDefinition['metadata']['entity_id'];
+    $entity = $storage->load($entity_id);
+    return $entity->urlInfo();
   }
 }
 

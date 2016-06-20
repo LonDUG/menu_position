@@ -263,6 +263,7 @@ class MenuPositionRuleForm extends EntityForm {
     $definition['route_name'] = null;
     $definition['route_parameters'] = [];
     $definition['enabled'] = false;
+    $definition['metadata'] = array('entity_id' => $rule->getId());
     $definition['provider'] = 'menu_position';
     $definition['class'] = 'Drupal\menu_position\Plugin\Menu\MenuPositionLink';
 
