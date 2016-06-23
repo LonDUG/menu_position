@@ -31,6 +31,7 @@ class MenuPositionRuleOrderForm extends FormBase {
     $this->entity_query = $entity_query;
     $this->menu_link_manager = $menu_link_manager;
     $this->entity_manager = $entity_manager;
+    $this->db = $database;
   }
 
   public static function create(ContainerInterface $container) {
@@ -155,7 +156,7 @@ class MenuPositionRuleOrderForm extends FormBase {
       $rule->setWeight((float) $value['weight']);
       $storage->save($rule);
     }
-
     drupal_set_message($this->t('The new rules ordering has been applied.'));
+    drupal_flush_all_caches();
   }
 }

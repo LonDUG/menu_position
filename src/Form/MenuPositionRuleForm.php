@@ -243,7 +243,9 @@ class MenuPositionRuleForm extends EntityForm {
     }
 
     // Redirect back to the menu position rule order form.
+    drupal_flush_all_caches();
     $form_state->setRedirect('entity.menu_position_rule.order_form');
+
   }
 
   /**
