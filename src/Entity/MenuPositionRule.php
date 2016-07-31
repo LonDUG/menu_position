@@ -141,6 +141,13 @@ class MenuPositionRule extends ConfigEntityBase implements MenuPositionRuleInter
   /**
    * {@inheritdoc}
    */
+  public function label() {
+    return $this->label;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
   public function getEnabled() {
     return $this->enabled;
   }
