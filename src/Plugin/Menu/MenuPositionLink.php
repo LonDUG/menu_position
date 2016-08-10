@@ -10,6 +10,15 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 class MenuPositionLink extends MenuLinkBase implements ContainerFactoryPluginInterface {
 
   /**
+   * {@inheritdoc}
+   */
+  protected $overrideAllowed = array(
+    'menu_name' => 1,
+    'parent' => 1,
+    'weight' => 1,
+  );
+
+  /**
    * The entity manager.
    *
    * @var \Drupal\Core\Entity\EntityManagerInterface
@@ -49,11 +58,6 @@ class MenuPositionLink extends MenuLinkBase implements ContainerFactoryPluginInt
   /**
    * {@inheritdoc}
    */
-  protected $overrideAllowed = array();
-
-  /**
-   * {@inheritdoc}
-   */
   public function getTitle() {
     // When we're in an admin route we want to display the name of the menu
     // position rule.
@@ -85,7 +89,11 @@ class MenuPositionLink extends MenuLinkBase implements ContainerFactoryPluginInt
    * {@inheritdoc}
    */
   public function updateLink(array $new_definition_values, $persist) {
-    return $new_definition_values;
+    // Filter the list of updates to only those that are allowed.
+    $overrides = array_intersect_key($new_definition_values, $this->overrideAllowed);
+    // Update the definition.
+    $plugin_definition = $overrides + $this->getPluginDefinition();
+    return $plugin_definition;
   }
 
   /**
@@ -115,5 +123,6 @@ class MenuPositionLink extends MenuLinkBase implements ContainerFactoryPluginInt
     $entity = $storage->load($entity_id);
     return $entity->urlInfo();
   }
+
 }
 
