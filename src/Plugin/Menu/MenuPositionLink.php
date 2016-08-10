@@ -5,6 +5,7 @@ namespace Drupal\menu_position\Plugin\Menu;
 use Drupal\Core\Entity\EntityManagerInterface;
 use Drupal\Core\Menu\MenuLinkBase;
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
+use Drupal\Core\Url;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 class MenuPositionLink extends MenuLinkBase implements ContainerFactoryPluginInterface {
@@ -78,7 +79,26 @@ class MenuPositionLink extends MenuLinkBase implements ContainerFactoryPluginInt
    * {@inheritdoc}
    */
   public function getDescription() {
-    return $this->getPluginDefinition()['description'];
+    return $this->pluginDefinition['description'];
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getUrlObject($title_attribute = TRUE) {
+    $options = $this->getOptions();
+    if ($title_attribute && $description = $this->getDescription()) {
+      $options['attributes']['title'] = $description;
+    }
+    // If this is an admin path, return url to configuration form.
+    if (\Drupal::service('router.admin_context')->isAdminRoute()) {
+      return new Url($this->getRouteName(), $this->getRouteParameters(), $options);
+    }
+    // Otherwise, return current page url using the default `<none>` route,
+    // as only the current page ever gets printed.
+    else {
+      return Url::fromUri($this->pluginDefinition['url']);
+    }
   }
 
   /**
