@@ -263,7 +263,8 @@ class MenuPositionRuleForm extends EntityForm {
     $definition['menu_name'] = $menu_name;
     $definition['parent'] = $parent;
     $definition['title'] = $this->t('@label  (menu position rule)', array('@label' => $rule->getLabel()));
-    $definition['url'] = 'internal:<none>';
+    // Link to `<current>` route, it's the only location the link is displayed.
+    $definition['url'] = 'internal:/<current>';
     $definition['route_name'] = 'entity.menu_position_rule.edit_form';
     $definition['route_parameters'] = ['menu_position_rule' => $rule->getId()];
     $definition['enabled'] = false;
