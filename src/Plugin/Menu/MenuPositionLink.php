@@ -94,10 +94,9 @@ class MenuPositionLink extends MenuLinkBase implements ContainerFactoryPluginInt
     if (\Drupal::service('router.admin_context')->isAdminRoute()) {
       return new Url($this->getRouteName(), $this->getRouteParameters(), $options);
     }
-    // Otherwise, return current page url using the default `<none>` route,
-    // as only the current page ever gets printed.
+    // Otherwise, return the configured url.
     else {
-      return Url::fromUri($this->pluginDefinition['url']);
+      return Url::fromUri($this->pluginDefinition['url'], $options);
     }
   }
 
