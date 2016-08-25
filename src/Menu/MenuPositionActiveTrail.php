@@ -13,6 +13,9 @@ use Drupal\Core\Routing\RouteMatchInterface;
 
 class MenuPositionActiveTrail extends MenuActiveTrail  {
 
+  private $active_rule = null;
+  private $settings;
+
   /**
    * Constructs a \Drupal\Core\Menu\MenuActiveTrail object.
    *
@@ -46,29 +49,80 @@ class MenuPositionActiveTrail extends MenuActiveTrail  {
     // Get all the rules.
     $query = $this->entity_query->get('menu_position_rule');
     $results = $query->sort('weight')->execute();
-    $rules = $this->entity_manager->getStorage('menu_position_rule')->loadMultiple($results);
+
+    // Try and locate an active rule.
+    if (false === $rule = $this->getActiveRule()) {
+      return parent::getActiveLink($menu_name);
+    }
+
+    // Get correct menu link based on the settings.
+    $menu_link = $this->menuLinkManager->createInstance($rule->getMenuLink());
+    switch ($this->settings->get('link_display')) {
+      case 'child':
+        // Set this menu link to active.
+        return $menu_link;
+        break;
+      case 'parent':
+        return $this->menuLinkManager->createInstance($menu_link->getParent());
+        break;
+      case 'none':
+        return null;
+        break;
+      default:
+        return null;
+        break;
+    }
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getActiveTrailIds($menu_name) {
+    $trail_ids = parent::getActiveTrailIds();
+    if ($rule = $this->getActiveRule()) {
+      if ($this->settings->get('link_display') == 'child') {
+        $request = \Drupal::request();
+        if ($route = $request->attributes->get(\Symfony\Cmf\Component\Routing\RouteObjectInterface::ROUTE_OBJECT)) {
+          $title = \Drupal::service('title_resolver')->getTitle($request, $route);
+        }
+        $id = 'menu_position_rule:' . $rule->getId() . ':' . $title;
+        $trail_ids[$id] = $id;
+      }
+    }
+    return $trail_ids;
+  }
+
+  /**
+   * Sets the active rule if it is not set and returns the active rule.
+   *
+   * @return MenuPositionRule|false
+   */
+  public function getActiveRule() {
+    // Rule has been set, return it.
+    if ($this->active_rule !== null) {
+      return $this->active_rule;
+    }
 
     // Iterate over the rules.
+    $rules = $this->entity_manager->getStorage('menu_position_rule')->loadMultiple($results);
     foreach ($rules as $rule) {
-      // This rule is active.
+      // This rule is active, set it and return.
       if ($rule->isActive()) {
-        $menu_link = $this->menuLinkManager->createInstance($rule->getMenuLink());
-        switch ($this->settings->get('link_display')) {
-          case 'child':
-            // Set this menu link to active.
-            return $menu_link;
-            break;
-          case 'parent':
-            return $this->menuLinkManager->createInstance($menu_link->getParent());
-            break;
-          case 'none':
-            return null;
-            break;
-        }
+        $this->active_rule = $rule;
+        return $this->active_rule;
       }
     }
 
-    // Default implementation takes here.
-    return parent::getActiveLink($menu_name);
+    // No active rule, false.
+    $this->active_rule = false;
+    return $this->active_rule;
+  }
+
+  /**
+   * Clears the active rule so that calling "getActiveRule" again re-evaluates
+   * the rules.
+   */
+  public function resetRule() {
+    $this->active_rule = null;
   }
 }
