@@ -17,6 +17,7 @@ use Drupal\Core\Menu\MenuLinkManagerInterface;
 use Drupal\Core\Menu\MenuParentFormSelector;
 use Drupal\Core\Plugin\ContextAwarePluginInterface;
 use Drupal\Core\Plugin\Context\ContextRepositoryInterface;
+use Drupal\Core\Routing\RouteBuilder;
 use Drupal\menu_link_content\Entity\MenuLinkContent;
 use Drupal\menu_position\Entity\MenuPositionRule;
 use Symfony\Component\DependencyInjection\ContainerInterface;
@@ -33,7 +34,8 @@ class MenuPositionRuleForm extends EntityForm {
     MenuParentFormSelector $menu_parent_form_selector,
     MenuLinkManagerInterface $menu_link_manager,
     ConditionManager $condition_plugin_manager,
-    ContextRepositoryInterface $context_repository) {
+    ContextRepositoryInterface $context_repository,
+    RouteBuilder $route_builder) {
 
     $this->entity_query = $entity_query;
     $this->entity_manager = $entity_manager;
@@ -41,6 +43,7 @@ class MenuPositionRuleForm extends EntityForm {
     $this->menu_link_manager = $menu_link_manager;
     $this->condition_plugin_manager = $condition_plugin_manager;
     $this->context_repository = $context_repository;
+    $this->route_builder = $route_builder;
   }
 
   /**
@@ -53,7 +56,8 @@ class MenuPositionRuleForm extends EntityForm {
       $container->get('menu.parent_form_selector'),
       $container->get('plugin.manager.menu.link'),
       $container->get('plugin.manager.condition'),
-      $container->get('context.repository')
+      $container->get('context.repository'),
+      $container->get('router.builder')
     );
   }
 
@@ -245,6 +249,9 @@ class MenuPositionRuleForm extends EntityForm {
     } else {
       drupal_set_message($this->t('Rule %label was not saved.', ['%label' => $rule->getLabel()]), 'warning');
     }
+
+    // Flush appropriate menu cache
+    $this->route_builder->rebuild();
 
     // Redirect back to the menu position rule order form.
     $form_state->setRedirect('entity.menu_position_rule.order_form');

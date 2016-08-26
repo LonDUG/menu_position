@@ -9,6 +9,7 @@ namespace Drupal\menu_position\Form;
 
 use Drupal\Core\Form\ConfigFormBase;
 use Drupal\Core\Form\FormStateInterface;
+use Drupal\Core\Routing\RouteBuilder;
 
 /**
  * Class MenuPositionSettings.
@@ -16,6 +17,17 @@ use Drupal\Core\Form\FormStateInterface;
  * @package Drupal\menu_position\Form
  */
 class MenuPositionSettings extends ConfigFormBase {
+
+  public function __construct(
+    RouteBuilder $route_builder) {
+    $this->route_builder = $route_builder;
+  }
+
+  public static function create(ContainerInterface $container) {
+    return new static(
+      $container->get('router.builder')
+    );
+  }
 
   /**
    * {@inheritdoc}
@@ -69,6 +81,9 @@ class MenuPositionSettings extends ConfigFormBase {
     $this->config('menu_position.settings')
       ->set('link_display', $form_state->getValue('menu_position_active_link_display'))
       ->save();
+
+    // Flush appropriate menu cache
+    $this->route_builder->rebuild();
 
     parent::submitForm($form, $form_state);
   }
