@@ -7,9 +7,11 @@
 
 namespace Drupal\menu_position\Form;
 
+use Drupal\Core\Config\ConfigFactoryInterface;
 use Drupal\Core\Form\ConfigFormBase;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Routing\RouteBuilder;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
  * Class MenuPositionSettings.
@@ -18,13 +20,24 @@ use Drupal\Core\Routing\RouteBuilder;
  */
 class MenuPositionSettings extends ConfigFormBase {
 
+  /**
+   * {@inheritdoc}
+   */
   public function __construct(
-    RouteBuilder $route_builder) {
+    ConfigFactoryInterface $config_factory,
+    RouteBuilder $route_builder
+    ) {
+
+    $this->setConfigFactory($config_factory);
     $this->route_builder = $route_builder;
   }
 
+  /**
+   * {@inheritdoc}
+   */
   public static function create(ContainerInterface $container) {
     return new static(
+      $container->get('config.factory'),
       $container->get('router.builder')
     );
   }
