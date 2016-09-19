@@ -1,2 +1,10 @@
 {
+  "name": "drupal/menu_position",
+  "description": "This module allows for the creation of rules that will dynamically add the current page into the menu system at the requested spots.",
+  "type": "drupal-module",
+  "homepage": "https://www.drupal.org/project/menu_position",
+  "support": {
+    "issues": "https://www.drupal.org/project/issues/menu_position"
+  },
+  "license": "GPL-2.0+"
 }
