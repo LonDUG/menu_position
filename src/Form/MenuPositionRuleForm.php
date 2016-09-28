@@ -179,17 +179,6 @@ class MenuPositionRuleForm extends EntityForm {
   /**
    * {@inheritdoc}
    */
-  public function validateForm(array &$form, FormStateInterface $form_state) {
-    // Don't allow the user to select a menu name instead of a menu item.
-    list($menu_name, $parent) = explode(':', $form_state->getValue('parent'));
-    if (empty($parent)) {
-      $form_state->setErrorByName('parent', $this->t('Please select a menu item. You have selected the name of a menu.'));
-    }
-  }
-
-  /**
-   * {@inheritdoc}
-   */
   public function save(array $form, FormStateInterface $form_state) {
     // Get menu position rule.
     $rule = $this->entity;
@@ -198,7 +187,7 @@ class MenuPositionRuleForm extends EntityForm {
     // Break apart parent selector for menu link creation.
     $link_parts = explode(':', $form_state->getValue('parent'));
     $menu_name = array_shift($link_parts);
-    $parent= implode(':', $link_parts);
+    $parent = implode(':', $link_parts);
 
     // This is a new menu position rule.
     if ($is_new) {

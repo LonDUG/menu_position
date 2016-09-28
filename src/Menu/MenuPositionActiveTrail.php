@@ -59,7 +59,13 @@ class MenuPositionActiveTrail extends MenuActiveTrail  {
             return $menu_link;
             break;
           case 'parent':
-            return $this->menuLinkManager->createInstance($menu_link->getParent());
+            if (!empty($menu_link->getParent())) {
+              return $this->menuLinkManager->createInstance($menu_link->getParent());
+            }
+            else {
+              // This is a top level menu item, there is not parent.
+              return null;
+            }
             break;
           case 'none':
             return null;
