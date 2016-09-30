@@ -126,7 +126,7 @@ class MenuPositionRuleForm extends EntityForm {
       if ($rule->getConditions()->has($condition_id)) {
         $condition = $rule->getConditions()->get($condition_id);
       } else {
-        $condition = $this->condition_plugin_manager->createInstance($definition['id']);
+        $condition = $this->condition_plugin_manager->createInstance($condition_id, []);
       }
 
       // Set conditions in the form state for extraction later.
