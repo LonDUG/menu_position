@@ -7,8 +7,11 @@
 
 namespace Drupal\menu_position\Form;
 
+use Drupal\Core\Config\ConfigFactoryInterface;
 use Drupal\Core\Form\ConfigFormBase;
 use Drupal\Core\Form\FormStateInterface;
+use Drupal\Core\Routing\RouteBuilder;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
  * Class MenuPositionSettings.
@@ -16,6 +19,28 @@ use Drupal\Core\Form\FormStateInterface;
  * @package Drupal\menu_position\Form
  */
 class MenuPositionSettings extends ConfigFormBase {
+
+  /**
+   * {@inheritdoc}
+   */
+  public function __construct(
+    ConfigFactoryInterface $config_factory,
+    RouteBuilder $route_builder
+    ) {
+
+    $this->setConfigFactory($config_factory);
+    $this->route_builder = $route_builder;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public static function create(ContainerInterface $container) {
+    return new static(
+      $container->get('config.factory'),
+      $container->get('router.builder')
+    );
+  }
 
   /**
    * {@inheritdoc}
@@ -69,6 +94,9 @@ class MenuPositionSettings extends ConfigFormBase {
     $this->config('menu_position.settings')
       ->set('link_display', $form_state->getValue('menu_position_active_link_display'))
       ->save();
+
+    // Flush appropriate menu cache
+    $this->route_builder->rebuild();
 
     parent::submitForm($form, $form_state);
   }
