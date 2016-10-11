@@ -9,6 +9,8 @@ namespace Drupal\menu_position\Form;
 
 use Drupal\Core\Form\ConfigFormBase;
 use Drupal\Core\Form\FormStateInterface;
+use Composer\Autoload\ClassLoader;
+use Symfony\Component\HttpFoundation\Request;
 
 /**
  * Class MenuPositionSettings.
@@ -71,6 +73,7 @@ class MenuPositionSettings extends ConfigFormBase {
       ->save();
 
     parent::submitForm($form, $form_state);
+    drupal_flush_all_caches();
   }
 
 }
