@@ -37,3 +37,9 @@ menu_position.settings:
     _title: 'Settings'
   requirements:
     _permission: 'administer site configuration'
+
+#Define homepage as default route.
+menu_position.default:
+  path: '/'
+  requirements:
+    _permission: 'administer site configuration'
