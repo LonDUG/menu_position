@@ -122,6 +122,7 @@ class MenuPositionRuleForm extends EntityForm {
 
     // Get all available plugins from the plugin manager.
     foreach ($this->condition_plugin_manager->getDefinitions() as $condition_id => $definition) {
+
       // If this condition exists already on the rule, use that.
       if ($rule->getConditions()->has($condition_id)) {
         $condition = $rule->getConditions()->get($condition_id);
@@ -134,10 +135,14 @@ class MenuPositionRuleForm extends EntityForm {
 
       // Allow condition plugins to build their own forms.
       $condition_form = $condition->buildConfigurationForm([], $form_state);
-      $condition_form['#type'] = 'details';
-      $condition_form['#title'] = $condition->getPluginDefinition()['label'];
-      $condition_form['#group'] = 'conditions_tabs';
-      $form['conditions'][$condition_id] = $condition_form;
+
+      // Exclude theme condition plugin.
+      if (!isset($condition_form['theme'])) {
+        $condition_form['#type'] = 'details';
+        $condition_form['#title'] = $condition->getPluginDefinition()['label'];
+        $condition_form['#group'] = 'conditions_tabs';
+        $form['conditions'][$condition_id] = $condition_form;
+      }
     }
 
     // Custom form alters for core conditions (lifted from BlockForm.php).
