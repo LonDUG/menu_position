@@ -122,6 +122,10 @@ class MenuPositionRuleForm extends EntityForm {
 
     // Get all available plugins from the plugin manager.
     foreach ($this->condition_plugin_manager->getDefinitions() as $condition_id => $definition) {
+      // Ignore the theme conditions so we just apply this rule to all themes
+      if ($condition_id == 'current_theme') {
+        continue;
+      }
       // If this condition exists already on the rule, use that.
       if ($rule->getConditions()->has($condition_id)) {
         $condition = $rule->getConditions()->get($condition_id);
